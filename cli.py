@@ -28,4 +28,5 @@ while True:
         break
 
 # Close the socket connection
+print('end close')
 client_socket.close()

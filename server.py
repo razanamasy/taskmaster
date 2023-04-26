@@ -18,7 +18,6 @@ client_socket, addr = server_socket.accept()
 while client_socket:
 
     print("New client connected from {addr[0]}:{addr[1]}")
-
     # Receive data from the client
     data = client_socket.recv(1024).decode()
 
