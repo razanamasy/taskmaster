@@ -13,12 +13,13 @@ server_socket.listen()
 
 print(f"Server listening on {HOST}:{PORT}")
 
+print('server 1');
+client_socket, addr = server_socket.accept()
+
+print('server 1');
+print(f"New client connected from {addr[0]}:{addr[1]}")
+
 while True:
-    # Accept a new client connection
-    client_socket, addr = server_socket.accept()
-
-    print(f"New client connected from {addr[0]}:{addr[1]}")
-
     # Receive data from the client
     data = client_socket.recv(1024).decode()
 
@@ -38,5 +39,5 @@ while True:
     # Send the result back to the client
     client_socket.sendall(result.encode())
 
-    # Close the client connection
-    client_socket.close()
+# Close the client connection
+client_socket.close()
