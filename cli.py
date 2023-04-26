@@ -14,10 +14,6 @@ while True:
     # Prompt the user for a command
     command = input('Enter a command ("start", "stop", or "quit"): ')
 
-    # Exit the loop if the user enters the quit command
-    if command == 'quit':
-        break
-
     # Send the command to the server
     client_socket.sendall(command.encode())
 
@@ -26,6 +22,10 @@ while True:
 
     # Print the result to the console
     print(result)
+
+    # Exit the loop if the user enters the quit command
+    if command == 'quit':
+        break
 
 # Close the socket connection
 client_socket.close()

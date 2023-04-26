@@ -12,12 +12,12 @@ server_socket.bind((HOST, PORT))
 server_socket.listen()
 
 print(f"Server listening on {HOST}:{PORT}")
+# Accept a new client connection
+client_socket, addr = server_socket.accept()
 
-while True:
-    # Accept a new client connection
-    client_socket, addr = server_socket.accept()
+while client_socket:
 
-    print(f"New client connected from {addr[0]}:{addr[1]}")
+    print("New client connected from {addr[0]}:{addr[1]}")
 
     # Receive data from the client
     data = client_socket.recv(1024).decode()
@@ -31,6 +31,11 @@ while True:
         print("Stopping the job...")
         # Code to stop the job goes here
         result = "Job stopped."
+    elif data == 'quit':
+        print("shutdown")
+        result = "server shutdown"
+        client_socket.sendall(result.encode())
+        break
     else:
         print("Invalid command.")
         result = "Invalid command."
@@ -38,5 +43,5 @@ while True:
     # Send the result back to the client
     client_socket.sendall(result.encode())
 
-    # Close the client connection
-    client_socket.close()
+# Close the client connection
+client_socket.close()
