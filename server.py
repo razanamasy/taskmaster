@@ -1,0 +1,42 @@
+import socket
+
+# Define the host and port to listen on
+HOST = 'localhost'
+PORT = 12345
+
+# Create a socket object and bind it to the host and port
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT))
+
+# Listen for incoming connections
+server_socket.listen()
+
+print(f"Server listening on {HOST}:{PORT}")
+
+while True:
+    # Accept a new client connection
+    client_socket, addr = server_socket.accept()
+
+    print(f"New client connected from {addr[0]}:{addr[1]}")
+
+    # Receive data from the client
+    data = client_socket.recv(1024).decode()
+
+    # Process the job command
+    if data == 'start':
+        print("Starting the job...")
+        # Code to start the job goes here
+        result = "Job started."
+    elif data == 'stop':
+        print("Stopping the job...")
+        # Code to stop the job goes here
+        result = "Job stopped."
+    else:
+        print("Invalid command.")
+        result = "Invalid command."
+
+    # Send the result back to the client
+    client_socket.sendall(result.encode())
+
+    # Close the client connection
+    client_socket.close()
