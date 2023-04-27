@@ -1,4 +1,10 @@
 import socket
+import sys
+
+#python server called with this config
+
+for i in range(1, len(sys.argv)):
+    print('argument:', i, 'value:', sys.argv[i])
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -25,7 +31,7 @@ while client_socket:
     if data == 'start':
         print("Starting the job...")
         # Code to start the job goes here
-        result = "Job started."
+        result = sys.argv[i]
     elif data == 'stop':
         print("Stopping the job...")
         # Code to stop the job goes here
@@ -43,4 +49,4 @@ while client_socket:
     client_socket.sendall(result.encode())
 
 # Close the client connection
-client_socket.close()
+server_socket.close()
