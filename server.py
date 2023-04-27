@@ -17,12 +17,18 @@ server_socket.bind((HOST, PORT))
 # Listen for incoming connections
 server_socket.listen()
 
+#replace with YAML parsing
 conf_file = open(sys.argv[1], "r");
 content = conf_file.read()
+
+
 
 print(f"Server listening on {HOST}:{PORT}")
 # Accept a new client connection
 client_socket, addr = server_socket.accept()
+
+#Here initialise the config file for the first time with YAML parsing command
+#Loop on all programs listed on yaml
 
 while client_socket:
 
