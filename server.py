@@ -17,6 +17,9 @@ server_socket.bind((HOST, PORT))
 # Listen for incoming connections
 server_socket.listen()
 
+conf_file = open(sys.argv[1], "r");
+content = conf_file.read()
+
 print(f"Server listening on {HOST}:{PORT}")
 # Accept a new client connection
 client_socket, addr = server_socket.accept()
@@ -31,11 +34,11 @@ while client_socket:
     if data == 'start':
         print("Starting the job...")
         # Code to start the job goes here
-        result = sys.argv[i]
+        result = sys.argv[1]
     elif data == 'stop':
         print("Stopping the job...")
         # Code to stop the job goes here
-        result = "Job stopped."
+        result = content
     elif data == 'quit':
         print("shutdown")
         result = "server shutdown"
@@ -50,3 +53,4 @@ while client_socket:
 
 # Close the client connection
 server_socket.close()
+conf_file.close()
