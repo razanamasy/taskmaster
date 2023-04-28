@@ -1,0 +1,19 @@
+programs:
+  ls:
+    cmd: "/usr/bin/ls"
+  env:
+    cmd: "/usr/bin/env"
+    numprocs: 1
+    umask: 022
+    workingdir: /tmp
+    autostart: True
+    autorestart: true
+    exitcode:
+      - 0
+      - 1
+    startretries: 7
+    starttime: 10
+    stopsignal: SIGTERM
+    stoptime: 10
+    stdout: ./logs/env
+    stderr: ./logs/enverror    

@@ -1,3 +1,0 @@
-programs:
-  nginx:
-    cmd: "command=/home/hrazanam/taskmaster/while"
