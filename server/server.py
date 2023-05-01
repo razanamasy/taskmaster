@@ -3,6 +3,7 @@ import sys
 import os
 import select
 from create_child_process import main as main_launch
+from parse import main as main_parse
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -37,9 +38,11 @@ while True:
             clients.append(client_socket)
             poll_object.register(client_socket, select.POLLIN)
             print(f"New client connected from {addr[0]}:{addr[1]}")
-            data = client_socket.recv(1024).decode()
-            print("LAUNH SERVER HERE received WARNING IT LAUNCHES 5 WHILE: ", data)
-            main_launch()
+            path_conf = client_socket.recv(1024).decode()
+            print("LAUNH SERVER HERE received WARNING IT LAUNCHES 5 WHILE: ", path_conf)
+			#the first parsing for launch here
+            main_parse(path_conf) #ici retourner un element proc_data = process_data 
+		   # main_launch(proc_data) #main_launch(process_structure)
 
         # If the event is from a client socket, it means there's data to read
         elif event & select.POLLIN:

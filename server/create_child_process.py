@@ -1,15 +1,16 @@
 import os
 import signal
+import sys
 
-def main():
+def main(data):
     env = {"USER": "hrazanam", "HOME": "/home/hrazanam"}
 
     pids = []
-    for i in range(5):
+    for i in range(1):
         pid = os.fork()
         if pid == 0:
             # Child process
-            os.execve("/Users/hinaraza/42/cursus/taskmaster/progs/while", ['while'], env)
+            os.execve("/home/hrazanam/taskmaster/progs/while", ['while'], env)
             # This line will never be reached
         else:
             pids.append(pid)
@@ -20,4 +21,4 @@ def main():
 #        print(f"Process {pid} exited with status {status}")
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1])
