@@ -12,12 +12,14 @@ def parse_file(configs):
             if isinstance(programs, dict) and programs != "programs":
                 for proc_name, conf in programs.items():
                     if isinstance(conf, dict):
+                        print("Proc name in parsing : ", proc_name)
                         process_dict[proc_name] = process_data(proc_name)
                         for key, value in conf.items():
                             if isinstance(value, dict):
                                 print("Wrong config file3")
                                 exit(1)
                             else:
+                                print("key and value : ", "|",key,"| " "|",value,"| ")
                                 setattr(process_dict[proc_name], key, value)
                     else:
                         print("Wrong config file2")
@@ -25,14 +27,15 @@ def parse_file(configs):
             else:
                 print("Wrong config file1")
                 exit(1)
-    print(process_dict);
+    return (process_dict)
         
 
 def open_file(conf_file):
+    print("in open file : ", conf_file)
     try:
         with open(conf_file, 'r') as f:
             configs = yaml.safe_load(f)
-            parse_file(configs)
+            return parse_file(configs)
     except FileNotFoundError:
         print("File not found")
         exit(1)
@@ -44,7 +47,7 @@ def open_file(conf_file):
         exit(1)
 
 def main(arg1):
-    open_file(arg1);
+    return open_file(arg1);
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
