@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 class process:
+=======
+class process_data:
+>>>>>>> master
     def __init__(self, name):
         self.name = name
         self.cmd = ""
@@ -26,4 +30,7 @@ autorestart = {self.autorestart}\n exitcode = {self.exitcode}\n startretries = {
 starttime = {self.starttime}\n stopsignal = {self.starttime}\n stoptime = {self.stoptime}\n \
 stdout = {self.stdout}\n stderr = {self.stderr}\n env = {self.env}\n failure = {self.failure}\n \
 fatal = {self.fatal}\n logs = {self.logs}\n"
+<<<<<<< HEAD
 
+=======
+>>>>>>> master

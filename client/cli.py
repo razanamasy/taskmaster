@@ -1,13 +1,16 @@
 import socket
 import argparse
+import sys
 
 # Define the host and port to connect to
 HOST = 'localhost'
 PORT = 12345
 
-# Create a socket object and connect to the server
+# Create a socket object and connect to the server and send the path file to launch
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
+print('argument: ', sys.argv[1])
+client_socket.sendall(sys.argv[1].encode())
 
 
 while True:
