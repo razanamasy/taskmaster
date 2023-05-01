@@ -1,0 +1,20 @@
+programs:
+  ls:
+    cmd:
+    numprocs: 1
+    umask: !!str 021
+    workingdir: /tmp
+    autostart: true
+    autorestart: unexpected
+    exitcodes:
+      - 0
+      - 
+    startretries: 5
+    starttime: 10
+    stopsignal: SIGTERM
+    stoptime: 5
+    stdout: /stdout/ls
+    stderr: /stderr/ls
+    env:
+      TEST: caca
+
