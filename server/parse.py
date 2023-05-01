@@ -12,24 +12,22 @@ def parse_file(configs, client_socket):
             if isinstance(programs, dict) and programs != "programs":
                 for proc_name, conf in programs.items():
                     if isinstance(conf, dict):
-                        print("Proc name in parsing : ", proc_name)
                         process_dict[proc_name] = process_data(proc_name)
+                        setattr(process_dict[proc_name], "client", client_socket)
                         for key, value in conf.items():
                             if isinstance(value, dict):
                                 print("Wrong config file3")
                                 exit(1)
                             else:
-                                print("key and value : ", "|",key,"| " "|",value,"| ")
                                 setattr(process_dict[proc_name], key, value)
+                        print(process_dict[proc_name])
                     else:
                         print("Wrong config file2")
                         exit(1)
             else:
                 print("Wrong config file1")
                 exit(1)
-    client_proc_dict = {client_socket: process_dict}
-    print(client_proc_dict[client_socket]["while"])
-    return (client_proc_dict)
+    return (process_dict)
         
 
 def open_file(conf_file, client_socket):
