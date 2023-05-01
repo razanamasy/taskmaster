@@ -2,7 +2,7 @@ import yaml
 import sys
 from process_struct import *
 
-def parse_file(configs):
+def parse_file(configs, client_socket):
     process_dict = {}
     if "programs" in configs == False:
         print("No programs section")
@@ -12,8 +12,8 @@ def parse_file(configs):
             if isinstance(programs, dict) and programs != "programs":
                 for proc_name, conf in programs.items():
                     if isinstance(conf, dict):
-                        print("Proc name in parsing : ", proc_name)
                         process_dict[proc_name] = process_data(proc_name)
+                        setattr(process_dict[proc_name], "client", client_socket)
                         for key, value in conf.items():
                             if isinstance(value, dict):
                                 print("Wrong config file3")
@@ -28,14 +28,15 @@ def parse_file(configs):
                 print("Wrong config file1")
                 exit(1)
     return (process_dict)
+
         
 
-def open_file(conf_file):
+def open_file(conf_file, client_socket):
     print("in open file : ", conf_file)
     try:
         with open(conf_file, 'r') as f:
             configs = yaml.safe_load(f)
-            return parse_file(configs)
+            return parse_file(configs, client_socket)
     except FileNotFoundError:
         print("File not found")
         exit(1)
@@ -46,12 +47,11 @@ def open_file(conf_file):
         print("You don't have the permissions to read the file")
         exit(1)
 
-def main(arg1):
-    return open_file(arg1);
+def main(arg1, arg2):
+    return open_file(arg1, arg2);
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Wrong number of arguments")
         exit(1)
-    main(sys.argv[1])
-
+    main(sys.argv[1], sys.argv[2])

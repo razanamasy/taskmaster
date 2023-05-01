@@ -26,6 +26,7 @@ print(f"Server listening on {HOST}:{PORT}")
 poll_object = select.poll()
 poll_object.register(server_socket, select.POLLIN)
 
+client_proc_data = {}
 
 while True:
     # Wait for events from clients or the server socket
@@ -42,13 +43,19 @@ while True:
             print("LAUNH SERVER HERE received WARNING IT LAUNCHES 5 WHILE: ", path_conf)
 			#the first parsing for launch here
 			
-            list_proc_data = main_parse(path_conf) #ici retourner un element proc_data = process_data
-
-			#Boucler sur le tableau de structure de process a envoyer au launch
-			#Boucler et le stocker quelque part
-            for key in list_proc_data:
-                main_launch(list_proc_data[key])
+            list_proc_data = main_parse(path_conf, client_socket) #ici retourner un element proc_data = process_data
+            client_proc_dict = {client_socket: list_proc_data}
+			#Boucler sur le tableau de structure de process du client a envoyer au launch
+            for key in client_proc_dict[client_socket]:
+                main_launch(client_proc_dict[client_socket][key])
             #main_launch(list_proc_data["while"]) #main_launch(process_structure)
+        
+            pid, status = os.waitpid(-1, 0)
+            print(f"Process {pid} exited with status {status}")
+
+	        #TEST faudrait checker la map de client/dico_process lol
+				
+
 
         # If the event is from a client socket, it means there's data to read
         elif event & select.POLLIN:
