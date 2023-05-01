@@ -41,10 +41,14 @@ while True:
             path_conf = client_socket.recv(1024).decode()
             print("LAUNH SERVER HERE received WARNING IT LAUNCHES 5 WHILE: ", path_conf)
 			#the first parsing for launch here
+			
             list_proc_data = main_parse(path_conf) #ici retourner un element proc_data = process_data
 
 			#Boucler sur le tableau de structure de process a envoyer au launch
-            main_launch(list_proc_data["while"]) #main_launch(process_structure)
+			#Boucler et le stocker quelque part
+            for key in list_proc_data:
+                main_launch(list_proc_data[key])
+            #main_launch(list_proc_data["while"]) #main_launch(process_structure)
 
         # If the event is from a client socket, it means there's data to read
         elif event & select.POLLIN:
