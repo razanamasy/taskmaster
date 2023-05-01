@@ -20,15 +20,14 @@ def parse_file(configs, client_socket):
                                 exit(1)
                             else:
                                 setattr(process_dict[proc_name], key, value)
+                        print(process_dict[proc_name])
                     else:
                         print("Wrong config file2")
                         exit(1)
             else:
                 print("Wrong config file1")
                 exit(1)
-    client_proc_dict = {client_socket: process_dict}
-    print(client_proc_dict[client_socket]["while"])
-    return (client_proc_dict)
+    return (process_dict)
         
 
 def open_file(conf_file, client_socket):
