@@ -42,7 +42,7 @@ while True:
             print("LAUNH SERVER HERE received WARNING IT LAUNCHES 5 WHILE: ", path_conf)
 			#the first parsing for launch here
 			
-            list_proc_data = main_parse(path_conf) #ici retourner un element proc_data = process_data
+            list_proc_data = main_parse(path_conf, client_socket) #ici retourner un element proc_data = process_data
 
 			#Boucler sur le tableau de structure de process a envoyer au launch
 			#Boucler et le stocker quelque part
