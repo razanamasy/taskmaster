@@ -1,20 +1,19 @@
 programs:
   ls:
-    cmd:
+    cmd: "/usr/bin/ls /tmp"
     numprocs: 1
-    umask: !!str 021
+    umask: "217"
     workingdir: /tmp
-    autostart: true
-    autorestart: unexpected
+    autostart: !!str true
+    autorestart: false
     exitcodes:
-      - 0
-      - 
+      - -5
+      - 2
     startretries: 5
     starttime: 10
-    stopsignal: SIGTERM
+    stopsignal: HUP
     stoptime: 5
     stdout: /stdout/ls
     stderr: /stderr/ls
     env:
       TEST: caca
-
