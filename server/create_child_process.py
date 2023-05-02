@@ -20,10 +20,4 @@ def main(data):
         else:
             pids.append(pid)
 
-    # Wait for all child processes to exit
-#    while pids:
-#        pid, status = os.waitpid(-1, 0)
-#        print(f"Process {pid} exited with status {status}")
-
-if __name__ == '__main__':
-    main(sys.argv[1])
+    return pid

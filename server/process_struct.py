@@ -2,6 +2,7 @@ class process_data:
     def __init__(self, name):
         self.name = name
         self.client = ""
+        self.pid = -1
         self.cmd = ""
         self.numprocs = 1
         self.umask = "022"

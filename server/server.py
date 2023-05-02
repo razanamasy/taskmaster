@@ -3,16 +3,17 @@ import sys
 import os
 import select
 from create_child_process import main as main_launch
+from start_launch import main as main_starting
 from parse import main as main_parse
 
 # Define the host and port to listen on
 HOST = 'localhost'
 PORT = 12345
 
+#SOCKET INITALISATION
 # Create a socket object and bind it to the host and port
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
 def is_running():
     try:
         server_socket.bind((HOST, PORT))
@@ -21,8 +22,6 @@ def is_running():
         exit(1) 
 
 is_running()
-
-
 # Listen for incoming connections
 server_socket.listen()
 
@@ -35,6 +34,12 @@ print(f"Server listening on {HOST}:{PORT}")
 poll_object = select.poll()
 poll_object.register(server_socket, select.POLLIN)
 
+
+
+#TABLES AND GLOBALE VARIABLES
+#{pid : process}
+running_table = {}
+#{client : dico_process}
 client_proc_dict = {}
 running = 1
 
@@ -50,26 +55,31 @@ while running:
             poll_object.register(client_socket, select.POLLIN)
             print(f"New client connected from {addr[0]}:{addr[1]}")
             path_conf = client_socket.recv(1024).decode()
-            print("LAUNH SERVER HERE received WARNING IT LAUNCHES 5 WHILE: ", path_conf)
 			#the first parsing for launch here
 			
 
-
             list_proc_data = main_parse(path_conf, client_socket.fileno()) #ici retourner un element proc_data = process_data
             client_proc_dict[client_socket.fileno()]=list_proc_data
+            
+
 			#Boucler sur le tableau de structure de process du client a envoyer au launch
             for key in client_proc_dict[client_socket.fileno()]:
-                main_launch(client_proc_dict[client_socket.fileno()][key])
-            #main_launch(list_proc_data["while"]) #main_launch(process_structure)
-            print("Key in dictionary ; ")
-            print(client_proc_dict.keys())
-    
+                main_starting(client_proc_dict, client_socket.fileno(), key, running_table)
+
+			#TESTS	
+            #client_proc_dict
+            print("value of pid of each client in dictionary ; ")
+            for value in client_proc_dict:
+                for sub_value in client_proc_dict[value]:
+                    print(client_proc_dict[value][sub_value].pid)
+                    print(client_proc_dict[value][sub_value].name)
+            #Running process
+            print("Key running table (should be modified in main_starting) ; ")
+            print(running_table.keys())
+
+			#LISTENING TO DEAD CHILDS
             pid, status = os.waitpid(-1, os.WNOHANG)
             print(f"Process {pid} exited with status {status}")
-
-	        #TEST faudrait checker la map de client/dico_process lol
-				
-
 
         # If the event is from a client socket, it means there's data to read
         elif event & select.POLLIN:

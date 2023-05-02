@@ -1,5 +1,5 @@
 programs:
   while:
     cmd: "/home/hrazanam/taskmaster/progs/while"
-  other_while:
-    cmd: "/home/hrazanam/taskmaster/progs/other_while"
+  return:
+    cmd: "/home/hrazanam/taskmaster/progs/return"
