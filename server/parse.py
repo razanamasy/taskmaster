@@ -8,35 +8,71 @@ conf_list = ["cmd", "numprocs", "umask", "workingdir", "autostart", "autorestart
 
 def check_value_types(key, value):
     error_flag = None 
-    #case "cmd":
+    if key == "cmd":
+        error_flag = check_string(value)
+        if error_flag != None:
+            error_flag = "error: cmd " + error_flag
+            return (error_flag)
     if key == "numprocs":
         error_flag = check_int(value, 1, 10)
         if error_flag != None:
             error_flag = "error: numprocs " + error_flag
             return (error_flag)
-    #case "umask":
-    #case "workingdir":
-    #case "autostart":
-    #case "autorestart":
-    #case "exitcodes":
-    elif key == "startretries":
+    if key == "umask":
+        error_flag = check_umask(value)
+        if error_flag != None:
+            error_flag = "error: umask " + error_flag
+            return (error_flag)
+    if key == "workingdir":
+        error_flag = check_string(value)
+        if error_flag != None:
+            error_flag = "error: workingdir " + error_flag
+            return (error_flag)
+    if key == "autostart":
+        error_flag = check_bool(value)
+        if error_flag != None:
+            error_flag = "error: autostart " + error_flag
+            return (error_flag)
+    if key == "autorestart":
+        error_flag = check_autorestart(value)
+        if error_flag != None:
+            error_flag = "error: autorestart " + error_flag
+            return (error_flag)
+    if key == "exitcodes":
+        error_flag = check_exitcodes(value)
+        if error_flag != None:
+            error_flag = "error: exitcodes " + error_flag
+            return (error_flag)
+    if key == "startretries":
         error_flag = check_int(value, 0, 50)
         if error_flag != None:
             error_flag = "error: startretries " + error_flag
             return (error_flag)
-    elif key == "starttime":
-        error_flag = check_int(value, 0, 60)
+    if key == "starttime":
+        error_flag = check_int(value, 0, 3600)
         if error_flag != None:
             error_flag = "error: startime " + error_flag
             return (error_flag)
-    #case "stopsignal":
-    elif key == "stoptime":
+    if key == "stopsignal":
+        error_flag = check_stopsignal(value)
+        if error_flag != None:
+            error_flag = "error: stopsignal " + error_flag
+            return (error_flag)
+    if key == "stoptime":
         error_flag = check_int(value, 0, 60)
         if error_flag != None:
             error_flag = "error: stoptime " + error_flag
             return (error_flag)
-    #case "stdout":
-    #case "stderr":
+    if key == "stdout":
+        error_flag = check_string(value)
+        if error_flag != None:
+            error_flag = "error: stdout " + error_flag
+            return (error_flag)
+    if key == "stderr":
+        error_flag = check_string(value)
+        if error_flag != None:
+            error_flag = "error: stderr " + error_flag
+            return (error_flag)
     #case "env":
     return (error_flag)
 
@@ -75,7 +111,7 @@ def parse_file(configs, client_socket):
             print("File doesn't start with the programs section or programs section is NULL")
             error["error"] = "File doesn't start with the programs section or programs section is NULL"
             return (error)
-
+    
     print(process_dict[proc_name])
     return (process_dict)
         
@@ -113,3 +149,10 @@ if __name__ == "__main__":
         print("Wrong number of arguments")
         exit(1)
     main(sys.argv[1], sys.argv[2])
+
+#to do parser env
+#stocker exitcodes correctement en remplacant la liste
+#changer true et false pour les bool
+#associer eles bons signaux a leur equivalent sig
+#tester les paths
+#export les env
