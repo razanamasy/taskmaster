@@ -12,7 +12,16 @@ PORT = 12345
 # Create a socket object and bind it to the host and port
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server_socket.bind((HOST, PORT))
+
+def is_running():
+    try:
+        server_socket.bind((HOST, PORT))
+    except socket.error as err:
+        print("Server already running")
+        exit(1) 
+
+is_running()
+
 
 # Listen for incoming connections
 server_socket.listen()
@@ -26,9 +35,10 @@ print(f"Server listening on {HOST}:{PORT}")
 poll_object = select.poll()
 poll_object.register(server_socket, select.POLLIN)
 
-client_proc_data = {}
+client_proc_dict = {}
+running = 1
 
-while True:
+while running:
     # Wait for events from clients or the server socket
     events = poll_object.poll()
 
@@ -43,14 +53,18 @@ while True:
             print("LAUNH SERVER HERE received WARNING IT LAUNCHES 5 WHILE: ", path_conf)
 			#the first parsing for launch here
 			
-            list_proc_data = main_parse(path_conf, client_socket) #ici retourner un element proc_data = process_data
-            client_proc_dict = {client_socket: list_proc_data}
+
+
+            list_proc_data = main_parse(path_conf, client_socket.fileno()) #ici retourner un element proc_data = process_data
+            client_proc_dict[client_socket.fileno()]=list_proc_data
 			#Boucler sur le tableau de structure de process du client a envoyer au launch
-            for key in client_proc_dict[client_socket]:
-                main_launch(client_proc_dict[client_socket][key])
+            for key in client_proc_dict[client_socket.fileno()]:
+                main_launch(client_proc_dict[client_socket.fileno()][key])
             #main_launch(list_proc_data["while"]) #main_launch(process_structure)
-        
-            pid, status = os.waitpid(-1, 0)
+            print("Key in dictionary ; ")
+            print(client_proc_dict.keys())
+    
+            pid, status = os.waitpid(-1, os.WNOHANG)
             print(f"Process {pid} exited with status {status}")
 
 	        #TEST faudrait checker la map de client/dico_process lol
@@ -79,12 +93,21 @@ while True:
                 # Code to stop the job goes here
                 result = "Stopping the job..."
             elif data == 'quit':
-                print("Shutdown")
-                result = "server shutdown"
+                print("Client quitting")
+                result = "bye bitch"
                 client_socket.sendall(result.encode())
+
+                client_proc_dict.pop(client_socket.fileno())
+                print("Key in dictionary left ; ")
+                print(client_proc_dict.keys())
+
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)
-                client_socket.close()
+                if len(client_proc_dict) == 0:
+                    print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
+                    running = 0
+                    break
+				#client_socket.close()
             else:
                 print("Invalid command.", data)
                 result = "Invalid command."
@@ -97,4 +120,3 @@ for client in clients:
     poll_object.unregister(client)
     client.close()
 server_socket.close()
-conf_file.close()
