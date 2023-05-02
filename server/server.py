@@ -77,7 +77,9 @@ while running:
             print("Key running table (should be modified in main_starting) ; ")
             print(running_table.keys())
 
-			#LISTENING TO DEAD CHILDS
+            #LISTENING TO DEAD TIMER (To restart process)
+			#join
+			#LISTENING TO DEAD CHILDS (Exec for RELOAD PROCESS)
             pid, status = os.waitpid(-1, os.WNOHANG)
             print(f"Process {pid} exited with status {status}")
 
