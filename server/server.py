@@ -5,6 +5,7 @@ import select
 from create_child_process import main as main_launch
 from start_launch import main as main_starting
 from parse import main as main_parse
+import threading
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -39,9 +40,27 @@ poll_object.register(server_socket, select.POLLIN)
 #TABLES AND GLOBALE VARIABLES
 #{pid : process}
 running_table = {}
+#{pid_timer: pid_exec}
+timer_exec = {}
 #{client : dico_process}
 client_proc_dict = {}
+#to quit
 running = 1
+#to start wait pid inly at first connexion
+switch_monitor = [0]
+
+#WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
+def wait_for_child(running_table, switch_monitor):
+    print("MONITOR HAS STARTED")
+    while bool(running_table):
+        pid, status = os.waitpid(-1, os.WNOHANG)
+        if (pid != 0):
+            running_table.pop(pid)
+            print(f"Process {pid} exited with status {status}")
+            if bool(running_table)==False:
+                switch_monitor[0] = 0
+                print("Set my switch monitor to false")
+
 
 while running:
     # Wait for events from clients or the server socket
@@ -68,20 +87,23 @@ while running:
 
 			#TESTS	
             #client_proc_dict
-            print("value of pid of each client in dictionary ; ")
-            for value in client_proc_dict:
-                for sub_value in client_proc_dict[value]:
-                    print(client_proc_dict[value][sub_value].pid)
-                    print(client_proc_dict[value][sub_value].name)
+		#    print("value of pid of each client in dictionary ; ")
+		#    for value in client_proc_dict:
+		#        for sub_value in client_proc_dict[value]:
+		#            print(client_proc_dict[value][sub_value].pid)
+		#            print(client_proc_dict[value][sub_value].name)
             #Running process
-            print("Key running table (should be modified in main_starting) ; ")
-            print(running_table.keys())
+		#    print("Key running table (should be modified in main_starting) ; ")
+		#    print(running_table.keys())
 
-            #LISTENING TO DEAD TIMER (To restart process)
-			#join
-			#LISTENING TO DEAD CHILDS (Exec for RELOAD PROCESS)
-            pid, status = os.waitpid(-1, os.WNOHANG)
-            print(f"Process {pid} exited with status {status}")
+			#START MONITOR DEATH ONLY AT START 
+            print("switch monitor is at : ", switch_monitor[0])
+            if switch_monitor[0] == 0:
+                switch_monitor[0] = 1
+                monitor = threading.Thread(target=wait_for_child, args=(running_table, switch_monitor))
+                monitor.daemon = True
+                monitor.start()
+
 
         # If the event is from a client socket, it means there's data to read
         elif event & select.POLLIN:
@@ -126,6 +148,7 @@ while running:
 
             # Send the result back to the client
             client_socket.sendall(result.encode())
+
 
 # Close the client connections and the server socket
 for client in clients:

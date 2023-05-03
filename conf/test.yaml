@@ -1,5 +1,4 @@
 programs:
   while:
     cmd: "/home/hrazanam/taskmaster/progs/while"
-  return:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
+    starttime: 10

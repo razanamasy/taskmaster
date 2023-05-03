@@ -1,22 +1,22 @@
 class process_data:
     def __init__(self, name):
         self.name = name
-        self.client = ""
+        self.client = None
         self.pid = -1
-        self.cmd = ""
+        self.cmd = None
         self.numprocs = 1
         self.umask = "022"
-        self.workingdir = ""
+        self.workingdir = None
         self.autostart = True
         self.autorestart = "unexpected"
         self.exitcode = [0]
         self.startretries = 3
         self.starttime = 1
-        self.stopsignal = "TERM"
+        self.stopsignal = "SIGTERM"
         self.stoptime = 10
         self.stdout = "/etc/taskmaster/stdout/" + name
         self.stderr = "/etc/taskmaster/stderr/" + name
-        self.env = []
+        self.env = None
         self.failure = False
         self.fatal = False
         self.logs = []

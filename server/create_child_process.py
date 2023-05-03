@@ -7,8 +7,8 @@ import sys
 def main(data):
     env = {"USER": "hrazanam", "HOME": "/home/hrazanam"}
 
-    print("In create_child file proc data name is : ", data.name)
-    print("In create_child the cmd to execute is : ", data.cmd)
+#    print("In create_child file proc data name is : ", data.name)
+#    print("In create_child the cmd to execute is : ", data.cmd)
 
     pids = []
     for i in range(1):
