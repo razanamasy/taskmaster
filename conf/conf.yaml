@@ -1,8 +1,8 @@
 programs:
   ls:
-    cmd: "/usr/bin/ls /tmp"
+    cmd: "/usr/bin/ls /etc"
     numprocs: 1
-    umask: "217"
+    umask: "022"
     workingdir: /tmp
     autostart: !!str true
     autorestart: false
@@ -13,7 +13,10 @@ programs:
     starttime: 10
     stopsignal: HUP
     stoptime: 5
-    stdout: /stdout/ls
-    stderr: /stderr/ls
+    stdout: ../conf/test.yaml
+    stderr: ../conf/er
     env:
-      TEST: caca
+      Test: "123"
+  cd:
+    cmd: "/usr/bin/cd"
+    stopsignal: 10
