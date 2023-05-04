@@ -1,10 +1,13 @@
 import yaml
 import sys
+import os
 from process_struct import *
 from parse_utils import *
 
 error = {}
 conf_list = ["cmd", "numprocs", "umask", "workingdir", "autostart", "autorestart", "exitcodes", "startretries", "starttime", "stopsignal", "stoptime", "stdout", "stderr", "env"]
+signals = {"TERM": "SIGTERM", "HUP": "SIGHUP", "INT": "SIGINT", "QUIT": "SIGQUIT", "KILL": "SIGKILL", "USR1": "SIGUSR1", "USR2": "SIGUSR2"}
+int_signals = {15: "SIGTERM", 1: "SIGHUP", 2: "SIGINT", 3: "SIGQUIT", 9: "SIGKILL", 10: "SIGUSR1", 12: "SIGUSR2"}
 
 def check_value_types(key, value):
     error_flag = None 
@@ -73,36 +76,88 @@ def check_value_types(key, value):
         if error_flag != None:
             error_flag = "error: stderr " + error_flag
             return (error_flag)
-    #case "env":
+    if key == "env":
+        error_flag = check_env(value)
+        if error_flag != None:
+            error_flag = "error: env " + error_flag
+            return (error_flag)
     return (error_flag)
+
+def set_attribute(process_dict, key, value):
+    if key == "autostart" or key == "autorestart":
+        if value == "false":
+            value = False
+        elif value == "true":
+            value = True
+    elif key == "stopsignal":
+        if isinstance(value, str) == True:
+            value = signals[value]
+        else:
+            value = int_signals[value]
+    elif key == "stdout":
+        if os.path.exists(os.path.dirname(value)):
+            open(value, "w")
+            os.chmod(value, int(calculate_file_rights(process_dict.umask), 8))
+            if os.access(value, os.W_OK):
+                pass
+            else:
+                return ("error: stdout file write rights issues")
+        else:
+            return ("error: stdout file does not exist")
+    elif key == "stderr":
+        if os.path.exists(os.path.dirname(value)):
+            open(value, "w")
+            os.chmod(value, int(calculate_file_rights(process_dict.umask), 8))    
+            if os.access(value, os.W_OK):
+                pass
+            else:
+                return ("error: stderr file write rights issues")
+        else:
+            return ("error: stderr file does not exist")
+    setattr(process_dict, key, value)
+    return (None)
+
 
 def parse_file(configs, client_socket):
     process_dict = {}
     for glob, programs in configs.items():
-        if isinstance(programs, dict) and programs != "programs":
+        if isinstance(programs, dict) and glob == "programs":
             for proc_name, conf in programs.items():
                 if isinstance(conf, dict):
-                    process_dict[proc_name] = process_data(proc_name)
-                    setattr(process_dict[proc_name], "client", client_socket)
-                    for key, value in conf.items():
-                        try:
-                            conf_list.index(key)
-                        except ValueError:
-                            print("Invalid configuration option")
-                            error["error"] = "Invalid configuration option"
-                            return (error)
-                        if isinstance(value, dict) and key != "env":
-                            print("Wrong configuration value format")
-                            error["error"] = "Wrong configuration value format"
-                            return (error)
-                        else:
+                    error_flag = check_string(str(proc_name))
+                    if error_flag != None:
+                        error["error"] = "process name" +  error_flag
+                        return (error)
+                    else:
+                        process_dict[str(proc_name)] = process_data(str(proc_name))
+                        setattr(process_dict[str(proc_name)], "client", client_socket)
+                        for key, value in conf.items():
+                            try:
+                                conf_list.index(key)
+                            except ValueError:
+                                print("Invalid configuration option")
+                                error["error"] = "Invalid configuration option"
+                                return (error)
                             error_type = check_value_types(key, value)
                             if error_type != None:
                                 print(error_type)
                                 error["error"] = error_type
                                 return (error)
                             else:
-                                setattr(process_dict[proc_name], key, value)
+                                error_type = set_attribute(process_dict[str(proc_name)], key, value)
+                                if error_type != None:
+                                    print(error_type)
+                                    error["error"] = error_type
+                                    return (error)
+                    if process_dict[str(proc_name)].cmd == None:
+                        print("cmd configuration mandatory")
+                        error["error"] = "cmd configuration mandatory"
+                        return (error)
+                    if process_dict[str(proc_name)].stdout == process_dict[str(proc_name)].stderr:
+                        print("stdout and stderr should be different")
+                        error["error"] = "stdout and stderr should be different"
+                        return (error)
+                    print(process_dict[str(proc_name)])
                 else:
                     print("Wrong process section or process section is NULL")
                     error["error"] = "Wrong process section or process section is NULL"
@@ -111,8 +166,6 @@ def parse_file(configs, client_socket):
             print("File doesn't start with the programs section or programs section is NULL")
             error["error"] = "File doesn't start with the programs section or programs section is NULL"
             return (error)
-    
-    print(process_dict[proc_name])
     return (process_dict)
         
 
@@ -122,14 +175,12 @@ def open_file(conf_file, client_socket):
         with open(conf_file, 'r') as f:
             try:
                 configs = yaml.safe_load(f)
-                print(configs)
             except:
                 print("Invalid yaml")
                 error["error"] = "Invalid yaml"
                 return (error)
-            return parse_file(configs, client_socket)
     except FileNotFoundError:
-        print("File not found")
+        print("open File not found")
         error["error"] = "File not found"
         return (error)
     except IOError:
@@ -140,20 +191,15 @@ def open_file(conf_file, client_socket):
         print("You don't have the permissions to read the file")
         error["error"] = "You don't have the permissions to read the file"
         return (error)
+    return parse_file(configs, client_socket)
+
 
 def main(conf_file, client_socket):
     return open_file(conf_file, client_socket)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Wrong number of arguments")
-        exit(1)
-    main(sys.argv[1], sys.argv[2])
-
-#to do parser env
-#stocker exitcodes correctement en remplacant la liste
-#changer true et false pour les bool
-#associer eles bons signaux a leur equivalent sig
-#tester les paths
-#export les env
+#if __name__ == "__main__":
+#    if len(sys.argv) != 3:
+#        print("Wrong number of arguments")
+#        exit(1)
+#    main(sys.argv[1], sys.argv[2])
 

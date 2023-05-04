@@ -1,5 +1,5 @@
 _bool = ["true", "True", "False", "false"]
-signals = ["TERM", "HUP", "INT", "QUIT", "KILL", "USR1", "USR2"]
+signals = ["TERM", "SIGTERM", "HUP", "SIGHUP", "INT", "SIGINT", "QUIT", "SIGQUIT", "KILL", "SIGKILL", "USR1", "SIGUSR1", "USR2", "SIGUSR2"]
 int_signals = [15, 1, 2, 3, 9, 10, 12]
 
 def check_int(value, min, max):
@@ -96,11 +96,34 @@ def check_stopsignal(value):
     else:
         if flag == "is not a string":
             if isinstance(value, int) == False:
-                return ("is not an int")
+                return ("is not a signal")
             else:
                 try:
                     int_signals.index(value)
                 except ValueError:
-                    return ("wrong signal")
+                    return ("wrong signal value")
                 flag = None
     return (flag)
+
+def check_env(_dict):
+    if _dict == None:
+        return ("is empty")
+    else:
+        if isinstance(_dict, dict) == False:
+            return ("is not a dict")
+        else:
+            for key, value in _dict.items():
+                flag = check_string(key)
+                if flag == None:
+                    flag = check_string(value)
+                    if flag != None:
+                        return ("value " + flag)
+                else:
+                    return ("key " + flag)
+    return (None)
+
+def calculate_file_rights(umask):
+    rights = ""
+    for nb in umask:
+        rights = rights + str(6 - int(nb))
+    return(rights)

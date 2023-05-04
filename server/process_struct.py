@@ -9,7 +9,7 @@ class process_data:
         self.workingdir = None
         self.autostart = True
         self.autorestart = "unexpected"
-        self.exitcode = [0]
+        self.exitcodes = [0]
         self.startretries = 3
         self.starttime = 1
         self.stopsignal = "SIGTERM"
@@ -24,9 +24,9 @@ class process_data:
         self.logs = []
 
     def __str__(self):
-        return f"My class: \n name = {self.name}\n client = {self.client}\n cmd = {self.cmd}\n numprocs = {self.numprocs}\n \
+        return f"My class: \n name = {self.name}\n client = {self.client}\n pid = {self.pid}\n cmd = {self.cmd}\n numprocs = {self.numprocs}\n \
 umask = {self.umask}\n workingdir = {self.workingdir}\n autostart = {self.autostart}\n \
-autorestart = {self.autorestart}\n exitcode = {self.exitcode}\n startretries = {self.startretries}\n \
-starttime = {self.starttime}\n stopsignal = {self.starttime}\n stoptime = {self.stoptime}\n \
+autorestart = {self.autorestart}\n exitcodes = {self.exitcodes}\n startretries = {self.startretries}\n \
+starttime = {self.starttime}\n stopsignal = {self.stopsignal}\n stoptime = {self.stoptime}\n \
 stdout = {self.stdout}\n stderr = {self.stderr}\n env = {self.env}\n failure = {self.failure}\n \
 running = {self.running}\n fatal = {self.fatal}\n logs = {self.logs}\n"
