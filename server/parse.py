@@ -197,10 +197,8 @@ def open_file(conf_file, client_socket):
 def main(conf_file, client_socket):
     return open_file(conf_file, client_socket)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Wrong number of arguments")
-        exit(1)
-    main(sys.argv[1], sys.argv[2])
-
-#export les env
+#if __name__ == "__main__":
+#    if len(sys.argv) != 3:
+#        print("Wrong number of arguments")
+#        exit(1)
+#    main(sys.argv[1], sys.argv[2])
