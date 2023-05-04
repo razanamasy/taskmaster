@@ -157,7 +157,6 @@ def parse_file(configs, client_socket):
                         print("stdout and stderr should be different")
                         error["error"] = "stdout and stderr should be different"
                         return (error)
-                    print(process_dict[str(proc_name)])
                 else:
                     print("Wrong process section or process section is NULL")
                     error["error"] = "Wrong process section or process section is NULL"
