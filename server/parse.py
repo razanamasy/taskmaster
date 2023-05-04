@@ -127,7 +127,7 @@ def parse_file(configs, client_socket):
                     error_flag = check_string(str(proc_name))
                     if error_flag != None:
                         error["error"] = "process name" +  error_flag
-                        return (error_flag)
+                        return (error)
                     else:
                         process_dict[str(proc_name)] = process_data(str(proc_name))
                         setattr(process_dict[str(proc_name)], "client", client_socket)
