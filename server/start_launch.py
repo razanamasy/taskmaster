@@ -3,19 +3,28 @@ import threading
 from create_child_process import main as main_exec
 
 def starting_process(client_proc_dict, fd, key, running_table):
-    while client_proc_dict[fd][key].startretries:
-        print("my starting time is : ", client_proc_dict[fd][key].starttime)
+    while client_proc_dict[fd][key].startretries and client_proc_dict[fd][key].starttime:
+        print("my starting time for", client_proc_dict[fd][key].name,"is : ", client_proc_dict[fd][key].starttime)
         time.sleep(client_proc_dict[fd][key].starttime);
         print("end sleeping")
         if client_proc_dict[fd][key].pid in running_table:
             client_proc_dict[fd][key].starttime = 0
-            print("end of story for start pass to reload")
+            client_proc_dict[fd][key].running = True
+            client_proc_dict[fd][key].failure = False
+            print("end of story for start pass to reload for : ", client_proc_dict[fd][key].name)
         else: #Fork
-            print("Pid not in running table, neet to retry")
+            print("Pid not in running table, neet to retry for :", client_proc_dict[fd][key].name)
+            client_proc_dict[fd][key].backlog = True
+            client_proc_dict[fd][key].failure = True
             newpid = main_exec(client_proc_dict[fd][key]);
             client_proc_dict[fd][key].pid = newpid;
             running_table[newpid]=client_proc_dict[fd][key]; 
             client_proc_dict[fd][key].startretries -= 1
+
+    if client_proc_dict[fd][key].failure == True:
+        client_proc_dict[fd][key].fatal = True
+    client_proc_dict[fd][key].backlog = False
+    print("FINAL START PROCESS FOR --->i", client_proc_dict[fd][key].name," Fatal:", client_proc_dict[fd][key].fatal, " Running:", client_proc_dict[fd][key].running, " Failure:", client_proc_dict[fd][key].failure )
 
 def main (client_proc_dict, fd, key, running_table):
 	#Fork premiere execution

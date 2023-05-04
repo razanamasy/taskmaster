@@ -1,0 +1,5 @@
+programs:
+  while:
+    cmd: "/home/hrazanam/taskmaster/progs/while"
+    starttime: 10
+    startretries: 1

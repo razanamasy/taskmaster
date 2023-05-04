@@ -46,20 +46,22 @@ timer_exec = {}
 client_proc_dict = {}
 #to quit
 running = 1
-#to start wait pid inly at first connexion
+#to start wait pid only at first connexion
+first = 0
+#Switch monitor deprecated
 switch_monitor = [0]
 
 #WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
 def wait_for_child(running_table, switch_monitor):
     print("MONITOR HAS STARTED")
-    while bool(running_table):
-        pid, status = os.waitpid(-1, os.WNOHANG)
-        if (pid != 0):
-            running_table.pop(pid)
-            print(f"Process {pid} exited with status {status}")
-            if bool(running_table)==False:
-                switch_monitor[0] = 0
-                print("Set my switch monitor to false")
+    while True:
+        while bool(running_table):
+				#   print("Start waiting pid")
+            pid, status = os.waitpid(-1, os.WNOHANG)
+            if (pid != 0):
+                running_table.pop(pid)
+                print(f"Process {pid} exited with status {status}")
+                print("No longer waiting pid")
 
 
 while running:
@@ -98,8 +100,8 @@ while running:
 
 			#START MONITOR DEATH ONLY AT START 
             print("switch monitor is at : ", switch_monitor[0])
-            if switch_monitor[0] == 0:
-                switch_monitor[0] = 1
+            if first == 0:
+                first = 1
                 monitor = threading.Thread(target=wait_for_child, args=(running_table, switch_monitor))
                 monitor.daemon = True
                 monitor.start()
