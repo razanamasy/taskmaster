@@ -1,7 +1,7 @@
 import os
 import signal
 
-def main(client_fd, client_proc_dict):
+def main(client_fd, client_proc_dict, running_table):
 	#TESTS	
     #client_proc_dict
     print("Killin pid of this quitting client : ", client_fd)

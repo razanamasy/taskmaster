@@ -2,6 +2,7 @@ import socket
 import sys
 import os
 import select
+import copy
 from create_child_process import main as main_launch
 from start_launch import main as main_starting
 from parse import main as main_parse
@@ -84,7 +85,21 @@ while running:
             client_proc_dict[client_socket.fileno()]=list_proc_data
             
 
-			#Boucler sur le tableau de structure de process du client a envoyer au launch
+            #REPLICAS PUIS EXECUTION SORTIR CETTE FONCTION
+            temp_dico = {}
+            for key in client_proc_dict[client_socket.fileno()]:
+                print(key)
+                if client_proc_dict[client_socket.fileno()][key].numprocs > 1:
+                    i = 1
+                    while i < client_proc_dict[client_socket.fileno()][key].numprocs:
+                        temp_dico[key + "-" + str(i)] = copy.deepcopy(client_proc_dict[client_socket.fileno()][key])
+                        temp_dico[key + "-" + str(i)].name = key + "-" + str(i)
+                        i += 1
+			#CHECK DU NOUVEAU CLIENT DICO
+            client_proc_dict[client_socket.fileno()].update(temp_dico)
+            for key in client_proc_dict[client_socket.fileno()]:
+                print(key)
+
             for key in client_proc_dict[client_socket.fileno()]:
                 main_starting(client_proc_dict, client_socket.fileno(), key, running_table)
 
@@ -129,12 +144,12 @@ while running:
                 print("Stopping the job...")
                 # Code to stop the job goes here
                 result = "Stopping the job..."
-            elif data == 'quit':
+            elif data == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
                 result = "bye bitch"
 
                 #kill all its process
-                kill_quit(client_socket.fileno(), client_proc_dict)
+                kill_quit(client_socket.fileno(), client_proc_dict, running_table)
 
                 client_socket.sendall(result.encode())
                 client_proc_dict.pop(client_socket.fileno())
