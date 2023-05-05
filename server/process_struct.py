@@ -19,7 +19,7 @@ class process_data:
         self.env = None
         self.failure = False
         self.running = False
-        self.backlog = False
+        self.backlog = True
         self.fatal = False
         self.logs = []
 
@@ -29,4 +29,4 @@ umask = {self.umask}\n workingdir = {self.workingdir}\n autostart = {self.autost
 autorestart = {self.autorestart}\n exitcodes = {self.exitcodes}\n startretries = {self.startretries}\n \
 starttime = {self.starttime}\n stopsignal = {self.stopsignal}\n stoptime = {self.stoptime}\n \
 stdout = {self.stdout}\n stderr = {self.stderr}\n env = {self.env}\n failure = {self.failure}\n \
-running = {self.running}\n fatal = {self.fatal}\n logs = {self.logs}\n"
+running = {self.running}\n backlog= {self.backlog}\n fatal = {self.fatal}\n logs = {self.logs}\n"

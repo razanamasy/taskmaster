@@ -37,8 +37,6 @@ print(f"Server listening on {HOST}:{PORT}")
 poll_object = select.poll()
 poll_object.register(server_socket, select.POLLIN)
 
-
-
 #TABLES AND GLOBALE VARIABLES
 #{pid : process}
 running_table = {}
@@ -54,13 +52,19 @@ first = 0
 switch_monitor = [0]
 
 #WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
-def wait_for_child(running_table, switch_monitor):
+def wait_for_child(running_table, client_proc_dict):
     print("MONITOR HAS STARTED")
     while True:
         while bool(running_table):
 				#   print("Start waiting pid")
             pid, status = os.waitpid(-1, os.WNOHANG)
             if (pid != 0):
+                print(running_table[pid])
+                fd = running_table[pid].client
+                key = running_table[pid].name
+                print(client_proc_dict[fd][key])
+                if running_table[pid].backlog == False and running_table[pid].fatal == False and running_table[pid].autorestart == True:
+                    main_starting(client_proc_dict, fd, key, running_table)
                 running_table.pop(pid)
                 print(f"Process {pid} exited with status {status}")
                 print("No longer waiting pid")
@@ -118,7 +122,7 @@ while running:
             print("switch monitor is at : ", switch_monitor[0])
             if first == 0:
                 first = 1
-                monitor = threading.Thread(target=wait_for_child, args=(running_table, switch_monitor))
+                monitor = threading.Thread(target=wait_for_child, args=(running_table, client_proc_dict))
                 monitor.daemon = True
                 monitor.start()
 
