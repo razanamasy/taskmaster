@@ -3,13 +3,14 @@ import threading
 from create_child_process import main as main_exec
 
 def starting_process(client_proc_dict, fd, key, running_table):
-    while client_proc_dict[fd][key].startretries and client_proc_dict[fd][key].starttime:
+    running = 0
+    while client_proc_dict[fd][key].startretries and (running == 0):
         print("my starting time for", client_proc_dict[fd][key].name,"is : ", client_proc_dict[fd][key].starttime)
         time.sleep(client_proc_dict[fd][key].starttime);
         print("end sleeping")
         if client_proc_dict[fd][key].pid in running_table:
             client_proc_dict[fd][key].starttime = 0
-            client_proc_dict[fd][key].running = True
+            running = True
             client_proc_dict[fd][key].failure = False
             print("end of story for start pass to reload for : ", client_proc_dict[fd][key].name)
         else: #Fork

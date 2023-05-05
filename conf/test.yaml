@@ -2,128 +2,40 @@ programs:
   return1:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return2:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return3:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return4:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return5:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return6:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return7:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return8:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return9:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
+    startretries: 10
   return10:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 40
-  return11:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return12:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return13:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return14:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return15:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return16:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return17:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return18:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return19:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return20:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return21:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return22:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return23:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return24:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return25:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return26:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return27:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return28:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return29:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return30:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return31:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-  return32:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
+    startretries: 10

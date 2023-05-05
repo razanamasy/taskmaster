@@ -5,6 +5,7 @@ import select
 from create_child_process import main as main_launch
 from start_launch import main as main_starting
 from parse import main as main_parse
+from kill_quit import main as kill_quit
 import threading
 
 # Define the host and port to listen on
@@ -131,8 +132,11 @@ while running:
             elif data == 'quit':
                 print("Client quitting")
                 result = "bye bitch"
-                client_socket.sendall(result.encode())
 
+                #kill all its process
+                kill_quit(client_socket.fileno(), client_proc_dict)
+
+                client_socket.sendall(result.encode())
                 client_proc_dict.pop(client_socket.fileno())
                 print("Key in dictionary left ; ")
                 print(client_proc_dict.keys())
