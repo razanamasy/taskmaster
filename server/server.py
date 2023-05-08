@@ -61,7 +61,7 @@ def wait_for_child(running_table, client_proc_dict):
     while True:
     #    print("still in monitor but no running table")
         if bool(running_table):
-            print("J'ai reussit a rentrer dans le monitor car In monitor, my running table SIZE is : ", len(running_table))
+    #        print("J'ai reussit a rentrer dans le monitor car In monitor, my running table SIZE is : ", len(running_table))
             try:
                 pid, status = os.waitpid(-1, os.WNOHANG)
                 if (pid != 0):
@@ -69,7 +69,22 @@ def wait_for_child(running_table, client_proc_dict):
                     fd = running_table[pid].client
                     key = running_table[pid].name
                     #print(client_proc_dict[fd][key])
+                    print("EST TU QUITTING ? ", running_table[pid].quitting)
+                    if running_table[pid].quitting == True:
+                        print("QUITTING A TRUE ALOrS ON POP PUTAIN")
+                        if client_proc_dict[fd]:
+                            print("LE FD EXISTE ENCORE ALORS ON POP PUTAIN")
+                            client_proc_dict.pop(fd)
+
+                            print("Key in dictionary left in monitor; ")
+
+                            mutex_proc_dict.acquire()
+                            print(client_proc_dict.keys())
+                            mutex_proc_dict.release()
+
+
                     if running_table[pid].backlog == False and running_table[pid].startretries != 0 and running_table[pid].autorestart == True and running_table[pid].quitting == False:
+                        print("KESKE TU VIENS FOUTRE ICI BORDEL DE MERDE ? QUITTING : ", running_table[pid].quitting)
                         main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict)
                     running_table.pop(pid)
                     print(f"Process {pid} exited with status {status}")
@@ -177,14 +192,14 @@ while running:
                 client_socket.sendall(result.encode())
 
                 #TOUT CE MERDIER DOIT ETRE APPELE PAR LE MONITOR 
-#                mutex_proc_dict.acquire()
-#                client_proc_dict.pop(client_socket.fileno())
-#                mutex_proc_dict.release()
-                print("Key in dictionary left ; ")
+ #               mutex_proc_dict.acquire()
+ #               client_proc_dict.pop(client_socket.fileno())
+ #               mutex_proc_dict.release()
+#                print("Key in dictionary left ; ")
 
-                mutex_proc_dict.acquire()
-                print(client_proc_dict.keys())
-                mutex_proc_dict.release()
+#                mutex_proc_dict.acquire()
+#                print(client_proc_dict.keys())
+#                mutex_proc_dict.release()
 
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)

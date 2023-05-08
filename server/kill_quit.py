@@ -11,9 +11,9 @@ def main(client_fd, client_proc_dict, running_table):
      #   print("IT's PID : ", client_proc_dict[client_fd][sub_value].pid)
         #First pop from running table then try to kill
         print("I've juste popped the pid from running table")
+        client_proc_dict[client_fd][sub_value].quitting = True
         try:
             if (client_proc_dict[client_fd][sub_value].fatal == False):
-                client_proc_dict[client_fd][sub_value].quitting = True
                 os.kill(client_proc_dict[client_fd][sub_value].pid, signal.SIGTERM)
                 print(f"Process with PID {client_proc_dict[client_fd][sub_value].pid} exists. We can kill it")
             else:
