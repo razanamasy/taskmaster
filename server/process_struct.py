@@ -21,6 +21,7 @@ class process_data:
         self.running = False
         self.backlog = True
         self.fatal = False
+        self.quitting = False
         self.logs = []
 
     def __str__(self):

@@ -59,7 +59,7 @@ mutex_proc_dict = Lock()
 def wait_for_child(running_table, client_proc_dict):
         #   print("MONITOR HAS STARTED")
     while True:
-        print("still in monitor but no running table")
+    #    print("still in monitor but no running table")
         if bool(running_table):
             print("J'ai reussit a rentrer dans le monitor car In monitor, my running table SIZE is : ", len(running_table))
             try:
@@ -68,8 +68,8 @@ def wait_for_child(running_table, client_proc_dict):
                         #    print(running_table[pid])
                     fd = running_table[pid].client
                     key = running_table[pid].name
-                    print(client_proc_dict[fd][key])
-                    if running_table[pid].backlog == False and running_table[pid].startretries != 0 and running_table[pid].autorestart == True:
+                    #print(client_proc_dict[fd][key])
+                    if running_table[pid].backlog == False and running_table[pid].startretries != 0 and running_table[pid].autorestart == True and running_table[pid].quitting == False:
                         main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict)
                     running_table.pop(pid)
                     print(f"Process {pid} exited with status {status}")
@@ -176,9 +176,10 @@ while running:
 
                 client_socket.sendall(result.encode())
 
-                mutex_proc_dict.acquire()
-                client_proc_dict.pop(client_socket.fileno())
-                mutex_proc_dict.release()
+                #TOUT CE MERDIER DOIT ETRE APPELE PAR LE MONITOR 
+#                mutex_proc_dict.acquire()
+#                client_proc_dict.pop(client_socket.fileno())
+#                mutex_proc_dict.release()
                 print("Key in dictionary left ; ")
 
                 mutex_proc_dict.acquire()
