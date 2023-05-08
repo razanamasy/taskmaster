@@ -3,39 +3,3 @@ programs:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
     startretries: 10
-  return2:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return3:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return4:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return5:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return6:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return7:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return8:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return9:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10
-  return10:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 10

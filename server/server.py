@@ -8,6 +8,7 @@ from start_launch import main as main_starting
 from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
+from threading import Thread, Lock
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -51,23 +52,36 @@ first = 0
 #Switch monitor deprecated
 switch_monitor = [0]
 
+#mutex
+mutex_proc_dict = Lock()
+
 #WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
 def wait_for_child(running_table, client_proc_dict):
-    print("MONITOR HAS STARTED")
+        #   print("MONITOR HAS STARTED")
     while True:
-        while bool(running_table):
-				#   print("Start waiting pid")
-            pid, status = os.waitpid(-1, os.WNOHANG)
-            if (pid != 0):
-                print(running_table[pid])
-                fd = running_table[pid].client
-                key = running_table[pid].name
-                print(client_proc_dict[fd][key])
-                if running_table[pid].backlog == False and running_table[pid].fatal == False and running_table[pid].autorestart == True:
-                    main_starting(client_proc_dict, fd, key, running_table)
-                running_table.pop(pid)
-                print(f"Process {pid} exited with status {status}")
-                print("No longer waiting pid")
+        print("still in monitor but no running table")
+        if bool(running_table):
+            print("J'ai reussit a rentrer dans le monitor car In monitor, my running table SIZE is : ", len(running_table))
+            try:
+                pid, status = os.waitpid(-1, os.WNOHANG)
+                if (pid != 0):
+                        #    print(running_table[pid])
+                    fd = running_table[pid].client
+                    key = running_table[pid].name
+                    print(client_proc_dict[fd][key])
+                    if running_table[pid].backlog == False and running_table[pid].startretries != 0 and running_table[pid].autorestart == True:
+                        main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict)
+                    running_table.pop(pid)
+                    print(f"Process {pid} exited with status {status}")
+                    print("No longer waiting pid")
+            except OSError as e:
+                if e.errno == errno.ECHILD:
+                       # No child processes to wait for
+                    print("No child processes to wait for...")
+                else:
+                    # Some other error occurred
+                    raise e
+    print("MONITOR HAS QUIT")
 
 
 while running:
@@ -82,11 +96,13 @@ while running:
             poll_object.register(client_socket, select.POLLIN)
             print(f"New client connected from {addr[0]}:{addr[1]}")
             path_conf = client_socket.recv(1024).decode()
-			#the first parsing for launch here
-			
+            #the first parsing for launch here
+            
 
             list_proc_data = main_parse(path_conf, client_socket.fileno()) #ici retourner un element proc_data = process_data
+            mutex_proc_dict.acquire()
             client_proc_dict[client_socket.fileno()]=list_proc_data
+            mutex_proc_dict.release()
             
 
             #REPLICAS PUIS EXECUTION SORTIR CETTE FONCTION
@@ -99,26 +115,26 @@ while running:
                         temp_dico[key + "-" + str(i)] = copy.deepcopy(client_proc_dict[client_socket.fileno()][key])
                         temp_dico[key + "-" + str(i)].name = key + "-" + str(i)
                         i += 1
-			#CHECK DU NOUVEAU CLIENT DICO
+            #CHECK DU NOUVEAU CLIENT DICO
             client_proc_dict[client_socket.fileno()].update(temp_dico)
             for key in client_proc_dict[client_socket.fileno()]:
                 print(key)
 
             for key in client_proc_dict[client_socket.fileno()]:
-                main_starting(client_proc_dict, client_socket.fileno(), key, running_table)
+                main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict)
 
-			#TESTS	
+            #TESTS    
             #client_proc_dict
-		#    print("value of pid of each client in dictionary ; ")
-		#    for value in client_proc_dict:
-		#        for sub_value in client_proc_dict[value]:
-		#            print(client_proc_dict[value][sub_value].pid)
-		#            print(client_proc_dict[value][sub_value].name)
+        #    print("value of pid of each client in dictionary ; ")
+        #    for value in client_proc_dict:
+        #        for sub_value in client_proc_dict[value]:
+        #            print(client_proc_dict[value][sub_value].pid)
+        #            print(client_proc_dict[value][sub_value].name)
             #Running process
-		#    print("Key running table (should be modified in main_starting) ; ")
-		#    print(running_table.keys())
+        #    print("Key running table (should be modified in main_starting) ; ")
+        #    print(running_table.keys())
 
-			#START MONITOR DEATH ONLY AT START 
+            #START MONITOR DEATH ONLY AT START 
             print("switch monitor is at : ", switch_monitor[0])
             if first == 0:
                 first = 1
@@ -153,20 +169,31 @@ while running:
                 result = "bye bitch"
 
                 #kill all its process
+
+                mutex_proc_dict.acquire()
                 kill_quit(client_socket.fileno(), client_proc_dict, running_table)
+                mutex_proc_dict.release()
 
                 client_socket.sendall(result.encode())
+
+                mutex_proc_dict.acquire()
                 client_proc_dict.pop(client_socket.fileno())
+                mutex_proc_dict.release()
                 print("Key in dictionary left ; ")
+
+                mutex_proc_dict.acquire()
                 print(client_proc_dict.keys())
+                mutex_proc_dict.release()
 
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)
+                mutex_proc_dict.acquire()
                 if len(client_proc_dict) == 0:
                     print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
                     running = 0
                     break
-				#client_socket.close()
+                mutex_proc_dict.release()
+                #client_socket.close()
             else:
                 print("Invalid command.", data)
                 result = "Invalid command."
