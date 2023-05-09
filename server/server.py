@@ -72,7 +72,7 @@ def wait_for_child(running_table, client_proc_dict):
                     print("EST TU QUITTING ? ", running_table[pid].quitting)
                     if running_table[pid].quitting == True:
                         print("QUITTING A TRUE ALOrS ON POP PUTAIN")
-                        if client_proc_dict[fd]:
+                        if fd in client_proc_dict:
                             print("LE FD EXISTE ENCORE ALORS ON POP PUTAIN")
                             client_proc_dict.pop(fd)
 
@@ -192,14 +192,15 @@ while running:
                 client_socket.sendall(result.encode())
 
                 #TOUT CE MERDIER DOIT ETRE APPELE PAR LE MONITOR 
- #               mutex_proc_dict.acquire()
- #               client_proc_dict.pop(client_socket.fileno())
- #               mutex_proc_dict.release()
-#                print("Key in dictionary left ; ")
 
-#                mutex_proc_dict.acquire()
-#                print(client_proc_dict.keys())
-#                mutex_proc_dict.release()
+                if fd in client_proc_dict:
+                    mutex_proc_dict.acquire()
+                    client_proc_dict.pop(client_socket.fileno())
+                    mutex_proc_dict.release()
+                    print("Key in dictionary left ; ")
+                    mutex_proc_dict.acquire()
+                    print(client_proc_dict.keys())
+                    mutex_proc_dict.release()
 
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)

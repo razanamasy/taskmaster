@@ -1,6 +1,7 @@
 programs:
   while:
-    cmd: "/Users/hinaraza/taskmaster/progs/while"
+    cmd: "/home/hrazanam/taskmaster/progs/while"
     starttime: 10
     startretries: 10
     autorestart: True
+    numprocs: 10

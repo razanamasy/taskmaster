@@ -13,7 +13,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
         mutex_proc_dict.release()
         time.sleep(client_proc_dict[fd][key].starttime)
         if fd in client_proc_dict:
-         #   mutex_proc_dict.acquire()
+				# mutex_proc_dict.acquire()
             if client_proc_dict[fd][key].pid in running_table:
                 client_proc_dict[fd][key].startretries += 1
                 running = True
@@ -29,9 +29,9 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
                 newpid = main_exec(client_proc_dict[fd][key])
                 client_proc_dict[fd][key].pid = newpid
                 running_table[newpid]=client_proc_dict[fd][key]
+			# mutex_proc_dict.release()
         else:
             break
-            # mutex_proc_dict.release()
 
     if fd in client_proc_dict:
         mutex_proc_dict.acquire()

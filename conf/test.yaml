@@ -1,5 +1,6 @@
 programs:
   return1:
-    cmd: "/Users/hinaraza/taskmaster/progs/return"
+    cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 1
-    startretries: 10
+    startretries: 40
+    numprocs: 10
