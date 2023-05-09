@@ -1,5 +1,5 @@
 programs:
   ls:
     cmd: "/usr/bin/ls"
-    autorestart: true
-    starttime: 1
+    autorestart: False
+    starttime: 0

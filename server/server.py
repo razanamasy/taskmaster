@@ -87,7 +87,6 @@ def wait_for_child(running_table, client_proc_dict):
                         print("KESKE TU VIENS FOUTRE ICI BORDEL DE MERDE ? QUITTING : ", running_table[pid].quitting)
                         main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict)
                     running_table.pop(pid)
-                    print(f"Process {pid} exited with status {status}")
                     print("No longer waiting pid")
             except OSError as e:
                 if e.errno == errno.ECHILD:
@@ -111,8 +110,7 @@ while running:
             poll_object.register(client_socket, select.POLLIN)
             print(f"New client connected from {addr[0]}:{addr[1]}")
             path_conf = client_socket.recv(1024).decode()
-            #the first parsing for launch here
-            
+            #the first parsing for launch here 
 
             list_proc_data = main_parse(path_conf, client_socket.fileno()) #ici retourner un element proc_data = process_data
             mutex_proc_dict.acquire()
@@ -136,7 +134,8 @@ while running:
                 print(key)
 
             for key in client_proc_dict[client_socket.fileno()]:
-                main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict)
+                if client_proc_dict[client_socket.fileno()][key].autostart == True:
+                    main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict)
 
             #TESTS    
             #client_proc_dict
