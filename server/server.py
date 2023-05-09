@@ -1,4 +1,5 @@
 import socket
+import time
 import sys
 import os
 import select
@@ -55,6 +56,16 @@ switch_monitor = [0]
 #mutex
 mutex_proc_dict = Lock()
 
+def is_exit_matching(status, process_data):
+    exit_table = process_data.exitcodes
+    match = 0
+    for i in exit_table:
+        print(f"compare {status} with {i}")
+        if status == i:
+            print("It has matched !!!")
+            match = 1
+    return match
+
 #WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
 def wait_for_child(running_table, client_proc_dict):
         #   print("MONITOR HAS STARTED")
@@ -71,21 +82,41 @@ def wait_for_child(running_table, client_proc_dict):
                     #print(client_proc_dict[fd][key])
                     print("EST TU QUITTING ? ", running_table[pid].quitting)
                     if running_table[pid].quitting == True:
-                        print("QUITTING A TRUE ALOrS ON POP PUTAIN")
-                        if fd in client_proc_dict:
-                            print("LE FD EXISTE ENCORE ALORS ON POP PUTAIN")
-                            client_proc_dict.pop(fd)
+                        print("quitting do nothing in monitor")
+							#  if fd in client_proc_dict:
+							#client_proc_dict.pop(fd)
+							#print("Key in dictionary left in monitor; ")
+							#mutex_proc_dict.acquire()
+							#mutex_proc_dict.release()
 
-                            print("Key in dictionary left in monitor; ")
+                    else:
+                        restart = False
+                        exit_match = is_exit_matching(status, running_table[pid])
+                        if running_table[pid].autorestart == True:
+                            restart = True
+                        else:
+                            if running_table[pid].autorestart == "unexpected" and exit_match == 0:
+                                restart = True
+				 #       print(f"MY RESTART VARIABLESSSS = {restart}")
+                        print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
+                        
+                        #TEST FUCKING TEST
+                        print(f"Backlog is : ", running_table[pid].backlog)
+                        if running_table[pid].backlog == False:
+                            print("Backlog false")
+                            if running_table[pid].startretries != 0:
+                                print("start retries diff 0")
+                                if running_table[pid].autorestart == True:
+                                    print("Auto restart true")
+                                    if running_table[pid].stopping == False:
+                                        print("not stopping")
+                                        if restart == True:
+                                            print("MY RESTART VARIABLESSSS = {restart}")
 
-                            mutex_proc_dict.acquire()
-                            print(client_proc_dict.keys())
-                            mutex_proc_dict.release()
+                        if running_table[pid].backlog == False and running_table[pid].startretries != 0 and (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected") and running_table[pid].stopping == False and restart == True:
+                            print(f"PLEAS GO IN MY RESTART {restart}")
+                            main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict)
 
-
-                    if running_table[pid].backlog == False and running_table[pid].startretries != 0 and running_table[pid].autorestart == True and running_table[pid].quitting == False:
-                        print("KESKE TU VIENS FOUTRE ICI BORDEL DE MERDE ? QUITTING : ", running_table[pid].quitting)
-                        main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict)
                     running_table.pop(pid)
                     print(f"Process {pid} exited with status {status}")
                     print("No longer waiting pid")
@@ -204,12 +235,12 @@ while running:
 
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)
-                mutex_proc_dict.acquire()
+			 #   mutex_proc_dict.acquire()
                 if len(client_proc_dict) == 0:
                     print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
                     running = 0
-                    break
-                mutex_proc_dict.release()
+					#break
+			#    mutex_proc_dict.release()
                 #client_socket.close()
             else:
                 print("Invalid command.", data)
@@ -218,7 +249,7 @@ while running:
             # Send the result back to the client
             client_socket.sendall(result.encode())
 
-
+print("salut g fini")
 # Close the client connections and the server socket
 for client in clients:
     poll_object.unregister(client)

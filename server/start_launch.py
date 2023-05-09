@@ -43,6 +43,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
         mutex_proc_dict.release()
 
 def main (client_proc_dict, fd, key, running_table, mutex_proc_dict):
+    print("MAIN STARTING CALLED")
     #Fork premiere execution
     newpid = main_exec(client_proc_dict[fd][key])
 
