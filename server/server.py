@@ -9,6 +9,7 @@ from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
 from threading import Thread, Lock
+from parse_command import *
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -168,17 +169,38 @@ while running:
                 continue
 
             data = client_socket.recv(1024).decode()
+            cmd = parse_command(data)
+
+            cmd_key = next(iter(cmd.keys()))
+
+            #argument sont cmd[cmd_key]
 
             # Process the job command
-            if data == 'start':
+            if cmd_key == 'start':
                 print("Starting the job...")
                 # Code to start the job goes here
                 result = "starting the job..." 
-            elif data == 'stop':
+            elif cmd_key == 'stop':
                 print("Stopping the job...")
                 # Code to stop the job goes here
                 result = "Stopping the job..."
-            elif data == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
+            elif cmd_key == 'restart':
+                print("Restarting the job...")
+                # Code to stop the job goes here
+                result = "Restarting the job..."
+            elif cmd_key == 'reload':
+                print("Reloading the configuration file...")
+                # Code to stop the job goes here
+                result = "Stopping the configuration file..."
+            elif cmd_key == 'status':
+                print("Getting the job status...")
+                # Code to stop the job goes here
+                result = "Getting the job status..."
+            elif cmd_key == 'help':
+                print("Display helper...")
+                # Code to stop the job goes here
+                result = "Display helper..."
+            elif cmd_key  == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
                 result = "bye bitch"
 
@@ -210,8 +232,12 @@ while running:
                     break
                 mutex_proc_dict.release()
                 #client_socket.close()
+            elif cmd_key == 'shutdown':
+                print("Shutdown server...")
+                # Code to stop the job goes here
+                result = "Shutdown server..."
             else:
-                print("Invalid command.", data)
+                print(cmd[cmd_key])
                 result = "Invalid command."
 
             # Send the result back to the client
