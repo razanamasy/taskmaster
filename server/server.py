@@ -6,6 +6,7 @@ import select
 import copy
 from create_child_process import main as main_launch
 from start_launch import main as main_starting
+from restart_cli import main as main_restart_cli
 from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
@@ -202,6 +203,14 @@ while running:
                 result = "starting the job..." 
             elif data == 'stop':
                 print("Stopping the job...")
+                # Code to stop the job goes here
+                result = "Stopping the job..."
+            elif data == 'restart':
+                print(f"data for restart is {data}")
+                # Code to stop the job goes here
+                # main_restart_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+            elif data == 'shutdown':
+                print(f"data for shutdown is {data}")
                 # Code to stop the job goes here
                 result = "Stopping the job..."
             elif data == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
