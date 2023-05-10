@@ -19,7 +19,7 @@ class process_data:
         self.env = None
         self.failure = False
         self.running = False
-        self.backlog = True
+        self.backlog = False
         self.fatal = False
         self.quitting = False
         self.stopping = False

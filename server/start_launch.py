@@ -6,16 +6,15 @@ from threading import Thread, Lock
 
 def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
     running = False
-    while client_proc_dict[fd][key].startretries and (running == False):
-        print("TYPE OF MY MUTEX", type(mutex_proc_dict))
+    my_retries = copy.deepcopy(client_proc_dict[fd][key].startretries)
+    while my_retries and (running == False):
+        print("MY RETRIES = ", my_retries)
         mutex_proc_dict.acquire()
-        client_proc_dict[fd][key].startretries -= 1
+        my_retries -= 1
         mutex_proc_dict.release()
         time.sleep(client_proc_dict[fd][key].starttime)
         if fd in client_proc_dict:
-                # mutex_proc_dict.acquire()
             if client_proc_dict[fd][key].pid in running_table:
-                client_proc_dict[fd][key].startretries += 1
                 running = True
                 client_proc_dict[fd][key].failure = False
                 client_proc_dict[fd][key].backlog = False
@@ -24,12 +23,11 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
                 print("Pid not in running table, neet to retry for :", client_proc_dict[fd][key].name)
                 client_proc_dict[fd][key].backlog = True
                 client_proc_dict[fd][key].failure = True
-                if client_proc_dict[fd][key].startretries == 0:
+                if my_retries == 0:
                     client_proc_dict[fd][key].fatal = True
                 newpid = main_exec(client_proc_dict[fd][key])
                 client_proc_dict[fd][key].pid = newpid
                 running_table[newpid]=client_proc_dict[fd][key]
-            # mutex_proc_dict.release()
         else:
             break
 

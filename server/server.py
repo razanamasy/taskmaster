@@ -86,15 +86,7 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                     key = running_table[pid].name
                     #print(client_proc_dict[fd][key])
                     print("EST TU QUITTING ? ", running_table[pid].quitting)
-                    if running_table[pid].quitting == True:
-                        print("quitting do nothing in monitor")
-                            #  if fd in client_proc_dict:
-                            #client_proc_dict.pop(fd)
-                            #print("Key in dictionary left in monitor; ")
-                            #mutex_proc_dict.acquire()
-                            #mutex_proc_dict.release()
-
-                    else:
+                    if running_table[pid].quitting == False and running_table[pid].stopping == False:
                         restart = False
                         exit_match = is_exit_matching(status, running_table[pid])
                         if running_table[pid].autorestart == True:
@@ -105,21 +97,17 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                  #       print(f"MY RESTART VARIABLESSSS = {restart}")
                         print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
                         
-                        #TEST FUCKING TEST
-                        print(f"Backlog is : ", running_table[pid].backlog)
                         if running_table[pid].backlog == False:
-                            print("Backlog false")
-                            if running_table[pid].startretries != 0:
-                                print("start retries diff 0")
-                                if running_table[pid].autorestart == True:
-                                    print("Auto restart true")
-                                    if running_table[pid].stopping == False:
-                                        print("not stopping")
-                                        if restart == True:
-                                            print("MY RESTART VARIABLESSSS = {restart}")
+                            print("BACKLOG FALSE : ", running_table[pid].backlog)
+                            if running_table[pid].fatal == False:
+                                print("FATAL FALSE :", running_table[pid].fatal)
+                                if (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected"):
+                                    print("AUTORESTART :", running_table[pid].backlog)
+                                    if restart == True:
+                                        print("RESTART :", restart)
 
-                        if running_table[pid].backlog == False and running_table[pid].startretries != 0 and (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected") and running_table[pid].stopping == False and restart == True:
-                            print(f"PLEAS GO IN MY RESTART {restart}")
+
+                        if running_table[pid].backlog == False and running_table[pid].fatal == False and (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected") and restart == True:
                             main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
 
                     running_table.pop(pid)
