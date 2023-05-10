@@ -52,6 +52,8 @@ running = 1
 first = 0
 #Switch monitor deprecated
 switch_monitor = [0]
+#Thread tables
+thread_list = []
 
 #mutex
 mutex_proc_dict = Lock()
@@ -67,9 +69,12 @@ def is_exit_matching(status, process_data):
     return match
 
 #WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
-def wait_for_child(running_table, client_proc_dict):
+def wait_for_child(running_table, client_proc_dict, thread_list):
         #   print("MONITOR HAS STARTED")
     while True:
+        if len(client_proc_dict) == 0:
+            print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
+            break
     #    print("still in monitor but no running table")
         if bool(running_table):
     #        print("J'ai reussit a rentrer dans le monitor car In monitor, my running table SIZE is : ", len(running_table))
@@ -83,11 +88,11 @@ def wait_for_child(running_table, client_proc_dict):
                     print("EST TU QUITTING ? ", running_table[pid].quitting)
                     if running_table[pid].quitting == True:
                         print("quitting do nothing in monitor")
-							#  if fd in client_proc_dict:
-							#client_proc_dict.pop(fd)
-							#print("Key in dictionary left in monitor; ")
-							#mutex_proc_dict.acquire()
-							#mutex_proc_dict.release()
+                            #  if fd in client_proc_dict:
+                            #client_proc_dict.pop(fd)
+                            #print("Key in dictionary left in monitor; ")
+                            #mutex_proc_dict.acquire()
+                            #mutex_proc_dict.release()
 
                     else:
                         restart = False
@@ -97,7 +102,7 @@ def wait_for_child(running_table, client_proc_dict):
                         else:
                             if running_table[pid].autorestart == "unexpected" and exit_match == 0:
                                 restart = True
-				 #       print(f"MY RESTART VARIABLESSSS = {restart}")
+                 #       print(f"MY RESTART VARIABLESSSS = {restart}")
                         print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
                         
                         #TEST FUCKING TEST
@@ -115,7 +120,7 @@ def wait_for_child(running_table, client_proc_dict):
 
                         if running_table[pid].backlog == False and running_table[pid].startretries != 0 and (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected") and running_table[pid].stopping == False and restart == True:
                             print(f"PLEAS GO IN MY RESTART {restart}")
-                            main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict)
+                            main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
 
                     running_table.pop(pid)
                     print(f"Process {pid} exited with status {status}")
@@ -167,7 +172,7 @@ while running:
                 print(key)
 
             for key in client_proc_dict[client_socket.fileno()]:
-                main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict)
+                main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
 
             #TESTS    
             #client_proc_dict
@@ -184,9 +189,10 @@ while running:
             print("switch monitor is at : ", switch_monitor[0])
             if first == 0:
                 first = 1
-                monitor = threading.Thread(target=wait_for_child, args=(running_table, client_proc_dict))
+                monitor = threading.Thread(target=wait_for_child, args=(running_table, client_proc_dict, thread_list))
                 monitor.daemon = True
                 monitor.start()
+                thread_list.append(monitor)
 
 
         # If the event is from a client socket, it means there's data to read
@@ -222,7 +228,6 @@ while running:
 
                 client_socket.sendall(result.encode())
 
-                #TOUT CE MERDIER DOIT ETRE APPELE PAR LE MONITOR 
 
                 if fd in client_proc_dict:
                     mutex_proc_dict.acquire()
@@ -235,12 +240,12 @@ while running:
 
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)
-			 #   mutex_proc_dict.acquire()
+                mutex_proc_dict.acquire()
                 if len(client_proc_dict) == 0:
                     print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
                     running = 0
-					#break
-			#    mutex_proc_dict.release()
+                    break
+                mutex_proc_dict.release()
                 #client_socket.close()
             else:
                 print("Invalid command.", data)
@@ -250,6 +255,11 @@ while running:
             client_socket.sendall(result.encode())
 
 print("salut g fini")
+for thread in thread_list:
+    print(f"here is my thread : {thread}")
+    thread.join()
+
+print("YOOOOO")
 # Close the client connections and the server socket
 for client in clients:
     poll_object.unregister(client)
