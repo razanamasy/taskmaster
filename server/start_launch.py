@@ -5,9 +5,9 @@ from create_child_process import main as main_exec
 from threading import Thread, Lock
 
 def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
-    running = False
+    client_proc_dict[fd][key].running = False #A delete car deja fait dans le monitor
     my_retries = copy.deepcopy(client_proc_dict[fd][key].startretries)
-    while my_retries and (running == False):
+    while my_retries and (client_proc_dict[fd][key].running == False):
         print("MY RETRIES = ", my_retries)
         mutex_proc_dict.acquire()
         my_retries -= 1
@@ -15,7 +15,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
         time.sleep(client_proc_dict[fd][key].starttime)
         if fd in client_proc_dict:
             if client_proc_dict[fd][key].pid in running_table:
-                running = True
+                client_proc_dict[fd][key].running = True
                 client_proc_dict[fd][key].failure = False
                 client_proc_dict[fd][key].backlog = False
                 print("end of story for start pass to reload for : ", client_proc_dict[fd][key].name)

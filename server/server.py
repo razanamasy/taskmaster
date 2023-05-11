@@ -11,6 +11,7 @@ from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
 from threading import Thread, Lock
+from parse_command import *
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -85,6 +86,7 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                         #    print(running_table[pid])
                     fd = running_table[pid].client
                     key = running_table[pid].name
+                    running_table[pid].running = False
                     #print(client_proc_dict[fd][key])
                     print("EST TU QUITTING ? ", running_table[pid].quitting)
                     if running_table[pid].quitting == False and running_table[pid].stopping == False:
@@ -195,30 +197,44 @@ while running:
                 continue
 
             data = client_socket.recv(1024).decode()
+            cmd = parse_command(data)
+
+            cmd_key = next(iter(cmd.keys()))
 
             # Process the job command
-            if data == 'start':
+            if cmd_key == 'start':
                 print("Starting the job...")
                 # Code to start the job goes here
                 result = "starting the job..." 
-            elif data == 'stop':
+            elif cmd_key == 'stop':
                 print("Stopping the job...")
                 # Code to stop the job goes here
                 result = "Stopping the job..."
-            elif data == 'restart':
-                print(f"data for restart is {data}")
+            elif cmd_key == 'restart':
+                print(f"cmd_key for restart is {cmd_key}")
                 # Code to stop the job goes here
                 # main_restart_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
-            elif data == 'shutdown':
-                print(f"data for shutdown is {data}")
+            elif cmd_key == 'shutdown':
+                print(f"cmd_key for shutdown is {cmd_key}")
                 # Code to stop the job goes here
                 result = "Stopping the job..."
-            elif data == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
+            elif cmd_key == 'reload':
+                print("Reloading the configuration file...")
+                # Code to stop the job goes here
+                result = "Stopping the configuration file..."
+            elif cmd_key == 'status':
+                print("Getting the job status...")
+                # Code to stop the job goes here
+                result = "Getting the job status..."
+            elif cmd_key == 'help':
+                print("Display helper...")
+                # Code to stop the job goes here
+                result = "Display helper..."
+            elif cmd_key == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
                 result = "bye bitch"
 
                 #kill all its process
-
                 mutex_proc_dict.acquire()
                 kill_quit(client_socket.fileno(), client_proc_dict, running_table)
                 mutex_proc_dict.release()
