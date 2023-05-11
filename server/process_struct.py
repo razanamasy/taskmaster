@@ -24,6 +24,7 @@ class process_data:
         self.quitting = False
         self.stopping = False
         self.logs = []
+        self.status_exit = []
 
     def __str__(self):
         return f"My class: \n name = {self.name}\n client = {self.client}\n pid = {self.pid}\n cmd = {self.cmd}\n numprocs = {self.numprocs}\n \

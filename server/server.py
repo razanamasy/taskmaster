@@ -86,6 +86,7 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                         #    print(running_table[pid])
                     fd = running_table[pid].client
                     key = running_table[pid].name
+                    running_table[pid].status_exit.append(status)
                     running_table[pid].running = False
                     #print(client_proc_dict[fd][key])
                     print("EST TU QUITTING ? ", running_table[pid].quitting)
@@ -100,14 +101,15 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                  #       print(f"MY RESTART VARIABLESSSS = {restart}")
                         print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
                         
-                        if running_table[pid].backlog == False:
-                            print("BACKLOG FALSE : ", running_table[pid].backlog)
-                            if running_table[pid].fatal == False:
-                                print("FATAL FALSE :", running_table[pid].fatal)
-                                if (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected"):
-                                    print("AUTORESTART :", running_table[pid].backlog)
-                                    if restart == True:
-                                        print("RESTART :", restart)
+                        #TEST
+                #        if running_table[pid].backlog == False:
+                #            print("BACKLOG FALSE : ", running_table[pid].backlog)
+                #            if running_table[pid].fatal == False:
+                #                print("FATAL FALSE :", running_table[pid].fatal)
+                #                if (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected"):
+                #                    print("AUTORESTART :", running_table[pid].backlog)
+                #                    if restart == True:
+                #                        print("RESTART :", restart)
 
 
                         if running_table[pid].backlog == False and running_table[pid].fatal == False and (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected") and restart == True:
@@ -212,8 +214,11 @@ while running:
                 result = "Stopping the job..."
             elif cmd_key == 'restart':
                 print(f"cmd_key for restart is {cmd_key}")
+                for key in cmd['restart']:
+                    main_restart_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    print("try to restart this command :", key)
+                result = "restarting..."
                 # Code to stop the job goes here
-                # main_restart_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
             elif cmd_key == 'shutdown':
                 print(f"cmd_key for shutdown is {cmd_key}")
                 # Code to stop the job goes here
