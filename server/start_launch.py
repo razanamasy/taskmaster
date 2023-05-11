@@ -36,7 +36,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
         print("NUMER RETRIES LEFT END OF WHILE", client_proc_dict[fd][key].startretries, "Failure is : ", client_proc_dict[fd][key].failure)
         if client_proc_dict[fd][key].startretries == 0 and client_proc_dict[fd][key].failure == True:
             client_proc_dict[fd][key].fatal = True
-    #    client_proc_dict[fd][key].backlog = False
+            client_proc_dict[fd][key].backlog = False
         print("FINAL START PROCESS FOR --->i", client_proc_dict[fd][key].name," Fatal:", client_proc_dict[fd][key].fatal, " Running:", client_proc_dict[fd][key].running, " Failure:", client_proc_dict[fd][key].failure )
         mutex_proc_dict.release()
 

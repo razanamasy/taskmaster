@@ -43,7 +43,8 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
             else:
                 print("it'is NOT fatal")
-                if is_exit_matching(process.status_exit[-1:], process) == 0: #means it did not exit gracefully, here obviously autorestart = false because it's not in backlog
+                last_position = len(process.status_exit) - 1
+                if is_exit_matching(process.status_exit[-1], process) == 0: #means it did not exit gracefully, here obviously autorestart = false because it's not in backlog
                     print("it has not exit gracefully")
                     main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         else:

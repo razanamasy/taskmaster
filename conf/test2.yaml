@@ -2,7 +2,7 @@ programs:
   while:
     cmd: "/home/hrazanam/taskmaster/progs/while"
     starttime: 10
-    startretries: 10
+    startretries: 3
     numprocs: 1
-    autorestart: False
+    autorestart: True
     exitcodes: [15]
