@@ -199,7 +199,7 @@ while running:
             elif cmd_key == 'help':
                 print("Display helper...")
                 # Code to stop the job goes here
-                result = "Display helper..."
+                result = str(cmd["help"])
             elif cmd_key  == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
                 result = "bye bitch"
@@ -237,8 +237,7 @@ while running:
                 # Code to stop the job goes here
                 result = "Shutdown server..."
             else:
-                print(cmd[cmd_key])
-                result = "Invalid command."
+                result = cmd[cmd_key]
 
             # Send the result back to the client
             client_socket.sendall(result.encode())
