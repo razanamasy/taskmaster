@@ -12,6 +12,7 @@ from kill_quit import main as kill_quit
 import threading
 from threading import Thread, Lock
 from parse_command import *
+import ctypes
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -223,6 +224,43 @@ while running:
                 print(f"cmd_key for shutdown is {cmd_key}")
                 # Code to stop the job goes here
                 result = "Stopping the job..."
+                print("Client quitting")
+                result = "shutdown"
+
+                #kill all process of all clients
+                mutex_proc_dict.acquire()
+                for my_client in clients:
+                    kill_quit(my_client.fileno(), client_proc_dict, running_table, mutex_proc_dict)
+                mutex_proc_dict.release()
+
+                mutex_proc_dict.acquire()
+                for my_client in clients:
+                    print("SHUTDOWN TO MY CLIENTS : ", my_client)
+                    my_client.send(result.encode())
+                mutex_proc_dict.release()
+
+                for my_client in clients:
+                    if my_client.fileno() in client_proc_dict:
+                        mutex_proc_dict.acquire()
+                        client_proc_dict.pop(my_client.fileno())
+                        mutex_proc_dict.release()
+                        print("Key in dictionary left ; ")
+                        mutex_proc_dict.acquire()
+                        print(client_proc_dict.keys())
+                        mutex_proc_dict.release()
+
+                
+                for my_client in clients:
+                    poll_object.unregister(my_client)
+                    clients.remove(my_client)
+                    mutex_proc_dict.acquire()
+
+                if len(client_proc_dict) == 0:
+                    print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
+                    running = 0
+                    break
+                mutex_proc_dict.release()
+
             elif cmd_key == 'reload':
                 print("Reloading the configuration file...")
                 # Code to stop the job goes here
@@ -241,12 +279,10 @@ while running:
 
                 #kill all its process
                 mutex_proc_dict.acquire()
-                kill_quit(client_socket.fileno(), client_proc_dict, running_table)
+                kill_quit(client_socket.fileno(), client_proc_dict, running_table, mutex_proc_dict)
                 mutex_proc_dict.release()
 
                 client_socket.sendall(result.encode())
-
-
                 if fd in client_proc_dict:
                     mutex_proc_dict.acquire()
                     client_proc_dict.pop(client_socket.fileno())
@@ -275,6 +311,12 @@ while running:
 print("salut g fini")
 for thread in thread_list:
     print(f"here is my thread : {thread}")
+    if thread.is_alive():
+        # Get the thread identifier
+        thread_id = thread.ident
+
+        # Terminate the thread by raising SystemExit exception
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), ctypes.py_object(SystemExit))
     thread.join()
 
 print("YOOOOO")

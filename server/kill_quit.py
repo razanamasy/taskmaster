@@ -2,7 +2,7 @@ import os
 import signal
 from threading import Thread, Lock
 
-def main(client_fd, client_proc_dict, running_table):
+def main(client_fd, client_proc_dict, running_table, mutex_proc_dict):
      
     #client_proc_dict
     print("Killin pid of this quitting client : ", client_fd)

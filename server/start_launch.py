@@ -20,7 +20,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
                 client_proc_dict[fd][key].backlog = False
                 print("end of story for start pass to reload for : ", client_proc_dict[fd][key].name)
             else: #Fork
-                print("Pid not in running table, neet to retry for :", client_proc_dict[fd][key].name)
+                print("Pid not in process_table, need to retry for :", client_proc_dict[fd][key].name)
                 client_proc_dict[fd][key].backlog = True
                 client_proc_dict[fd][key].failure = True
                 if my_retries == 0:
@@ -34,7 +34,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
     if fd in client_proc_dict:
         mutex_proc_dict.acquire()
         print("NUMER RETRIES LEFT END OF WHILE", client_proc_dict[fd][key].startretries, "Failure is : ", client_proc_dict[fd][key].failure)
-        if client_proc_dict[fd][key].startretries == 0 and client_proc_dict[fd][key].failure == True:
+        if my_retries == 0 and client_proc_dict[fd][key].failure == True:
             client_proc_dict[fd][key].fatal = True
             client_proc_dict[fd][key].backlog = False
         print("FINAL START PROCESS FOR --->i", client_proc_dict[fd][key].name," Fatal:", client_proc_dict[fd][key].fatal, " Running:", client_proc_dict[fd][key].running, " Failure:", client_proc_dict[fd][key].failure )
