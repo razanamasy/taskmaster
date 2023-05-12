@@ -4,7 +4,8 @@ import sys
 import select
 import signal
 import readline
-sys.path.insert(0, '/home/hrazanam/taskmaster/server/')
+import rlcompleter
+sys.path.insert(0, '/home/alice/taskmaster/server/')
 from parse_utils import *
 
 # Define the host and port to connect to
@@ -43,9 +44,11 @@ def main():
             while True:
                 # Prompt the user for a user_input
                 if history_index == -1:
+                    sys.stdout.write('Taskmaster> ')
                     pass
                 else:
-                    sys.stdout.write(user_input_history[history_index])
+                    sys.stdout.write('Taskmaster> ')
+                    sys.stdout.write(readline.get_history_item(history_index))
 
                 sys.stdout.flush()  # Ensure the prompt is immediately displayed
                 # Check if the socket is ready to receive data
@@ -64,16 +67,21 @@ def main():
                         # Read user input from the user_input line
                         try:
                             if history_index == -1:
-                                user_input = input('Taskmaster> ')
+                                user_input = sys.stdin.readline().strip()
                             else:
-                                user_input = input('Taskmaster> ')
-                                print(user_input)
+                                sys.stdout.write(readline.get_history_item(history_index))
+                                user_input = sys.stdin.readline().strip()
+                                #print(user_input)
+                                #sys.stdout.write(command_history[history_index])
                         except EOFError:
+                            print("caca")
                             user_input = "quit"
+
 
                         # Update command history
                         command_history.append(user_input)
                         history_index = -1
+                        readline.add_history(user_input)
 
                         # Send the user_input to the server
                         client_socket.sendall(user_input.encode())
@@ -88,10 +96,9 @@ def main():
                         if user_input == 'quit':
                             return
 
-# Print the initial prompt before entering the loop
-print('Taskmaster> ')
 
 if __name__ == "__main__":
+    readline.parse_and_bind("tab: complete")
     main()
     print('End connection')
     client_socket.close()
