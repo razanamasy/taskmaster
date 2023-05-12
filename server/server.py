@@ -253,8 +253,8 @@ while running:
                 for my_client in clients:
                     poll_object.unregister(my_client)
                     clients.remove(my_client)
-                    mutex_proc_dict.acquire()
 
+                mutex_proc_dict.acquire()
                 if len(client_proc_dict) == 0:
                     print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
                     running = 0
@@ -272,7 +272,7 @@ while running:
             elif cmd_key == 'help':
                 print("Display helper...")
                 # Code to stop the job goes here
-                result = "Display helper..."
+                result = str(cmd["help"]) 
             elif cmd_key == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
                 result = "bye bitch"
@@ -303,7 +303,7 @@ while running:
                 #client_socket.close()
             else:
                 print("Invalid command.", data)
-                result = "Invalid command."
+                result = cmd[cmd_key] 
 
             # Send the result back to the client
             client_socket.sendall(result.encode())

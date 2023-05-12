@@ -126,7 +126,12 @@ def parse_file(configs, client_socket):
                 if isinstance(conf, dict):
                     error_flag = check_string(str(proc_name))
                     if error_flag != None:
+                        print(error_flag)
                         error["error"] = "process name" +  error_flag
+                        return (error)
+                    elif proc_name.startswith("-"):
+                        print("Wrong process name, cannot start with a '-'")
+                        error["error"] = "Wrong process name, cannot start with a '-'"
                         return (error)
                     else:
                         process_dict[str(proc_name)] = process_data(str(proc_name))
