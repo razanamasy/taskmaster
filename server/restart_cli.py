@@ -42,6 +42,8 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 process.fatal = False
                 process.cli_history.append('restart')
                 process.stopping = False
+                process.stopped = False
+                process.quit_with_stop = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
             else:
                 print("it'is NOT fatal")
@@ -50,6 +52,8 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                     print("it has not exit gracefully")
                     process.cli_history.append('restart')
                     process.stopping = False
+                    process.stopped = False
+                    process.quit_with_stop = False
                     main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         else:
             print("Running")
@@ -58,7 +62,9 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 os.kill(process.pid, signal.SIGTERM)
             else:
                 print("Autorestart false so kill and restart")
-    			os.kill(process.pid, signal.process.stopsignal)
+                os.kill(process.pid, signal.SIGTERM)
                 process.cli_history.append('restart')
                 process.stopping = False
+                process.stopped = False
+                process.quit_with_stop = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)

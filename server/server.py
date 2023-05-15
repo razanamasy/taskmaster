@@ -82,13 +82,15 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
         if bool(running_table):
             try:
                 pid, status = os.waitpid(-1, os.WNOHANG)
-                if (pid != 0):
+                if (pid > 0):
                     fd = running_table[pid].client
                     key = running_table[pid].name
                     running_table[pid].status_exit.append(status)
                     running_table[pid].running = False
+                    running_table[pid].stopping = False 
+                    running_table[pid].stopped = True 
                     restart = False
-                    if running_table[pid].quitting == False and running_table[pid].stopping == False:
+                    if running_table[pid].quitting == False and running_table[pid].quit_with_stop == False:
                         exit_match = is_exit_matching(status, running_table[pid])
                         if running_table[pid].autorestart == True:
                             restart = True

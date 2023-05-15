@@ -18,6 +18,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
                 client_proc_dict[fd][key].running = True
                 client_proc_dict[fd][key].failure = False
                 client_proc_dict[fd][key].backlog = False
+                client_proc_dict[fd][key].stopped = False
                 print("end of story for start pass to reload for : ", client_proc_dict[fd][key].name)
             else: #Fork
                 print("Pid not in process_table, need to retry for :", client_proc_dict[fd][key].name)
@@ -47,6 +48,7 @@ def main (client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list
 
     client_proc_dict[fd][key].pid = newpid
     client_proc_dict[fd][key].backlog = True
+    client_proc_dict[fd][key].stopped = False 
     running_table[newpid]=client_proc_dict[fd][key]
 
     #envoi du thread starting process pour chaque process

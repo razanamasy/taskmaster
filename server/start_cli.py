@@ -22,10 +22,15 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
     if process.autostart == False and process.pid == -1:
         print('First start')
         process.stopping = False
+        process.stopped = False
+        process.quit_with_stop = False
         main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
     else:
         if is_exit_matching(process.status_exit[-1], process) == 1: #means it DID exit gracefully 
+            print("Start work it exited gracefully")
             process.stopping = False
+            process.stopped = False
+            process.quit_with_stop = False
             main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
-		else:
-			print("need to restart it didn't exit gracefully")
+        else:
+            print("need to restart it didn't exit gracefully")
