@@ -24,6 +24,7 @@ class process_data:
         self.quitting = False
         self.stopping = False
         self.logs = []
+        self.cli_history = []
         self.status_exit = []
 
     def __str__(self):

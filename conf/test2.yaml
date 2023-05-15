@@ -4,5 +4,6 @@ programs:
     starttime: 10
     startretries: 3
     numprocs: 1
+    autostart: False
     autorestart: True
     exitcodes: [15]

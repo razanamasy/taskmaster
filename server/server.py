@@ -7,6 +7,8 @@ import copy
 from create_child_process import main as main_launch
 from start_launch import main as main_starting
 from restart_cli import main as main_restart_cli
+from stop_cli import main as main_stop_cli
+from start_cli import main as main_start_cli
 from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
@@ -73,47 +75,29 @@ def is_exit_matching(status, process_data):
 
 #WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
 def wait_for_child(running_table, client_proc_dict, thread_list):
-        #   print("MONITOR HAS STARTED")
     while True:
         if len(client_proc_dict) == 0:
             print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
             break
-    #    print("still in monitor but no running table")
         if bool(running_table):
-    #        print("J'ai reussit a rentrer dans le monitor car In monitor, my running table SIZE is : ", len(running_table))
             try:
                 pid, status = os.waitpid(-1, os.WNOHANG)
                 if (pid != 0):
-                        #    print(running_table[pid])
                     fd = running_table[pid].client
                     key = running_table[pid].name
                     running_table[pid].status_exit.append(status)
                     running_table[pid].running = False
-                    #print(client_proc_dict[fd][key])
-                    print("EST TU QUITTING ? ", running_table[pid].quitting)
+                    restart = False
                     if running_table[pid].quitting == False and running_table[pid].stopping == False:
-                        restart = False
                         exit_match = is_exit_matching(status, running_table[pid])
                         if running_table[pid].autorestart == True:
                             restart = True
                         else:
                             if running_table[pid].autorestart == "unexpected" and exit_match == 0:
                                 restart = True
-                 #       print(f"MY RESTART VARIABLESSSS = {restart}")
+
                         print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
-                        
-                        #TEST
-                #        if running_table[pid].backlog == False:
-                #            print("BACKLOG FALSE : ", running_table[pid].backlog)
-                #            if running_table[pid].fatal == False:
-                #                print("FATAL FALSE :", running_table[pid].fatal)
-                #                if (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected"):
-                #                    print("AUTORESTART :", running_table[pid].backlog)
-                #                    if restart == True:
-                #                        print("RESTART :", restart)
-
-
-                        if running_table[pid].backlog == False and running_table[pid].fatal == False and (running_table[pid].autorestart == True or running_table[pid].autorestart == "unexpected") and restart == True:
+                        if running_table[pid].backlog == False and running_table[pid].fatal == False and restart == True:
                             main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
 
                     running_table.pop(pid)
@@ -121,10 +105,8 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                     print("No longer waiting pid")
             except OSError as e:
                 if e.errno == errno.ECHILD:
-                       # No child processes to wait for
                     print("No child processes to wait for...")
                 else:
-                    # Some other error occurred
                     raise e
     print("MONITOR HAS QUIT")
 
@@ -166,7 +148,8 @@ while running:
                 print(key)
 
             for key in client_proc_dict[client_socket.fileno()]:
-                main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                if client_proc_dict[client_socket.fileno()][key].autostart == True:
+                    main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
 
             #TESTS    
             #client_proc_dict
@@ -207,10 +190,15 @@ while running:
             # Process the job command
             if cmd_key == 'start':
                 print("Starting the job...")
+                for key in cmd['start']:
+                    main_start_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+
                 # Code to start the job goes here
                 result = "starting the job..." 
             elif cmd_key == 'stop':
                 print("Stopping the job...")
+                for key in cmd['stop']:
+                    main_stop_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
                 # Code to stop the job goes here
                 result = "Stopping the job..."
             elif cmd_key == 'restart':
@@ -264,7 +252,7 @@ while running:
             elif cmd_key == 'reload':
                 print("Reloading the configuration file...")
                 # Code to stop the job goes here
-                result = "Stopping the configuration file..."
+                result = "Realoading the configuration file..."
             elif cmd_key == 'status':
                 print("Getting the job status...")
                 # Code to stop the job goes here

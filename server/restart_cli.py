@@ -40,12 +40,16 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
             if process.fatal == True:
                 print("it's fatal")
                 process.fatal = False
+                process.cli_history.append('restart')
+                process.stopping = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
             else:
                 print("it'is NOT fatal")
-                last_position = len(process.status_exit) - 1
+              #  last_position = len(process.status_exit) - 1
                 if is_exit_matching(process.status_exit[-1], process) == 0: #means it did not exit gracefully, here obviously autorestart = false because it's not in backlog
                     print("it has not exit gracefully")
+                    process.cli_history.append('restart')
+                    process.stopping = False
                     main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         else:
             print("Running")
@@ -54,5 +58,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 os.kill(process.pid, signal.SIGTERM)
             else:
                 print("Autorestart false so kill and restart")
-                os.kill(process.pid, signal.SIGTERM)
+    			os.kill(process.pid, signal.process.stopsignal)
+                process.cli_history.append('restart')
+                process.stopping = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)

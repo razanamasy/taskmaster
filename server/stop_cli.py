@@ -1,0 +1,36 @@
+import copy
+import os
+import time 
+import signal
+
+def timer(client_proc_dict, fd, key, curr_pid, running_table, mutex_proc_dict):
+    process = client_proc_dict[fd][key]
+    sleep(process.stoptime)
+    print("end of sleep stop")
+    if process.pid == curr_pid: #Si pas eu d'autre start ou restart entre temp
+        if process.backlog == True: #Clairement impossible lol
+            return
+        if process.running == False: #On a reussit a kill
+            print("the process has stopped")
+            return
+        print("Stop failed Need to sigkill it")
+        process.stopping = True
+        os.kill(process.pid, signal.SIGKILL)
+
+def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list):
+    
+    process = client_proc_dict[fd][key]
+    if process.backlog == True:
+        print("Already in a start process")
+        return
+    if process.running == False:
+        print("Already stopped")
+        return
+
+    print(f"Really stopping {process.key}")
+    process.cli_history.append('stop')
+    process.stopping = True
+    stop_timer = threading.Thread(target=timer, args=(client_proc_dict, fd, key, copy.deepcopy(process.pid),running_table, mutex_proc_dict))
+    os.kill(process.pid, signal.process.stopsignal)
+    thread_list.append(stop_timer)
+    stop_timer.start()
