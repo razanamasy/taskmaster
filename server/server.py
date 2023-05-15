@@ -64,6 +64,7 @@ thread_list = []
 mutex_proc_dict = Lock()
 
 def is_exit_matching(status, process_data):
+    print("Is exit in server monitoring")
     exit_table = process_data.exitcodes
     match = 0
     for i in exit_table:
@@ -90,6 +91,7 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                     running_table[pid].stopping = False 
                     running_table[pid].stopped = True 
                     restart = False
+                    print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
                     if running_table[pid].quitting == False and running_table[pid].quit_with_stop == False:
                         exit_match = is_exit_matching(status, running_table[pid])
                         if running_table[pid].autorestart == True:
@@ -98,7 +100,6 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                             if running_table[pid].autorestart == "unexpected" and exit_match == 0:
                                 restart = True
 
-                        print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
                         if running_table[pid].backlog == False and running_table[pid].fatal == False and restart == True:
                             main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
 

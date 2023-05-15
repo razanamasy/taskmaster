@@ -38,7 +38,7 @@ def starting_process(client_proc_dict, fd, key, running_table, mutex_proc_dict):
         if my_retries == 0 and client_proc_dict[fd][key].failure == True:
             client_proc_dict[fd][key].fatal = True
             client_proc_dict[fd][key].backlog = False
-        print("FINAL START PROCESS FOR --->i", client_proc_dict[fd][key].name," Fatal:", client_proc_dict[fd][key].fatal, " Running:", client_proc_dict[fd][key].running, " Failure:", client_proc_dict[fd][key].failure )
+        print("FINAL START PROCESS FOR --->", client_proc_dict[fd][key])
         mutex_proc_dict.release()
 
 def main (client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list):

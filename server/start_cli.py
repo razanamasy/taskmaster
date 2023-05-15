@@ -21,6 +21,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         return
     if process.autostart == False and process.pid == -1:
         print('First start')
+        process.cli_history.append('start')
         process.stopping = False
         process.stopped = False
         process.quit_with_stop = False
@@ -28,6 +29,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
     else:
         if is_exit_matching(process.status_exit[-1], process) == 1: #means it DID exit gracefully 
             print("Start work it exited gracefully")
+            process.cli_history.append('start')
             process.stopping = False
             process.stopped = False
             process.quit_with_stop = False

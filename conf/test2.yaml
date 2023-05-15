@@ -5,5 +5,4 @@ programs:
     startretries: 3
     numprocs: 1
     autostart: False
-    autorestart: True
-    exitcodes: [15]
+    exitcodes: [0]

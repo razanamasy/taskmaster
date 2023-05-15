@@ -35,4 +35,7 @@ umask = {self.umask}\n workingdir = {self.workingdir}\n autostart = {self.autost
 autorestart = {self.autorestart}\n exitcodes = {self.exitcodes}\n startretries = {self.startretries}\n \
 starttime = {self.starttime}\n stopsignal = {self.stopsignal}\n stoptime = {self.stoptime}\n \
 stdout = {self.stdout}\n stderr = {self.stderr}\n env = {self.env}\n failure = {self.failure}\n \
-running = {self.running}\n backlog= {self.backlog}\n fatal = {self.fatal}\n logs = {self.logs}\n"
+running = {self.running}\n backlog = {self.backlog}\n fatal = {self.fatal}\n \
+quitting = {self.quitting}\n stopping = {self.stopping}\n stopped = {self.stopped}\n \
+quit_with_stop = {self.quit_with_stop}\n logs = {self.logs}\n \
+status_exit = {self.status_exit}\n logs = {self.logs}\n cli_history = {self.cli_history}\n"
