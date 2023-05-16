@@ -9,6 +9,7 @@ from start_launch import main as main_starting
 from restart_cli import main as main_restart_cli
 from stop_cli import main as main_stop_cli
 from start_cli import main as main_start_cli
+from status_cli import main as main_status_cli
 from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
@@ -264,9 +265,10 @@ while running:
                 # Code to stop the job goes here
                 result = "Realoading the configuration file..."
             elif cmd_key == 'status':
-                print("Getting the job status...")
+                result = "------SATUS------\n"
+                for key in client_proc_dict[client_socket.fileno()]:
+                    result += main_status_cli(client_proc_dict, client_socket.fileno(), key) + "\n"
                 # Code to stop the job goes here
-                result = "Getting the job status..."
             elif cmd_key == 'help':
                 print("Display helper...")
                 # Code to stop the job goes here
