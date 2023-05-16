@@ -9,4 +9,4 @@ programs:
     starttime: 10
     stoptime: 10
     stopsignal: "TERM"
-    exitcodes: [15]
+    exitcodes: [0]

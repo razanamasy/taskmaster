@@ -33,7 +33,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                     #main_starting a la main
     if process.backlog == True:
         print("Already in a start process")
-        return
+        return "Process :" + key + " already in a start process"
     else:
         if process.running == False:
             print("not running")

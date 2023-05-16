@@ -101,7 +101,6 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                                 restart = True
 
                         if running_table[pid].backlog == False and running_table[pid].fatal == False and restart == True:
-                            print("ENTER IN MY FUCKING RUNNING TABLE")
                             main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
 
                     running_table.pop(pid)
