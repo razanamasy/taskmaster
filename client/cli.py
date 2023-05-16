@@ -41,7 +41,7 @@ def main(stdscr):
 
             history_index = -1
             user_input = ''
-            row = 0
+            cmdy = stdscr.getyx()[0]
 
             stdscr.addstr('Taskmaster> ')
             stdscr.refresh()
@@ -67,20 +67,30 @@ def main(stdscr):
                         try:
                             c = stdscr.getch()
                             if c == curses.KEY_LEFT:
-                                ### a faire !!!! garder en memoire ancien y et gerer la navigation inter ligne si la commande est longue
-                                if stdscr.getyx()[1] > len('Taskmaster> '):
+                                if stdscr.getyx()[0] == cmdy and stdscr.getyx()[1] > len('Taskmaster> '):
                                     stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
                                     stdscr.refresh()
+                                elif stdscr.getyx()[0] > cmdy:
+                                    if stdscr.getyx()[1] == 0:
+                                        stdscr.move(stdscr.getyx()[0] - 1, stdscr.getmaxyx()[1] - 1)
+                                        stdscr.refresh()
+                                    else:
+                                        stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
+                                        stdscr.refresh()
                             elif c == curses.KEY_RIGHT:
-                                ### a faire !!!! garder en memoire ancien y et gerer la navigation inter ligne si la commande est longue
-                                if stdscr.getyx()[1] < len('Taskmaster> ') + len(user_input):
+                                count = stdscr.getyx()[0] - cmdy
+                                if stdscr.getyx()[1] < ((len('Taskmaster> ') + len(user_input)) - count * stdscr.getmaxyx()[1]) and stdscr.getyx()[1] < stdscr.getmaxyx()[1] - 1:
                                     stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] + 1)
+                                    stdscr.refresh()
+                                elif stdscr.getyx()[1] < ((len('Taskmaster> ') + len(user_input)) - count * stdscr.getmaxyx()[1]) and stdscr.getyx()[1] == stdscr.getmaxyx()[1] - 1:
+                                    stdscr.move(stdscr.getyx()[0] + 1, 0)
                                     stdscr.refresh()
                             elif c == curses.KEY_UP:
                                 if history_index < (len(command_history) - 1):
                                     history_index += 1
-                                    stdscr.move(stdscr.getyx()[0], len('Taskmaster> '))
-                                    stdscr.clrtoeol()
+                                    stdscr.move(cmdy, len('Taskmaster> '))
+                                    stdscr.clrtobot()
+                                    stdscr.refresh()
                                     stdscr.addstr(command_history[len(command_history) - 1 - history_index])
                                     stdscr.refresh()
                                     user_input = command_history[len(command_history) - 1 - history_index]
@@ -88,25 +98,46 @@ def main(stdscr):
                                 if history_index > -1:
                                     history_index -= 1
                                     if history_index != -1:
-                                        stdscr.move(stdscr.getyx()[0], len('Taskmaster> '))
-                                        stdscr.clrtoeol()
+                                        stdscr.move(cmdy, len('Taskmaster> '))
+                                        stdscr.clrtobot()
+                                        stdscr.refresh()
                                         stdscr.addstr(command_history[history_index])
                                         stdscr.refresh()
                                         user_input = command_history[history_index]
                                     elif history_index == -1:
-                                        stdscr.move(stdscr.getyx()[0], len('Taskmaster> '))
-                                        stdscr.clrtoeol()
+                                        stdscr.move(cmdy, len('Taskmaster> '))
+                                        stdscr.clrtobot()
                                         stdscr.refresh()
                                         user_input = ''
                             elif c == curses.KEY_BACKSPACE or c == 127:
-                                if stdscr.getyx()[1] > len('Taskmaster> '):
+                                ### a faire gerer la deletion du dernier charatere d'une ligne au milieu d'un bloc multiligne
+                                ### trouver pourquoi la deuxieme iteration depuis la fin de la chaine del de 2
+                                if stdscr.getyx()[0] == cmdy and stdscr.getyx()[1] > len('Taskmaster> '):
                                     stdscr.delch(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
                                     stdscr.refresh()
-                                    oldy, oldx = stdscr.getyx()
-                                    stdscr.move(stdscr.getyx()[0], len('Taskmaster> '))
-                                    y, x = stdscr.getyx()
-                                    new_input = ''
-                                    while True:
+                                    if stdscr.getyx()[1] > (len('Taskmaster> ') + len(user_input)):
+                                        stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
+                                        stdscr.refresh()
+                                elif stdscr.getyx()[0] > cmdy:
+                                    count = stdscr.getyx()[0] - cmdy
+                                    if stdscr.getyx()[1] == 0:
+                                        stdscr.delch(stdscr.getyx()[0] - 1, stdscr.getmaxyx()[1] - 1)
+                                        stdscr.refresh()
+                                        if stdscr.getyx()[1] > ((len('Taskmaster> ') + len(user_input) + 1) - count * stdscr.getmaxyx()[1]):
+                                            stdscr.move(stdscr.getyx()[0], stdscr.getmaxyx()[1] - 1)
+                                            stdscr.refresh()
+                                    else:
+                                        stdscr.delch(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
+                                        stdscr.refresh()
+                                        if stdscr.getyx()[1] > ((len('Taskmaster> ') + len(user_input) + 1) - count * stdscr.getmaxyx()[1]):
+                                            stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
+                                            stdscr.refresh()
+                                y = cmdy
+                                x = len('Taskmaster> ')
+                                new_input = ''
+                                while True:
+                                    count = y - cmdy
+                                    if x < ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]) and x < stdscr.getmaxyx()[1] - 1:
                                         # Get the character at the current position
                                         char = stdscr.inch(y, x)
 
@@ -115,14 +146,16 @@ def main(stdscr):
 
                                         # Move to the next character position
                                         x += 1
-
-                                        # Break the loop if we reached the end of the line
-                                        if chr(char) == '\n' or x >= stdscr.getmaxyx()[1]:
-                                            break
-                                    #### a faire !!! retirer tous les espaces a la fin 
-                                    user_input = ''
-                                    user_input = new_input
-                                    stdscr.move(oldy, oldx)
+                                    elif x < ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]) and x == stdscr.getmaxyx()[1] - 1:
+                                        char = stdscr.inch(y, x)
+                                        new_input += (chr(char))
+                                        x = 0
+                                        y += 1
+                                    
+                                    # Break the loop if we reached the end of the line
+                                    if x >= ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]):
+                                        break 
+                                user_input = new_input
                             elif c == ord('\n'):
                                 if len(user_input) > 0:
                                     command_history.append(user_input)
@@ -144,14 +177,17 @@ def main(stdscr):
                                     stdscr.addstr('Taskmaster> ')
                                     stdscr.refresh()
                                     stdscr.move(stdscr.getyx()[0], len('Taskmaster> '))
-                                    break
+                                    cmdy = stdscr.getyx()[0]
                             else:
-                                if history_index == -1 and len(chr(c)) == 1:
+                                if len(chr(c)) == 1 and c != ord('\n'):
+                                    ### a faire !!! insert where the prompt is
                                     stdscr.addstr(chr(c))
                                     stdscr.refresh()
                                     user_input += chr(c)
                         except EOFError:
                             user_input = "quit"
+
+### a faire return error message des if else
 
 if __name__ == "__main__":
     stdscr = curses.initscr()
