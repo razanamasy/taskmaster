@@ -25,14 +25,14 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
     
     process = client_proc_dict[fd][key]
     if process.stopping == True:
-        print("Already in a start process")
-        return
+        print("Already in a stopping process")
+        return "Process : " + key + " already in a stopping process"
     if process.backlog == True:
         print("Already in a start process")
-        return
+        return "Process : " + key + " already in a starting process"
     if process.running == False:
         print("Already stopped")
-        return
+        return "Process : " + key + " stopped"
 
     print(f"Really stopping {process.name}")
     process.cli_history.append('stop')
@@ -58,3 +58,4 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         os.kill(process.pid, signal.SIGUSR2)
     thread_list.append(stop_timer)
     stop_timer.start()
+    return "Stopping process : " + key

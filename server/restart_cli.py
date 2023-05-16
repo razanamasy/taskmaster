@@ -45,6 +45,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 process.stopped = False
                 process.quit_with_stop = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                return "Restart fatal process :" + key
             else:
                 print("it'is NOT fatal")
               #  last_position = len(process.status_exit) - 1
@@ -55,18 +56,53 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                     process.stopped = False
                     process.quit_with_stop = False
                     main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                    return "Restart process :" + key + " (has not quit gracefully)"
                 else:
                     print("process has exit gracefully, use start")
+                    return "Process :" + key + " has exit gracefully, use start"
         else:
             print("Running")
             if process.autorestart == True:
                 print("Autorestart true so just kill")
-                os.kill(process.pid, signal.SIGTERM)
+                if process.stopsignal == "TERM":
+                    print("STOP WITH SIGTERM")
+                    os.kill(process.pid, signal.SIGTERM)
+                elif process.stopsignal == "HUP":
+                    os.kill(process.pid, signal.SIGHUP)
+                elif process.stopsignal == "INT":
+                    os.kill(process.pid, signal.SIGINT)
+                elif process.stopsignal == "QUIT":
+                    os.kill(process.pid, signal.SIGQUIT)
+                elif process.stopsignal == "KILL":
+                    print("STOP WITH SIGTERM")
+                    os.kill(process.pid, signal.SIGKILL)
+                elif process.stopsignal == "USR1":
+                    os.kill(process.pid, signal.SIGUSR1)
+                elif process.stopsignal == "USR2":
+                    os.kill(process.pid, signal.SIGUSR2)
+                return "Restart running Process :" + key
             else:
                 print("Autorestart false so kill and restart")
-                os.kill(process.pid, signal.SIGTERM)
+                if process.stopsignal == "TERM":
+                    print("STOP WITH SIGTERM")
+                    os.kill(process.pid, signal.SIGTERM)
+                elif process.stopsignal == "HUP":
+                    os.kill(process.pid, signal.SIGHUP)
+                elif process.stopsignal == "INT":
+                    os.kill(process.pid, signal.SIGINT)
+                elif process.stopsignal == "QUIT":
+                    os.kill(process.pid, signal.SIGQUIT)
+                elif process.stopsignal == "KILL":
+                    print("STOP WITH SIGTERM")
+                    os.kill(process.pid, signal.SIGKILL)
+                elif process.stopsignal == "USR1":
+                    os.kill(process.pid, signal.SIGUSR1)
+                elif process.stopsignal == "USR2":
+                    os.kill(process.pid, signal.SIGUSR2)
+
                 process.cli_history.append('restart')
                 process.stopping = False
                 process.stopped = False
                 process.quit_with_stop = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                return "Restart running Process :" + key

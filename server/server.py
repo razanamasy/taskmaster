@@ -194,28 +194,35 @@ while running:
             # Process the job command
             if cmd_key == 'start':
                 print("Starting the job...")
+                result = "starting called..." 
                 for key in cmd['start']:
-                    main_start_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    if key in client_proc_dict[client_socket.fileno()]:
+                        result = main_start_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    else:
+                        result = "Can start process :" + key + ", it does not exist"
 
                 # Code to start the job goes here
-                result = "starting the job..." 
             elif cmd_key == 'stop':
                 print("Stopping the job...")
+                result = "Stopping called..."
                 for key in cmd['stop']:
-                    main_stop_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    if key in client_proc_dict[client_socket.fileno()]:
+                        result = main_stop_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    else:
+                        result = "Can't stop process :" + key + ", it does not exist"
                 # Code to stop the job goes here
-                result = "Stopping the job..."
             elif cmd_key == 'restart':
                 print(f"cmd_key for restart is {cmd_key}")
+                result = "restarting called..."
                 for key in cmd['restart']:
-                    main_restart_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
-                    print("try to restart this command :", key)
-                result = "restarting..."
+                    if key in client_proc_dict[client_socket.fileno()]:
+                        result = main_restart_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    else:
+                        result = "Can't restart process :" + key + ", it does not exist"
                 # Code to stop the job goes here
             elif cmd_key == 'shutdown':
                 print(f"cmd_key for shutdown is {cmd_key}")
                 # Code to stop the job goes here
-                result = "Stopping the job..."
                 print("Client quitting")
                 result = "shutdown"
 
