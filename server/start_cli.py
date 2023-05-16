@@ -27,7 +27,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         process.quit_with_stop = False
         main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
     else:
-        if is_exit_matching(process.status_exit[-1], process) == 1: #means it DID exit gracefully 
+        if is_exit_matching(process.status_exit[-1], process) == 1 and process.fatal == False: #means it DID exit gracefully 
             print("Start work it exited gracefully")
             process.cli_history.append('start')
             process.stopping = False
@@ -35,4 +35,4 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
             process.quit_with_stop = False
             main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         else:
-            print("need to restart it didn't exit gracefully")
+            print("need to restart it didn't exit gracefully or is fatal")

@@ -39,6 +39,22 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
     process.stopping = True
     process.quit_with_stop = True
     stop_timer = threading.Thread(target=timer, args=(client_proc_dict, fd, key, copy.deepcopy(process.pid),running_table, mutex_proc_dict))
-    os.kill(process.pid, signal.SIGTERM)
+
+    if process.stopsignal == "TERM":
+        print("STOP WITH SIGTERM")
+        os.kill(process.pid, signal.SIGTERM)
+    elif process.stopsignal == "HUP":
+        os.kill(process.pid, signal.SIGHUP)
+    elif process.stopsignal == "INT":
+        os.kill(process.pid, signal.SIGINT)
+    elif process.stopsignal == "QUIT":
+        os.kill(process.pid, signal.SIGQUIT)
+    elif process.stopsignal == "KILL":
+        print("STOP WITH SIGTERM")
+        os.kill(process.pid, signal.SIGKILL)
+    elif process.stopsignal == "USR1":
+        os.kill(process.pid, signal.SIGUSR1)
+    elif process.stopsignal == "USR2":
+        os.kill(process.pid, signal.SIGUSR2)
     thread_list.append(stop_timer)
     stop_timer.start()

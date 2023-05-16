@@ -6,8 +6,8 @@ from parse_utils import *
 
 error = {}
 conf_list = ["cmd", "numprocs", "umask", "workingdir", "autostart", "autorestart", "exitcodes", "startretries", "starttime", "stopsignal", "stoptime", "stdout", "stderr", "env"]
-signals = {"TERM": "SIGTERM", "HUP": "SIGHUP", "INT": "SIGINT", "QUIT": "SIGQUIT", "KILL": "SIGKILL", "USR1": "SIGUSR1", "USR2": "SIGUSR2"}
-int_signals = {15: "SIGTERM", 1: "SIGHUP", 2: "SIGINT", 3: "SIGQUIT", 9: "SIGKILL", 10: "SIGUSR1", 12: "SIGUSR2"}
+#signals = {"TERM": "SIGTERM", "HUP": "SIGHUP", "INT": "SIGINT", "QUIT": "SIGQUIT", "KILL": "SIGKILL", "USR1": "SIGUSR1", "USR2": "SIGUSR2"}
+int_signals = {15: "TERM", 1: "HUP", 2: "INT", 3: "QUIT", 9: "KILL", 10: "USR1", 12: "USR2"}
 
 def check_value_types(key, value):
     error_flag = None 
@@ -90,9 +90,7 @@ def set_attribute(process_dict, key, value):
         elif value == "true":
             value = True
     elif key == "stopsignal":
-        if isinstance(value, str) == True:
-            value = signals[value]
-        else:
+        if isinstance(value, int) == True:
             value = int_signals[value]
     elif key == "stdout":
         if os.path.exists(os.path.dirname(value)):

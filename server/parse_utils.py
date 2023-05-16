@@ -1,5 +1,5 @@
 _bool = ["true", "True", "False", "false"]
-signals = ["TERM", "SIGTERM", "HUP", "SIGHUP", "INT", "SIGINT", "QUIT", "SIGQUIT", "KILL", "SIGKILL", "USR1", "SIGUSR1", "USR2", "SIGUSR2"]
+signals = ["TERM", "HUP", "INT", "QUIT", "KILL", "USR1", "USR2"]
 int_signals = [15, 1, 2, 3, 9, 10, 12]
 
 def check_int(value, min, max):

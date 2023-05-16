@@ -4,5 +4,9 @@ programs:
     starttime: 10
     startretries: 3
     numprocs: 1
-    autostart: False
-    exitcodes: [0]
+    autostart: True 
+    autorestart: False 
+    starttime: 10
+    stoptime: 10
+    stopsignal: "TERM"
+    exitcodes: [15]
