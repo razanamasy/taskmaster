@@ -23,16 +23,17 @@ reload_parser = subparsers.add_parser('reload', help='Reload configuration file'
 reload_parser.add_argument('path', nargs=1, type=str, help='Configuration file path')
 
 # Subparser for "quit" command
-quit_parser = subparsers.add_parser('quit', help='Quit the taskmaster server')
+quit_parser = subparsers.add_parser('quit', help='Quit the taskmaster server', add_help=False)
 
 # Subparser for "status" command
-status_parser = subparsers.add_parser('status', help='Status of all of your process')
+status_parser = subparsers.add_parser('status', help='Status of all of your process', add_help=False)
+status_parser.add_argument('process_name', nargs='*', type=str, help='Process names from which you want the status')
 
 # Subparser for "help" command
-status_parser = subparsers.add_parser('help', help='Display helper')
+status_parser = subparsers.add_parser('help', help='Display helper', add_help=False)
 
 # Subparser for "shutdown" command
-quit_parser = subparsers.add_parser('shutdown', help='Shutdown the taskmaster server')
+quit_parser = subparsers.add_parser('shutdown', help='Shutdown the taskmaster server', add_help=False)
 
 def check_command_start(command):
     valid_commands = ["help", "reload", "start", "stop", "restart", "quit", "status", "shutdown"]
@@ -54,9 +55,9 @@ def parse_command(command):
             cmd[args.command] = helper.getvalue()
         elif args.command == "reload":
             cmd[args.command] = args.path
-        elif args.command in ['start', 'stop', 'restart']:
+        elif args.command in ['start', 'stop', 'restart', 'status']:
             cmd[args.command] = args.process_name
-        elif args.command in ['quit', 'status', 'shutdown']:
+        elif args.command in ['quit', 'shutdown']:
             cmd[args.command] = None
     except:
         # Temporarily redirect stderr to capture the usage message
