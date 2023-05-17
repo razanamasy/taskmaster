@@ -5,6 +5,7 @@ import select
 import signal
 import readline
 import curses
+import textwrap
 from client_utils import *
 
 # Define the host and port to connect to
@@ -41,6 +42,7 @@ def main(stdscr):
 
             history_index = -1
             user_input = ''
+            height, width = stdscr.getmaxyx()
             cmdy = stdscr.getyx()[0]
 
             stdscr.addstr('Taskmaster> ')
@@ -60,12 +62,27 @@ def main(stdscr):
                             stdscr.refresh()
                             return
                         else:
-                            stdscr.addstr('Received message from server: {}\n'.format(message))
+                            # Wrap the string to fit within the available space
+                            wrapped_string = textwrap.fill(message, stdscr.getmaxyx()[1] - 1, replace_whitespace=False)
+
+                            # Split the wrapped string into individual lines
+                            lines = wrapped_string.split("\n")
+                            stdscr.addstr('Received message from server:')
+                            # Display the wrapped string
+                            for line in lines:
+                                stdscr.addstr(stdscr.getyx()[0] + 1, 0, line)
+                                stdscr.refresh()
+                            stdscr.addstr('\nTaskmaster> ')
                             stdscr.refresh()
+                            cmdy = stdscr.getyx()[0]
+
                     elif sock is sys.stdin:
                         # Read user input from the user_input line
                         try:
                             c = stdscr.getch()
+                            ### a faire !!! gerer le resize de la fenetre
+                            if curses.is_term_resized(height, width):
+                                stdscr.resize(stdscr.getmaxyx()[0], stdscr.getmaxyx()[1])
                             if c == curses.KEY_LEFT:
                                 if stdscr.getyx()[0] == cmdy and stdscr.getyx()[1] > len('Taskmaster> '):
                                     stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
@@ -110,52 +127,45 @@ def main(stdscr):
                                         stdscr.refresh()
                                         user_input = ''
                             elif c == curses.KEY_BACKSPACE or c == 127:
-                                ### a faire gerer la deletion du dernier charatere d'une ligne au milieu d'un bloc multiligne
-                                ### trouver pourquoi la deuxieme iteration depuis la fin de la chaine del de 2
+                                ### a fairei !!! gerer la deletion du dernier charatere d'une ligne au milieu d'un bloc multiligne
+                                flag = False
                                 if stdscr.getyx()[0] == cmdy and stdscr.getyx()[1] > len('Taskmaster> '):
                                     stdscr.delch(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
                                     stdscr.refresh()
-                                    if stdscr.getyx()[1] > (len('Taskmaster> ') + len(user_input)):
-                                        stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
-                                        stdscr.refresh()
+                                    flag = True
                                 elif stdscr.getyx()[0] > cmdy:
-                                    count = stdscr.getyx()[0] - cmdy
                                     if stdscr.getyx()[1] == 0:
                                         stdscr.delch(stdscr.getyx()[0] - 1, stdscr.getmaxyx()[1] - 1)
                                         stdscr.refresh()
-                                        if stdscr.getyx()[1] > ((len('Taskmaster> ') + len(user_input) + 1) - count * stdscr.getmaxyx()[1]):
-                                            stdscr.move(stdscr.getyx()[0], stdscr.getmaxyx()[1] - 1)
-                                            stdscr.refresh()
+                                        flag = True
                                     else:
                                         stdscr.delch(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
                                         stdscr.refresh()
-                                        if stdscr.getyx()[1] > ((len('Taskmaster> ') + len(user_input) + 1) - count * stdscr.getmaxyx()[1]):
-                                            stdscr.move(stdscr.getyx()[0], stdscr.getyx()[1] - 1)
-                                            stdscr.refresh()
-                                y = cmdy
-                                x = len('Taskmaster> ')
-                                new_input = ''
-                                while True:
-                                    count = y - cmdy
-                                    if x < ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]) and x < stdscr.getmaxyx()[1] - 1:
-                                        # Get the character at the current position
-                                        char = stdscr.inch(y, x)
-
-                                        # Append the character to the line list
-                                        new_input += (chr(char))
-
-                                        # Move to the next character position
-                                        x += 1
-                                    elif x < ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]) and x == stdscr.getmaxyx()[1] - 1:
-                                        char = stdscr.inch(y, x)
-                                        new_input += (chr(char))
-                                        x = 0
-                                        y += 1
-                                    
-                                    # Break the loop if we reached the end of the line
-                                    if x >= ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]):
-                                        break 
-                                user_input = new_input
+                                        flag = True
+                                if flag == True:
+                                    oldy, oldx = stdscr.getyx()
+                                    stdscr.move(cmdy, len('Taskmaster> '))
+                                    y, x = stdscr.getyx()
+                                    new_input = ''
+                                    while True:
+                                        count = stdscr.getyx()[0] - cmdy
+                                        if x < ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]) and x < stdscr.getmaxyx()[1] - 1:
+                                            char = stdscr.inch(y, x)
+                                            new_input += (chr(char))
+                                            x += 1
+                                        elif x < ((len('Taskmaster> ') + len(user_input) - 1) - count * stdscr.getmaxyx()[1]) and x == stdscr.getmaxyx()[1] - 1:
+                                            char = stdscr.inch(y, x)
+                                            new_input += (chr(char))
+                                            x = 0
+                                            y += 1
+                                        # Break the loop if we reached the end of the line
+                                        if len(new_input) == len(user_input) - 1:
+                                            break
+                                    user_input = ''
+                                    if new_input == ' ':
+                                        new_input = ''
+                                    user_input = new_input
+                                    stdscr.move(oldy, oldx)
                             elif c == ord('\n'):
                                 if len(user_input) > 0:
                                     command_history.append(user_input)
@@ -164,7 +174,6 @@ def main(stdscr):
                                     # Send the user_input to the server
                                     client_socket.sendall(user_input.encode())
                                 
-                                    user_input = ''
                                     # Receive the result from the server
                                     result = client_socket.recv(1024).decode()
 
@@ -172,11 +181,23 @@ def main(stdscr):
                                     if user_input == 'quit':
                                         return
 
-                                    # Print the result to the console
-                                    stdscr.addstr('\n{}\n'.format(result))
-                                    stdscr.addstr('Taskmaster> ')
+                                    user_input = ''
+                                    # Wrap the string to fit within the available space
+                                    wrapped_string = textwrap.fill(result, stdscr.getmaxyx()[1] - 1, replace_whitespace=False)
+
+                                    # Split the wrapped string into individual lines
+                                    lines = wrapped_string.split("\n")
+                                    
+                                    # Display the wrapped string
+                                    for line in lines:
+                                        stdscr.addstr(stdscr.getyx()[0] + 1, 0, line)
+                                        stdscr.refresh()
+                                    stdscr.addstr('\nTaskmaster> ')
                                     stdscr.refresh()
-                                    stdscr.move(stdscr.getyx()[0], len('Taskmaster> '))
+                                    cmdy = stdscr.getyx()[0]
+                                else:
+                                    stdscr.addstr('\nTaskmaster> ')
+                                    stdscr.refresh()
                                     cmdy = stdscr.getyx()[0]
                             else:
                                 if len(chr(c)) == 1 and c != ord('\n'):
