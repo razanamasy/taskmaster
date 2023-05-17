@@ -1,4 +1,5 @@
 import socket
+import calendar
 import time
 import sys
 import os
@@ -84,29 +85,35 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
         if bool(running_table):
             try:
                 pid, status = os.waitpid(-1, os.WNOHANG)
-                if (pid > 0):
-                    fd = running_table[pid].client
-                    key = running_table[pid].name
-                    running_table[pid].status_exit.append(status)
-                    running_table[pid].running = False
-                    running_table[pid].stopping = False 
-                    running_table[pid].stopped = True 
-                    restart = False
-                    print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
-                    if running_table[pid].quitting == False and running_table[pid].quit_with_stop == False:
-                        exit_match = is_exit_matching(status, running_table[pid])
-                        if running_table[pid].autorestart == True:
-                            restart = True
-                        else:
-                            if running_table[pid].autorestart == "unexpected" and exit_match == 0:
+                if (pid < 0):
+                    print(f"child :{pid} encountered error")
+                else:
+                    if (pid > 0):
+                        current_GMT = time.gmtime()
+                        time_stamp = calendar.timegm(current_GMT)
+
+                        fd = running_table[pid].client
+                        key = running_table[pid].name
+                        running_table[pid].status_exit.append(status)
+                        running_table[pid].running = (False, time_stamp)
+                        running_table[pid].stopping = (False, time_stamp) 
+                        running_table[pid].stopped = (True, time_stamp) 
+                        restart = False
+                        print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
+                        if running_table[pid].quitting == False and running_table[pid].quit_with_stop == False:
+                            exit_match = is_exit_matching(status, running_table[pid])
+                            if running_table[pid].autorestart == True:
                                 restart = True
+                            else:
+                                if running_table[pid].autorestart == "unexpected" and exit_match == 0:
+                                    restart = True
 
-                        if running_table[pid].backlog == False and running_table[pid].fatal == False and restart == True:
-                            main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                            if running_table[pid].backlog[0] == False and running_table[pid].fatal[0] == False and restart == True:
+                                main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
 
-                    running_table.pop(pid)
-                    print(f"Process {pid} exited with status {status}")
-                    print("No longer waiting pid")
+                        running_table.pop(pid)
+                        print(f"Process {pid} exited with status {status}")
+                        print("No longer waiting pid")
             except OSError as e:
                 if e.errno == errno.ECHILD:
                     print("No child processes to wait for...")

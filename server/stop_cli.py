@@ -1,5 +1,6 @@
 import copy
 import os
+import calendar
 import time 
 import signal
 import threading
@@ -11,9 +12,9 @@ def timer(client_proc_dict, fd, key, curr_pid, running_table, mutex_proc_dict):
     time.sleep(process.stoptime)
     print("end of sleep stop")
     if process.pid == curr_pid: #Si pas eu d'autre start ou restart entre temp
-        if process.backlog == True: #Clairement impossible lol
+        if process.backlog[0] == True: #Clairement impossible lol
             return
-        if process.running == False: #On a reussit a kill
+        if process.running[0] == False: #On a reussit a kill
             print("the process has stopped")
             return
         else:
@@ -22,21 +23,23 @@ def timer(client_proc_dict, fd, key, curr_pid, running_table, mutex_proc_dict):
             os.kill(process.pid, signal.SIGKILL)
 
 def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list):
-    
     process = client_proc_dict[fd][key]
-    if process.stopping == True:
+    current_GMT = time.gmtime()
+    time_stamp = calendar.timegm(current_GMT)
+
+    if process.stopping[0] == True:
         print("Already in a stopping process")
         return "Process : " + key + " already in a stopping process"
-    if process.backlog == True:
+    if process.backlog[0] == True:
         print("Already in a start process")
         return "Process : " + key + " already in a starting process"
-    if process.running == False:
+    if process.running[0] == False:
         print("Already stopped")
         return "Process : " + key + " stopped"
 
     print(f"Really stopping {process.name}")
     process.cli_history.append('stop')
-    process.stopping = True
+    process.stopping = (True, time_stamp)
     process.quit_with_stop = True
     stop_timer = threading.Thread(target=timer, args=(client_proc_dict, fd, key, copy.deepcopy(process.pid),running_table, mutex_proc_dict))
 

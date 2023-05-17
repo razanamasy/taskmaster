@@ -2,6 +2,8 @@ from start_launch import main as main_starting
 #from server import is_exit_matching as is_exit_matching
 import os
 import signal
+import calendar
+import time
 
 def is_exit_matching(status, process_data):
     exit_table = process_data.exitcodes
@@ -14,9 +16,6 @@ def is_exit_matching(status, process_data):
     return match
 
 def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list):
-    #gestion erreur fonction
-    #Voir aussi le dernier exit code pour savoir si ca a ete stop gracefully
-    process = client_proc_dict[fd][key]
         #Check si c'est en backlog --> si oui rien faire (END)
         #else:
             #SI ca run PAS --> (et donci forcemment pas en backlog)
@@ -31,18 +30,23 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 #Sinon (Pas autorestart)
                     #kill gracefully
                     #main_starting a la main
-    if process.backlog == True:
+
+    process = client_proc_dict[fd][key]
+    current_GMT = time.gmtime()
+    time_stamp = calendar.timegm(current_GMT)
+
+    if process.backlog[0] == True:
         print("Already in a start process")
         return "Process :" + key + " already in a start process"
     else:
-        if process.running == False:
+        if process.running[0] == False:
             print("not running")
-            if process.fatal == True:
+            if process.fatal[0] == True:
                 print("it's fatal")
-                process.fatal = False
+                process.fatal = (False, time_stamp)
                 process.cli_history.append('restart')
-                process.stopping = False
-                process.stopped = False
+                process.stopping = (False, time_stamp)
+                process.stopped = (False, time_stamp)
                 process.quit_with_stop = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 return "Restart fatal process :" + key
@@ -52,8 +56,8 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 if is_exit_matching(process.status_exit[-1], process) == 0: #means it did not exit gracefully, here obviously autorestart = false because it's not in backlog
                     print("it has not exit gracefully so restart")
                     process.cli_history.append('restart')
-                    process.stopping = False
-                    process.stopped = False
+                    process.stopping = (False, time_stamp)
+                    process.stopped = (False, time_stamp)
                     process.quit_with_stop = False
                     main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                     return "Restart process :" + key + " (has not quit gracefully)"
@@ -101,8 +105,8 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                     os.kill(process.pid, signal.SIGUSR2)
 
                 process.cli_history.append('restart')
-                process.stopping = False
-                process.stopped = False
+                process.stopping = (False, time_stamp)
+                process.stopped = (False, time_stamp)
                 process.quit_with_stop = False
                 main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 return "Restart running Process :" + key
