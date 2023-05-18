@@ -35,6 +35,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                     list_proc_data[key].fatal = (True, time_stamp)
                 newpid = main_exec(list_proc_data[key])
                 list_proc_data[key].pid = newpid
+                list_proc_data[key].backoff_starting = (True, time_stamp) 
                 running_table[newpid]=list_proc_data[key]
         else:
             break
@@ -54,7 +55,6 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
 def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
     print("MAIN STARTING CALLED")
     #Fork premiere execution
-    #init backoff_starting to true (starting) + timestamp
     newpid = main_exec(list_proc_data[key])
 
     current_GMT = time.gmtime()
@@ -63,6 +63,7 @@ def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_l
     list_proc_data[key].pid = newpid
     list_proc_data[key].backlog = (True, time_stamp)
     list_proc_data[key].stopped = (False, time_stamp) 
+    list_proc_data[key].backoff_starting = (True, time_stamp) 
     running_table[newpid]=list_proc_data[key]
 
     #envoi du thread starting process pour chaque process

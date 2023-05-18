@@ -9,7 +9,10 @@ def main(list_proc_data, key):
 
     if process.backlog[0] == True: #Il faudra preciser avec failure plus tard
         delay = time_stamp - process.backlog[1]
-        return "Process " + key + " :BACKLOG (need to precise) since :" + str(delay) + " seconds"
+        if process.backoff_starting == True:
+            return "Process " + key + " :STARTING since :" + str(delay) + " seconds"
+        else:
+            return "Process " + key + " :BACKOFF since :" + str(delay) + " seconds"
     if process.fatal[0] == True:
         delay = time_stamp - process.fatal[1]
         return "Process " + key + " :FATAL since:" + str(delay) + " seconds"
