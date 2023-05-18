@@ -48,27 +48,33 @@ def main():
                 sys.stdout.flush()  # Ensure the prompt is immediately displayed
 
                 # Handle navigation through command history using readline
-                try:
-                    if history_index == -1:
-                        command = input('Taskmaster> ')
-                    else:
-                        command = input('Taskmaster> ')
-                        print(command)
-                except EOFError:
-                    command = "quit"
+                command = ""
+                while command == "":
+                    try:
+                        if history_index == -1:
+                            command = input('Taskmaster> ')
+                        else:
+                            command = input('Taskmaster> ')
+                            print(command)
+                    except EOFError:
+                        command = "quit"
 
                 # Update command history
                 command_history.append(command)
                 history_index = -1
-                        
-                # Send the command to the server
-                client_socket.sendall(command.encode())
+            
+                try:
+                    # Send the command to the server
+                    client_socket.sendall(command.encode())
 
-                # Receive the result from the server
-                result = client_socket.recv(1024).decode()
+                    # Receive the result from the server
+                    result = client_socket.recv(1024).decode()
 
-                # Print the result to the console
-                print(result)
+                    # Print the result to the console
+                    print(result)
+                except:
+                    print("Sorry server is closed")
+                    command = 'quit'
 
                 # Exit the loop if the user enters the quit command
                 if command == 'quit':

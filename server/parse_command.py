@@ -20,7 +20,6 @@ restart_parser.add_argument('process_name', nargs='+', type=str, help='Process n
 
 # Subparser for "reload" command
 reload_parser = subparsers.add_parser('reload', help='Reload configuration file', add_help=False)
-reload_parser.add_argument('path', nargs=1, type=str, help='Configuration file path')
 
 # Subparser for "quit" command
 quit_parser = subparsers.add_parser('quit', help='Quit the taskmaster server', add_help=False)
@@ -53,11 +52,11 @@ def parse_command(command):
             helper = io.StringIO()
             parser.print_help(file=helper)
             cmd[args.command] = helper.getvalue()
-        elif args.command == "reload":
-            cmd[args.command] = args.path
         elif args.command in ['start', 'stop', 'restart', 'status']:
             cmd[args.command] = args.process_name
-        elif args.command in ['quit', 'shutdown']:
+        elif args.command in ['reload', 'quit', 'shutdown'] and unknown_args:
+            cmd["error"] = f"Taskmaster: error: invalid argument: '{args.command}' should not have any arguments"
+        elif args.command in ['reload', 'quit', 'shutdown'] and not unknown_args:
             cmd[args.command] = None
     except:
         # Temporarily redirect stderr to capture the usage message
