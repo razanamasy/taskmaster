@@ -15,7 +15,7 @@ def is_exit_matching(status, process_data):
             match = 1
     return match
 
-def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list):
+def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
         #Check si c'est en backlog --> si oui rien faire (END)
         #else:
             #SI ca run PAS --> (et donci forcemment pas en backlog)
@@ -31,7 +31,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                     #kill gracefully
                     #main_starting a la main
 
-    process = client_proc_dict[fd][key]
+    process = list_proc_data[key]
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
@@ -48,7 +48,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 process.stopping = (False, time_stamp)
                 process.stopped = (False, time_stamp)
                 process.quit_with_stop = False
-                main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                 return "Restart fatal process :" + key
             else:
                 print("it'is NOT fatal")
@@ -59,7 +59,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                     process.stopping = (False, time_stamp)
                     process.stopped = (False, time_stamp)
                     process.quit_with_stop = False
-                    main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                    main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     return "Restart process :" + key + " (has not quit gracefully)"
                 else:
                     print("process has exit gracefully, use start")
@@ -108,5 +108,5 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
                 process.stopping = (False, time_stamp)
                 process.stopped = (False, time_stamp)
                 process.quit_with_stop = False
-                main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                 return "Restart running Process :" + key

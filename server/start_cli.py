@@ -16,8 +16,8 @@ def is_exit_matching(status, process_data):
     return match
 
 
-def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list):
-    process = client_proc_dict[fd][key]
+def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
+    process = list_proc_data[key]
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
@@ -29,7 +29,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
         process.stopping = (False, time_stamp)
         process.stopped = (False, time_stamp)
         process.quit_with_stop = False
-        main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+        main_starting(list_roc_data, key, clients, running_table, mutex_proc_dict, thread_list)
         return "Initial starting " + key
     else:
         if is_exit_matching(process.status_exit[-1], process) == 1 and process.fatal[0] == False: #means it DID exit gracefully 
@@ -38,7 +38,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
             process.stopping = (False, time_stamp)
             process.stopped = (False, time_stamp)
             process.quit_with_stop = False
-            main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+            main_starting(list_roc_data, key, clients, running_table, mutex_proc_dict, thread_list)
             return "Starting " + key
         else:
             print("need to restart it didn't exit gracefully or is fatal")

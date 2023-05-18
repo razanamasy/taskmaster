@@ -1,7 +1,6 @@
 class process_data:
     def __init__(self, name):
         self.name = name
-        self.client = None
         self.pid = -1
         self.cmd = None
         self.numprocs = 1
@@ -30,7 +29,7 @@ class process_data:
         self.status_exit = []
 
     def __str__(self):
-        return f"My class: \n name = {self.name}\n client = {self.client}\n pid = {self.pid}\n cmd = {self.cmd}\n numprocs = {self.numprocs}\n \
+        return f"My class: \n name = {self.name}\n pid = {self.pid}\n cmd = {self.cmd}\n numprocs = {self.numprocs}\n \
 umask = {self.umask}\n workingdir = {self.workingdir}\n autostart = {self.autostart}\n \
 autorestart = {self.autorestart}\n exitcodes = {self.exitcodes}\n startretries = {self.startretries}\n \
 starttime = {self.starttime}\n stopsignal = {self.stopsignal}\n stoptime = {self.stoptime}\n \

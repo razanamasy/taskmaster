@@ -5,7 +5,7 @@ import sys
 import os
 import select
 import copy
-from create_child_process import main as main_launch
+#from create_child_process import main as main_launch
 from start_launch import main as main_starting
 from restart_cli import main as main_restart_cli
 from stop_cli import main as main_stop_cli
@@ -24,35 +24,16 @@ PORT = 12345
 
 #SOCKET INITALISATION
 # Create a socket object and bind it to the host and port
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-def is_running():
-    try:
-        server_socket.bind((HOST, PORT))
-    except socket.error as err:
-        print("Server already running")
-        exit(1) 
-
-is_running()
-# Listen for incoming connections
-server_socket.listen()
 
 # Create a list to keep track of clients
 clients = []
-
-print(f"Server listening on {HOST}:{PORT}")
-
-# Set up the poll object
-poll_object = select.poll()
-poll_object.register(server_socket, select.POLLIN)
-
 #TABLES AND GLOBALE VARIABLES
 #{pid : process}
 running_table = {}
-#{pid_timer: pid_exec}
-timer_exec = {}
+#{name_key : process}
+list_proc_data = {}
 #{client : dico_process}
-client_proc_dict = {}
+#client_proc_dict = {}
 #to quit
 running = 1
 #to start wait pid only at first connexion
@@ -61,9 +42,27 @@ first = 0
 switch_monitor = [0]
 #Thread tables
 thread_list = []
-
+#Initil path conf in case of reload
+init_path_conf = sys.argv[1]
 #mutex
 mutex_proc_dict = Lock()
+
+def is_running():
+    try:
+        server_socket.bind((HOST, PORT))
+    except socket.error as err:
+        print("Server already running")
+        exit(1) 
+
+
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+is_running()
+server_socket.listen()
+print(f"Server listening on {HOST}:{PORT}")
+poll_object = select.poll()
+poll_object.register(server_socket, select.POLLIN)
+
 
 def is_exit_matching(status, process_data):
     print("Is exit in server monitoring")
@@ -77,10 +76,10 @@ def is_exit_matching(status, process_data):
     return match
 
 #WAIT PiD FORK and THREAD ICI ON ENLEVE DU TABLEAU PID
-def wait_for_child(running_table, client_proc_dict, thread_list):
+def wait_for_child(running_table, list_proc_data, clients, thread_list):
     while True:
-        if len(client_proc_dict) == 0:
-            print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
+        if len(clients) == 0:
+            print("LEN OF CLIENTS : ", len(clients))
             break
         if bool(running_table):
             try:
@@ -92,7 +91,6 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                         current_GMT = time.gmtime()
                         time_stamp = calendar.timegm(current_GMT)
 
-                        fd = running_table[pid].client
                         key = running_table[pid].name
                         running_table[pid].status_exit.append(status)
                         running_table[pid].running = (False, time_stamp)
@@ -109,7 +107,7 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
                                     restart = True
 
                             if running_table[pid].backlog[0] == False and running_table[pid].fatal[0] == False and restart == True:
-                                main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+                                main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
 
                         running_table.pop(pid)
                         print(f"Process {pid} exited with status {status}")
@@ -122,65 +120,53 @@ def wait_for_child(running_table, client_proc_dict, thread_list):
     print("MONITOR HAS QUIT")
 
 
+def launching(running, list_proc_data, clients, running_table, first, thread_list, path_conf):
+    #CHECK REPLICAS
+    temp_dico = {}
+    for key in list_proc_data:
+        print(key)
+        if list_proc_data[key].numprocs > 1:
+            i = 1
+            while i < list_proc_data[key].numprocs:
+                temp_dico[key + "-" + str(i)] = copy.deepcopy(list_proc_data[key])
+                temp_dico[key + "-" + str(i)].name = key + "-" + str(i)
+                i += 1
+    #UPDATE PROCES TO RUN
+    list_proc_data.update(temp_dico)
+    #FIRT EXEC IF AUTOSTART
+    for key in list_proc_data:
+        if list_proc_data[key].autostart == True:
+            main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+
+    monitor = threading.Thread(target=wait_for_child, args=(running_table, list_proc_data, clients, thread_list))
+    monitor.daemon = True
+    monitor.start()
+    thread_list.append(monitor)
+    print("In launching keys are : ", list_proc_data.keys())
+
+
+
+
 while running:
     # Wait for events from clients or the server socket
     events = poll_object.poll()
 
     for fd, event in events:
-        # If the event is from the server socket, it means there's a new connection
+        # NEW CONNEXION 
         if fd == server_socket.fileno():
             client_socket, addr = server_socket.accept()
             clients.append(client_socket)
             poll_object.register(client_socket, select.POLLIN)
             print(f"New client connected from {addr[0]}:{addr[1]}")
-            path_conf = client_socket.recv(1024).decode()
-            #the first parsing for launch here
-            
-
-            list_proc_data = main_parse(path_conf, client_socket.fileno()) #ici retourner un element proc_data = process_data
-            mutex_proc_dict.acquire()
-            client_proc_dict[client_socket.fileno()]=list_proc_data
-            mutex_proc_dict.release()
-            
-
-            #REPLICAS PUIS EXECUTION SORTIR CETTE FONCTION
-            temp_dico = {}
-            for key in client_proc_dict[client_socket.fileno()]:
-                print(key)
-                if client_proc_dict[client_socket.fileno()][key].numprocs > 1:
-                    i = 1
-                    while i < client_proc_dict[client_socket.fileno()][key].numprocs:
-                        temp_dico[key + "-" + str(i)] = copy.deepcopy(client_proc_dict[client_socket.fileno()][key])
-                        temp_dico[key + "-" + str(i)].name = key + "-" + str(i)
-                        i += 1
-            #CHECK DU NOUVEAU CLIENT DICO
-            client_proc_dict[client_socket.fileno()].update(temp_dico)
-            for key in client_proc_dict[client_socket.fileno()]:
-                print(key)
-
-            for key in client_proc_dict[client_socket.fileno()]:
-                if client_proc_dict[client_socket.fileno()][key].autostart == True:
-                    main_starting(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
-
-            #TESTS    
-            #client_proc_dict
-        #    print("value of pid of each client in dictionary ; ")
-        #    for value in client_proc_dict:
-        #        for sub_value in client_proc_dict[value]:
-        #            print(client_proc_dict[value][sub_value].pid)
-        #            print(client_proc_dict[value][sub_value].name)
-            #Running process
-        #    print("Key running table (should be modified in main_starting) ; ")
-        #    print(running_table.keys())
-
-            #START MONITOR DEATH ONLY AT START 
-            print("switch monitor is at : ", switch_monitor[0])
+        
+            # First launch process and monitor calling (only once)
             if first == 0:
                 first = 1
-                monitor = threading.Thread(target=wait_for_child, args=(running_table, client_proc_dict, thread_list))
-                monitor.daemon = True
-                monitor.start()
-                thread_list.append(monitor)
+                print(f"path conf = {init_path_conf}")
+                list_proc_data = copy.deepcopy(main_parse(init_path_conf))
+                print("in list proc data :: ", list_proc_data.keys())
+                launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
+                print("after launching the keys in dico are : ", list_proc_data.keys())
 
 
         # If the event is from a client socket, it means there's data to read
@@ -203,8 +189,8 @@ while running:
                 print("Starting the job...")
                 result = "starting called..." 
                 for key in cmd['start']:
-                    if key in client_proc_dict[client_socket.fileno()]:
-                        result = main_start_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    if key in list_proc_data:
+                        result = main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     else:
                         result = "Can start process :" + key + ", it does not exist"
 
@@ -213,8 +199,8 @@ while running:
                 print("Stopping the job...")
                 result = "Stopping called..."
                 for key in cmd['stop']:
-                    if key in client_proc_dict[client_socket.fileno()]:
-                        result = main_stop_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    if key in list_proc_data:
+                        result = main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     else:
                         result = "Can't stop process :" + key + ", it does not exist"
                 # Code to stop the job goes here
@@ -222,59 +208,21 @@ while running:
                 print(f"cmd_key for restart is {cmd_key}")
                 result = "restarting called..."
                 for key in cmd['restart']:
-                    if key in client_proc_dict[client_socket.fileno()]:
-                        result = main_restart_cli(client_proc_dict, client_socket.fileno(), key, running_table, mutex_proc_dict, thread_list)
+                    if key in list_proc_data:
+                        result = main_restart_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     else:
                         result = "Can't restart process :" + key + ", it does not exist"
                 # Code to stop the job goes here
-            elif cmd_key == 'shutdown':
-                print(f"cmd_key for shutdown is {cmd_key}")
-                # Code to stop the job goes here
-                print("Client quitting")
-                result = "shutdown"
-
-                #kill all process of all clients
-                mutex_proc_dict.acquire()
-                for my_client in clients:
-                    kill_quit(my_client.fileno(), client_proc_dict, running_table, mutex_proc_dict)
-                mutex_proc_dict.release()
-
-                mutex_proc_dict.acquire()
-                for my_client in clients:
-                    print("SHUTDOWN TO MY CLIENTS : ", my_client)
-                    my_client.send(result.encode())
-                mutex_proc_dict.release()
-
-                for my_client in clients:
-                    if my_client.fileno() in client_proc_dict:
-                        mutex_proc_dict.acquire()
-                        client_proc_dict.pop(my_client.fileno())
-                        mutex_proc_dict.release()
-                        print("Key in dictionary left ; ")
-                        mutex_proc_dict.acquire()
-                        print(client_proc_dict.keys())
-                        mutex_proc_dict.release()
-
-                
-                for my_client in clients:
-                    poll_object.unregister(my_client)
-                    clients.remove(my_client)
-
-                mutex_proc_dict.acquire()
-                if len(client_proc_dict) == 0:
-                    print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
-                    running = 0
-                    break
-                mutex_proc_dict.release()
-
             elif cmd_key == 'reload':
                 print("Reloading the configuration file...")
-                # Code to stop the job goes here
                 result = "Realoading the configuration file..."
+                new_list_proc_data = main_parse(init_path_conf, client_socket.fileno())
+                #main_reload_cli(new_list_proc_data, client_proc_dict, client_socket.fileno()])
+
             elif cmd_key == 'status':
                 result = "------SATUS------\n"
-                for key in client_proc_dict[client_socket.fileno()]:
-                    result += main_status_cli(client_proc_dict, client_socket.fileno(), key) + "\n"
+                for key in list_proc_data:
+                    result += main_status_cli(list_proc_data, key) + "\n"
                 # Code to stop the job goes here
             elif cmd_key == 'help':
                 print("Display helper...")
@@ -283,31 +231,40 @@ while running:
             elif cmd_key == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
                 result = "bye bitch"
-
-                #kill all its process
-                mutex_proc_dict.acquire()
-                kill_quit(client_socket.fileno(), client_proc_dict, running_table, mutex_proc_dict)
-                mutex_proc_dict.release()
-
-                client_socket.sendall(result.encode())
-                if fd in client_proc_dict:
-                    mutex_proc_dict.acquire()
-                    client_proc_dict.pop(client_socket.fileno())
-                    mutex_proc_dict.release()
-                    print("Key in dictionary left ; ")
-                    mutex_proc_dict.acquire()
-                    print(client_proc_dict.keys())
-                    mutex_proc_dict.release()
-
+                #Remove client from everything
+			#    client_socket.sendall(result.encode())
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)
+
+                #If last client
                 mutex_proc_dict.acquire()
-                if len(client_proc_dict) == 0:
-                    print("LEN OF CLIENT PROC DICT : ", len(client_proc_dict))
+                if len(clients) == 0:
+                    #Kill all processes
+                    kill_quit(list_proc_data, running_table, mutex_proc_dict)
+                    print("LEN OF CLIENTS : ", len(clients))
                     running = 0
-                    break
                 mutex_proc_dict.release()
-                #client_socket.close()
+            elif cmd_key == 'shutdown':
+                print("SHUTDOWN")
+                result = "shutdown"
+                print(f"Len of clients : {clients} ")
+                #kill all process 
+                #Clear clients
+                mutex_proc_dict.acquire()
+                while len(clients) != 0:
+                    poll_object.unregister(clients.pop())
+                    print(f"client left: {clients} ")
+                mutex_proc_dict.release()
+
+                print(f"Len of clients : {len(clients)} ")
+                mutex_proc_dict.acquire()
+                if len(clients) == 0:
+                    print("CLIENT LEN IS EMPTY")
+                    kill_quit(list_proc_data, running_table, mutex_proc_dict)
+                    print("LEN OF CLIENTS : ", len(clients))
+                    running = 0
+                mutex_proc_dict.release()
+
             else:
                 print("Invalid command.", data)
                 result = cmd[cmd_key] 
@@ -315,20 +272,17 @@ while running:
             # Send the result back to the client
             client_socket.sendall(result.encode())
 
-print("salut g fini")
+
+for client in clients:
+    poll_object.unregister(client)
+    client.close()
+server_socket.close()
+
 for thread in thread_list:
     print(f"here is my thread : {thread}")
     if thread.is_alive():
         # Get the thread identifier
         thread_id = thread.ident
-
         # Terminate the thread by raising SystemExit exception
         ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), ctypes.py_object(SystemExit))
     thread.join()
-
-print("YOOOOO")
-# Close the client connections and the server socket
-for client in clients:
-    poll_object.unregister(client)
-    client.close()
-server_socket.close()

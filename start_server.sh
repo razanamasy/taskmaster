@@ -1,9 +1,12 @@
 #!/bin/bash
 
-nohup python3 server/server.py &
+if [ $# -eq 0 ]; then
+    >&2 echo "you need to provide path file"
+    exit 1
+fi
+
+nohup python3 server/server.py $1 &
 
 sleep 2
 
-if [ $# -eq 1 ]; then
-	python3 client/cli.py $1
-fi
+python3 client/cli.py

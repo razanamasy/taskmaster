@@ -116,7 +116,7 @@ def set_attribute(process_dict, key, value):
     return (None)
 
 
-def parse_file(configs, client_socket):
+def parse_file(configs):
     process_dict = {}
     for glob, programs in configs.items():
         if isinstance(programs, dict) and glob == "programs":
@@ -133,7 +133,6 @@ def parse_file(configs, client_socket):
                         return (error)
                     else:
                         process_dict[str(proc_name)] = process_data(str(proc_name))
-                        setattr(process_dict[str(proc_name)], "client", client_socket)
                         for key, value in conf.items():
                             try:
                                 conf_list.index(key)
@@ -171,7 +170,7 @@ def parse_file(configs, client_socket):
     return (process_dict)
         
 
-def open_file(conf_file, client_socket):
+def open_file(conf_file):
     print("in open file : ", conf_file)
     try:
         with open(conf_file, 'r') as f:
@@ -193,11 +192,11 @@ def open_file(conf_file, client_socket):
         print("You don't have the permissions to read the file")
         error["error"] = "You don't have the permissions to read the file"
         return (error)
-    return parse_file(configs, client_socket)
+    return parse_file(configs)
 
 
-def main(conf_file, client_socket):
-    return open_file(conf_file, client_socket)
+def main(conf_file):
+    return open_file(conf_file)
 
 #if __name__ == "__main__":
 #    if len(sys.argv) != 3:

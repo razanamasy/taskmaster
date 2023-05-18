@@ -7,23 +7,23 @@ import threading
 from create_child_process import main as main_exec
 from threading import Thread, Lock
 
-def timer(client_proc_dict, fd, key, curr_pid, running_table, mutex_proc_dict):
-    process = client_proc_dict[fd][key]
+def timer(list_proc_data, key, curr_pid, running_table, mutex_proc_dict):
+    process = list_proc_data[key]
     time.sleep(process.stoptime)
     print("end of sleep stop")
-    if process.pid == curr_pid: #Si pas eu d'autre start ou restart entre temp
-        if process.backlog[0] == True: #Clairement impossible lol
+    if list_proc_data[key].pid == curr_pid: #Si pas eu d'autre start ou restart entre temp
+        if list_proc_data[key].backlog[0] == True: #Clairement impossible lol
             return
-        if process.running[0] == False: #On a reussit a kill
+        if list_proc_data[key].running[0] == False: #On a reussit a kill
             print("the process has stopped")
             return
         else:
             print("Stop failed Need to sigkill it")
-            process.quit_with_stop = True
+            list_proc_data[key].quit_with_stop = True
             os.kill(process.pid, signal.SIGKILL)
 
-def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list):
-    process = client_proc_dict[fd][key]
+def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
+    process = list_proc_data[key]
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
@@ -41,7 +41,7 @@ def main(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
     process.cli_history.append('stop')
     process.stopping = (True, time_stamp)
     process.quit_with_stop = True
-    stop_timer = threading.Thread(target=timer, args=(client_proc_dict, fd, key, copy.deepcopy(process.pid),running_table, mutex_proc_dict))
+    stop_timer = threading.Thread(target=timer, args=(list_proc_data, key, copy.deepcopy(process.pid),running_table, mutex_proc_dict))
 
     if process.stopsignal == "TERM":
         print("STOP WITH SIGTERM")

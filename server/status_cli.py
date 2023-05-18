@@ -1,8 +1,9 @@
 import calendar
 import time
 
-def main(client_proc_dict, fd, key):
-    process = client_proc_dict[fd][key]
+def main(list_proc_data, key):
+    process = list_proc_data[key]
+    print(f"my process status is : {process}")
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 

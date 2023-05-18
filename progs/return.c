@@ -4,7 +4,7 @@
 int main ()
 {
 	printf("logged\n");
-//	sleep(11);
+//	sleep(2);
 	printf("RETURN\n");
 	return 0;
 }
