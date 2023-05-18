@@ -18,7 +18,8 @@ class process_data:
         self.env = None
         self.failure = (False, 0) #real state 
         self.running = (False, 0) #Real state
-        self.backlog = (False, 0) # Real state
+        self.startprocess = (False, 0) # Real state
+        self.backoff_starting = (False, 0) # Real state True == starting False == backoff
         self.fatal = (False, 0) # Real state
         self.quitting = False #utils flag
         self.stopping = (False, 0) #A real state in process stopping AND used as flag to avoid multiple stop call

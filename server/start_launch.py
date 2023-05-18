@@ -19,7 +19,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
         current_GMT = time.gmtime()
         time_stamp = calendar.timegm(current_GMT)
 
-        if len(clients) != 0:
+        if len(clients) != 0: #Check also if has not been stopped to avoid revival process
             if list_proc_data[key].pid in running_table:
                 list_proc_data[key].running = (True, time_stamp)
                 list_proc_data[key].failure = (False, time_stamp)
@@ -30,6 +30,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                 print("Pid not in process_table, need to retry for :", list_proc_data[key].name)
                 list_proc_data[key].backlog = (True, time_stamp)
                 list_proc_data[key].failure = (True, time_stamp)
+                #backoff_starting a true
                 if my_retries == 0:
                     list_proc_data[key].fatal = (True, time_stamp)
                 newpid = main_exec(list_proc_data[key])
@@ -53,6 +54,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
 def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
     print("MAIN STARTING CALLED")
     #Fork premiere execution
+    #init backoff_starting to true (starting) + timestamp
     newpid = main_exec(list_proc_data[key])
 
     current_GMT = time.gmtime()

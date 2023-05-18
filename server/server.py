@@ -96,6 +96,8 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                         running_table[pid].running = (False, time_stamp)
                         running_table[pid].stopping = (False, time_stamp) 
                         running_table[pid].stopped = (True, time_stamp) 
+                        
+                        #Check if it has stopped if yes : stopped else check timestamp then backoff if it fits in startsecs backoff_starting to false 
                         restart = False
                         print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
                         if running_table[pid].quitting == False and running_table[pid].quit_with_stop == False:
