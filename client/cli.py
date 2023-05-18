@@ -17,8 +17,13 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def signal_handler(signal, frame):
     command = "quit"
-    client_socket.sendall(command.encode())
-    result = client_socket.recv(1024).decode()
+    try:
+        client_socket.sendall(command.encode())
+        result = client_socket.recv(1024).decode()
+        if result:
+            print(result)
+    except:
+        print("Sorry server is closed")
     client_socket.close()
     exit(0)
 
@@ -71,7 +76,8 @@ def main():
                     result = client_socket.recv(1024).decode()
 
                     # Print the result to the console
-                    print(result)
+                    if result:
+                        print(result)
                 except:
                     print("Sorry server is closed")
                     command = 'quit'
