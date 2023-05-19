@@ -2,10 +2,10 @@ programs:
   while:
     cmd: "/Users/hinaraza/taskmaster/progs/while"
     starttime: 10
-    startretries: 3
+    startretries: 6
     numprocs: 1
     autostart: True 
-    autorestart: False 
+    autorestart: True 
     starttime: 10
     stoptime: 10
     stopsignal: "TERM"

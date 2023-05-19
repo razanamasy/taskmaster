@@ -97,14 +97,8 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                         running_table[pid].stopping = (False, time_stamp) 
                         running_table[pid].stopped = (True, time_stamp) 
                         
-                        #Check if it has stopped if yes : stopped else check timestamp then backoff if it fits in startsecs backoff_starting to false 
-                        if running_table[pid].backlog[0] == True:
-                            delay = time_stamp - process.backoff_starting[1]
-                            if delay < process.starttime:
-                                process.backoff_starting = (False, time_stamp)
-
                         restart = False
-                        print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
+                      #  print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
                         if running_table[pid].quitting == False and running_table[pid].quit_with_stop == False:
                             exit_match = is_exit_matching(status, running_table[pid])
                             if running_table[pid].autorestart == True:
@@ -227,9 +221,9 @@ while running:
                 #main_reload_cli(new_list_proc_data, client_proc_dict, client_socket.fileno()])
 
             elif cmd_key == 'status':
-                result = "------SATUS------\n"
+                result = "------STATUS------\n"
                 for key in list_proc_data:
-                    result += main_status_cli(list_proc_data, key) + "\n"
+                    result += main_status_cli(list_proc_data, key, mutex_proc_dict) + "\n"
                 # Code to stop the job goes here
             elif cmd_key == 'help':
                 print("Display helper...")
