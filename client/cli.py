@@ -15,8 +15,18 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def signal_handler(signal, frame):
     command = "quit"
-    client_socket.sendall(command.encode())
-    result = client_socket.recv(1024).decode()
+    try:
+        client_socket.sendall(command.encode())
+        result = ''
+        while True:
+            chunk = client_socket.recv(1024).decode()
+            result += chunk
+            if '\x03' in chunk:
+                break
+        if result:
+            print(result)
+    except:
+        print("Sorry server is closed")
     client_socket.close()
     exit(0)
 
@@ -57,16 +67,21 @@ def main():
         # Update command history
         command_history.append(command)
         history_index = -1
-    
+
         try:
             # Send the command to the server
             client_socket.sendall(command.encode())
 
+            result = ''
             # Receive the result from the server
-            result = client_socket.recv(1024).decode()
-
+            while True:
+                chunk = client_socket.recv(1024).decode()
+                result += chunk
+                if '\x03' in chunk:
+                    break
             # Print the result to the console
-            print(result)
+            if result:
+                print(result)
         except:
             print("Sorry server is closed")
             command = 'quit'
@@ -74,6 +89,7 @@ def main():
         # Exit the loop if the user enters the quit command
         if command == 'quit':
             break
+
     # Close the socket connection
     client_socket.close()
     return ()

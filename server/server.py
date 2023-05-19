@@ -239,7 +239,7 @@ while running:
                 result = str(cmd["help"]) 
             elif cmd_key == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
-                result = "bye bitch"
+                result = "\x03"
                 #Remove client from everything
             #    client_socket.sendall(result.encode())
                 poll_object.unregister(client_socket)
@@ -279,6 +279,7 @@ while running:
                 result = cmd[cmd_key] 
 
             # Send the result back to the client
+            result += '\x03'
             client_socket.sendall(result.encode())
 
 
