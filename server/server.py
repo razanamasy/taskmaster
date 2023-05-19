@@ -95,7 +95,15 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                         running_table[pid].status_exit.append(status)
                         running_table[pid].running = (False, time_stamp)
                         running_table[pid].stopping = (False, time_stamp) 
-                        running_table[pid].stopped = (True, time_stamp) 
+
+                        #STOPPED OU EXIT ?
+                        if running_table[pid].quit_with_stop == True:
+                            running_table[pid].stopped = (True, time_stamp)
+                            running_table[pid].backlog = (False, time_stamp)
+                            running_table[pid].exited = (False, time_stamp)
+                        else:
+                            running_table[pid].stopped = (False, time_stamp)
+                            running_table[pid].exited = (True, time_stamp)
                         
                         restart = False
                       #  print("INFO OF MY PROCESS THAT HAS BEEN KILLED", running_table[pid])
@@ -233,7 +241,7 @@ while running:
                 print("Client quitting")
                 result = "bye bitch"
                 #Remove client from everything
-			#    client_socket.sendall(result.encode())
+            #    client_socket.sendall(result.encode())
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)
 

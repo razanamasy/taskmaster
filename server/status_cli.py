@@ -14,16 +14,20 @@ def main(list_proc_data, key, mutex_proc_dict):
             return "Process " + key + " :STARTING since :" + str(delay) + " seconds"
         elif process.backoff_starting[0] == False:
             return "Process " + key + " :BACKOFF since :" + str(delay) + " seconds"
-    if process.fatal[0] == True:
+    elif process.fatal[0] == True:
         delay = time_stamp - process.fatal[1]
         return "Process " + key + " :FATAL since:" + str(delay) + " seconds"
-    if process.stopping[0] == True:
+    elif process.stopping[0] == True:
         delay = time_stamp - process.stopping[1]
         return "Process " + key + " :STOPPING since:" + str(delay) + " seconds"
-    if process.running[0] == True:
-        delay = time_stamp - process.running[1]
-        return "Process " + key + " :RUNNING since:" + str(delay) + " seconds"
-    if process.stopped[0] == True:
+    elif process.stopped[0] == True:
         delay = time_stamp - process.stopped[1]
         return "Process " + key + " :STOPPED since:" + str(delay) + " seconds"
-    print("NoNe case here fuck off")
+    elif process.exited[0] == True:
+        delay = time_stamp - process.stopped[1]
+        return "Process " + key + " :EXITED since:" + str(delay) + " seconds"
+    elif process.running[0] == True:
+        delay = time_stamp - process.running[1]
+        return "Process " + key + " :RUNNING since:" + str(delay) + " seconds"
+    else:
+        return "Process " + key + " :UNKNOWN STATE" 

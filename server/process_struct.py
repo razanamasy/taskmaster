@@ -24,6 +24,7 @@ class process_data:
         self.quitting = False #utils flag
         self.stopping = (False, 0) #A real state in process stopping AND used as flag to avoid multiple stop call
         self.stopped = (False, 0) #A real state all process detected by wait need it
+        self.exited = (False, 0) #A real state all process detected by wait need it
         self.quit_with_stop = False #a utils flag to avoid autorestart
         self.logs = []
         self.cli_history = []

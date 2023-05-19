@@ -30,9 +30,12 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     if process.stopping[0] == True:
         print("Already in a stopping process")
         return "Process : " + key + " already in a stopping process"
-    if process.backlog[0] == True:
-        print("Already in a start process")
-        return "Process : " + key + " already in a starting process"
+    if process.backlog[0] == True and process.backoff_starting[0] == False:
+        print("Old state : BACKLOG, stopping the start process")
+        process.quit_with_stop = True
+        process.stopped = (True, time_stamp)
+        return "Old state of :" + key + " BACKLOG, stopping the start process"
+#        return "Process : " + key + " already in a starting process"
     if process.running[0] == False:
         print("Already stopped")
         return "Process : " + key + " stopped"
