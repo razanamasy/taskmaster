@@ -36,7 +36,7 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         process.stopped = (True, time_stamp)
         return "Old state of :" + key + " BACKLOG, stopping the start process"
 #        return "Process : " + key + " already in a starting process"
-    if process.running[0] == False:
+    if process.stopped[0] == True or process.exited[0]:
         print("Already stopped")
         return "Process : " + key + " stopped"
 
