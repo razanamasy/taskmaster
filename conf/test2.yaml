@@ -1,6 +1,6 @@
 programs:
   while:
-    cmd: "/home/hrazanam/taskmaster/progs/while"
+    cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 10
     startretries: 6
     numprocs: 1

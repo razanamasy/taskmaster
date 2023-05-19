@@ -17,7 +17,6 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
     mutex_proc_dict.release()
     while time_stamp - last_starting <= list_proc_data[key].starttime and list_proc_data[key].stopped[0] == False:
         if len(clients) != 0 and list_proc_data[key].stopped[0] == False: #Check also if has not been stopped to avoid revival process
-
             mutex_proc_dict.acquire()
             if list_proc_data[key].fatal[0] == True:
                 break

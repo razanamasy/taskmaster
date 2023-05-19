@@ -9,7 +9,7 @@ def main(list_proc_data, key, mutex_proc_dict):
 
     if process.backlog[0] == True: #Il faudra preciser avec failure plus tard
         print(f"B_S ===== {process.backoff_starting}")
-        delay = time_stamp - process.backlog[1]
+        delay = time_stamp - process.backoff_starting[1]
         if process.backoff_starting[0] == True:
             return "Process " + key + " :STARTING since :" + str(delay) + " seconds"
         elif process.backoff_starting[0] == False:
