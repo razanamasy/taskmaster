@@ -2,6 +2,7 @@ import socket
 import calendar
 import time
 import sys
+import signal 
 import os
 import select
 import copy
@@ -11,6 +12,7 @@ from restart_cli import main as main_restart_cli
 from stop_cli import main as main_stop_cli
 from start_cli import main as main_start_cli
 from status_cli import main as main_status_cli
+from restart_cli import main as main_reload_cli
 from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
@@ -46,6 +48,8 @@ thread_list = []
 init_path_conf = sys.argv[1]
 #mutex
 mutex_proc_dict = Lock()
+
+signal.signal(signal.SIGHUP, main_reload_cli)
 
 def is_running():
     try:
@@ -226,12 +230,14 @@ while running:
                 print("Reloading the configuration file...")
                 result = "Realoading the configuration file..."
                 new_list_proc_data = main_parse(init_path_conf, client_socket.fileno())
-                #main_reload_cli(new_list_proc_data, client_proc_dict, client_socket.fileno()])
+             #   handle_sighup(signal.SIGHUP, None)
+                #main_reload_cli(new_list_proc_data, list_proc_data, client_socket.fileno()])
 
             elif cmd_key == 'status':
                 result = "------STATUS------\n"
                 for key in list_proc_data:
-                    result += main_status_cli(list_proc_data, key, mutex_proc_dict) + "\n"
+                    curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
+                    result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + curr_status[1] + " seconds "  + "\n"
                 # Code to stop the job goes here
             elif cmd_key == 'help':
                 print("Display helper...")

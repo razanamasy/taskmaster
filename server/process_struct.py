@@ -16,7 +16,7 @@ class process_data:
         self.stdout = "/etc/taskmaster/stdout/" + name
         self.stderr = "/etc/taskmaster/stderr/" + name
         self.env = None
-        self.failure = (False, 0) #real state 
+        self.failure = (False, 0) #real state useless 
         self.running = (False, 0) #Real state
         self.backlog = (False, 0) # Real state
         self.backoff_starting = (False, 0) # Real state True == starting False == backoff

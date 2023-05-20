@@ -1,12 +1,8 @@
 from start_launch import main as main_starting
+from status_cli import main as status
+from stop_cli import main as stop
 
-def compare_and_replace(new_process, old_process):
-	to_reload = False
-
-
-	
-
-def manage_process(new_process, old_process, key):
+def manage_process(new_process, old_process):
 	to_reload = False
 	if new_process.numprocs != old_process.numprocs:
 		old_process.numprocs = new_process.numprocs
@@ -34,20 +30,52 @@ def manage_process(new_process, old_process, key):
 		old_process.stderr = new_process.stderr
 	if new_process.env != old_process.env:
 		old_process.env = new_process.env
+	if new_process.env != old_process.env:
+		old_process.env = new_process.env
+
+
 	if new_process.cmd != old_process.cmd:
 		old_process.cmd = new_process.cmd
 		to_reload = True
+
+    if to_reload:
+        if new_process.running != old_process.running:
+            old_process.running = new_process.running
+        if new_process.backlog != old_process.backlog:
+            old_process.backlog = new_process.backlog
+        if new_process.backoff_starting != old_process.backoff_starting:
+            old_process.backoff_starting = new_process.backoff_starting
+        if new_process.fatal != old_process.fatal:
+            old_process.fatal = new_process.fatal
+        if new_process.quitting != old_process.quitting:
+            old_process.quitting = new_process.quitting
+        if new_process.stopping != old_process.stopping:
+            old_process.stopping = new_process.stopping
+        if new_process.stopped != old_process.stopped:
+            old_process.stopped = new_process.stopped
+        if new_process.exited != old_process.exited:
+            old_process.exited = new_process.exited
+        if new_process.quit_with_stop != old_process.quit_with_stop:
+            old_process.quit_with_stop = new_process.quit_with_stop
+
 	return to_reload
 
-def main(new_list, client_proc_dict, fd):
-	old_list = client_proc_dict[fd]
+def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list):
+	old_list = list_proc_data
 	#check the changes in new list
 	for process in new_list:
 		if process in old_list:
-			if manage_process(new_list[process], old_list, process) == True:
-				#Need to check the status of process before : 
-				#Backlog wait 
-				#Stopping ???
-				#stopped ? depend on autostart we launch it
-                main_starting(client_proc_dict, fd, key, running_table, mutex_proc_dict, thread_list)
+			if manage_process(new_list[process], old_list[process]) == True:
+				stop(list_proc_data, process, clients, running_table, mutex_proc_dict, thread_list)
+                main_starting(list_proc_data, process, clients, running_table, mutex_proc_dict)
 				#RELOAD HERE
+
+    to_delete = []
+	for process in old_list:
+		if process not in new_list:
+            to.delete.append(process)
+
+    for process in to_delete
+        stop(list_proc_data, process, clients, running_table, mutex_proc_dict, thread_list)
+        running_table.pop(list_proc_data[process].pid)
+        list_proc_data.pop(process)
