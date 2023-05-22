@@ -27,6 +27,8 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
+    print(f"status of my shit {list_proc_data[key]}")
+
     if process.stopping[0] == True:
         print("Already in a stopping process")
         return "Process : " + key + " already in a stopping process"
@@ -36,9 +38,9 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         process.stopped = (True, time_stamp)
         return "Old state of :" + key + " BACKLOG, stopping the start process"
 #        return "Process : " + key + " already in a starting process"
-    if process.stopped[0] == True or process.exited[0]:
-        print("Already stopped")
-        return "Process : " + key + " stopped"
+    if process.stopped[0] == True:
+        print(f"Already stopped WHYYYYYYYYYYYYYYYYY ?{list_proc_data[key]}")
+        return "ALREADY STOPPED Process : " + key + " stopped"
 
     print(f"Really stopping {process.name}")
     process.cli_history.append('stop')
