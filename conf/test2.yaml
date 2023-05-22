@@ -34,16 +34,3 @@ programs:
     stoptime: 10
     stopsignal: "TERM"
     exitcodes: [0]
-
-  command:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 10
-    startretries: 6
-    numprocs: 1
-    autostart: True 
-    autorestart: False 
-    starttime: 50
-    stoptime: 10
-    stopsignal: "TERM"
-    exitcodes: [0]
-

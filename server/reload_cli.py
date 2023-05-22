@@ -102,13 +102,13 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
             print(f"i'm starting this shit because it did not exist ! {process_key}")
             main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
 
-#    to_delete = []
-#    for process_key in old_list:
-#        if process_key not in new_list:
-#            to_delete.append(process_key)
+    to_delete = []
+    for process_key in old_list:
+        if process_key not in new_list:
+            to_delete.append(process_key)
 
-#    for process_key in to_delete:
-#        stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
+    for process_key in to_delete:
+        stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
 	#    if list_proc_data[process_key].pid in running_table:
 	#        running_table.pop(list_proc_data[process_key].pid)
-#        list_proc_data.pop(process_key)
+        list_proc_data.pop(process_key)
