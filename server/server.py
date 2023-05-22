@@ -24,6 +24,10 @@ import ctypes
 HOST = 'localhost'
 PORT = 12345
 
+if os.getuid() != 0:
+    print("Error: you should be root to start a daemon Taskmaster server")
+    exit(1)
+
 #SOCKET INITALISATION
 # Create a socket object and bind it to the host and port
 
@@ -44,8 +48,12 @@ first = 0
 switch_monitor = [0]
 #Thread tables
 thread_list = []
-#Initil path conf in case of reload
-init_path_conf = sys.argv[1]
+if len(sys.argv) == 2:
+    #Initil path conf in case of reload
+    init_path_conf = sys.argv[1]
+else:
+    print("Error: wrong number of arguments, you should provide the configuration file")
+    exit(1)
 #mutex
 mutex_proc_dict = Lock()
 
@@ -229,7 +237,7 @@ while running:
             elif cmd_key == 'reload':
                 print("Reloading the configuration file...")
                 result = "Realoading the configuration file..."
-                new_list_proc_data = main_parse(init_path_conf, client_socket.fileno())
+                new_list_proc_data = main_parse(init_path_conf)
              #   handle_sighup(signal.SIGHUP, None)
                 #main_reload_cli(new_list_proc_data, list_proc_data, client_socket.fileno()])
 
@@ -245,7 +253,7 @@ while running:
                 result = str(cmd["help"]) 
             elif cmd_key == 'quit': #TOUT LE PROCESS A THREAD si ca met du temp a kill ?
                 print("Client quitting")
-                result = "\x03"
+                result = None
                 #Remove client from everything
             #    client_socket.sendall(result.encode())
                 poll_object.unregister(client_socket)
@@ -284,10 +292,12 @@ while running:
                 print("Invalid command.", data)
                 result = cmd[cmd_key] 
 
-            # Send the result back to the client
-            result += '\x03'
-            client_socket.sendall(result.encode())
-
+            if result != None:
+                # Send the result back to the client
+                result += '\x03'
+                client_socket.sendall(result.encode())
+            else:
+                pass
 
 for client in clients:
     poll_object.unregister(client)

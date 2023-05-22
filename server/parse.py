@@ -159,6 +159,21 @@ def parse_file(configs):
                         print("stdout and stderr should be different")
                         error["error"] = "stdout and stderr should be different"
                         return (error)
+                    try:
+                        os.makedirs(os.path.dirname(process_dict[str(proc_name)].stdout), exist_ok=True)
+                        os.makedirs(os.path.dirname(process_dict[str(proc_name)].stderr), exist_ok=True)
+                        open(process_dict[str(proc_name)].stdout, "x")
+                        open(process_dict[str(proc_name)].stderr, "x")
+                    except Exception as e:
+                        pass
+                    open(process_dict[str(proc_name)].stdout, "w")
+                    os.chmod(process_dict[str(proc_name)].stdout, int(calculate_file_rights(process_dict[str(proc_name)].umask), 8))    
+                    if os.access(process_dict[str(proc_name)].stdout, os.W_OK):
+                        open(process_dict[str(proc_name)].stderr, "w")
+                        os.chmod(process_dict[str(proc_name)].stderr, int(calculate_file_rights(process_dict[str(proc_name)].umask), 8))
+                    else:
+                        error["error"] = "stdout and stderr file write rights issues"
+                        return (error)
                 else:
                     print("Wrong process section or process section is NULL")
                     error["error"] = "Wrong process section or process section is NULL"

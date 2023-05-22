@@ -17,22 +17,15 @@ def signal_handler(signal, frame):
     command = "quit"
     try:
         client_socket.sendall(command.encode())
-        result = ''
-        while True:
-            chunk = client_socket.recv(1024).decode()
-            result += chunk
-            if '\x03' in chunk:
-                break
-        if result:
-            print(result)
     except:
-        print("Sorry server is closed")
+        pass
     client_socket.close()
     exit(0)
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGQUIT, signal_handler)
+    signal.signal(signal.SIGALRM, signal_handler)
     history_index = -1
     flag = True
     try:
@@ -41,7 +34,6 @@ def main():
         flag = False
         print("No available Takmaster server")
         return ()
-
 
     while True:
         # Prompt the user for a command
@@ -72,16 +64,19 @@ def main():
             # Send the command to the server
             client_socket.sendall(command.encode())
 
-            result = ''
-            # Receive the result from the server
-            while True:
-                chunk = client_socket.recv(1024).decode()
-                result += chunk
-                if '\x03' in chunk:
-                    break
-            # Print the result to the console
-            if result:
-                print(result)
+            signal.alarm(5)
+            if command != 'quit':
+                result = ''
+                # Receive the result from the server
+                while True:
+                    chunk = client_socket.recv(1024).decode()
+                    result += chunk
+                    if '\x03' in chunk:
+                        break
+                # Print the result to the console
+                if result:
+                    print(result)
+            signal.alarm(0)
         except:
             print("Sorry server is closed")
             command = 'quit'
