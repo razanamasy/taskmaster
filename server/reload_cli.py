@@ -1,6 +1,7 @@
 from start_launch import main as main_starting
 from status_cli import main as status
 from stop_cli import main as stop
+import copy
 
 def manage_process_key(new_process_key, old_process_key):
     to_reload = False
@@ -80,28 +81,34 @@ def manage_process_key(new_process_key, old_process_key):
 def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list):
     print(f"List process when calling reload {list_proc_data}")
     old_list = list_proc_data
+    to_add = []
     #check the changes in new list
     for process_key in new_list:
         if process_key in old_list:
             if manage_process_key(new_list[process_key], old_list[process_key]) == True:
                 print("need to reload stop it")
-                stop(list_proc_data, process_, clients, running_table, mutex_proc_dict, thread_list)
+                stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
                 if list_proc_data[process_key].autostart == True:
                     print("If autostart, start it")
                     print(f"i'm restarting this shit because changes {process_key}")
-                    main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict)
+                    main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
                 #RELOAD HERE
         else:
+            to_add.append(process_key)
+
+    for process_key in to_add:
+        list_proc_data[process_key] = copy.deepcopy(new_list[process_key])
+        if list_proc_data[process_key].autostart == True:
             print(f"i'm starting this shit because it did not exist ! {process_key}")
-            if list_proc_data[process_key].autostart == True:
-                main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict)
+            main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
 
 #    to_delete = []
 #    for process_key in old_list:
 #        if process_key not in new_list:
 #            to_delete.append(process_key)
 
-#    for process_key_key in to_delete:
-#        stop(list_proc_data, process_key_key, clients, running_table, mutex_proc_dict, thread_list)
-#        running_table.pop(list_proc_data[process_key_key].pid)
-#        list_proc_data.pop(process_key_key)
+#    for process_key in to_delete:
+#        stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
+	#    if list_proc_data[process_key].pid in running_table:
+	#        running_table.pop(list_proc_data[process_key].pid)
+#        list_proc_data.pop(process_key)

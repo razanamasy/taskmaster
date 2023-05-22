@@ -38,7 +38,7 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
             process.stopping = (False, time_stamp)
             process.stopped = (False, time_stamp)
             process.quit_with_stop = False
-            main_starting(list_roc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+            main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
             return "Starting " + key
         else:
             print("need to restart it didn't exit gracefully or is fatal")

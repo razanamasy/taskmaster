@@ -11,6 +11,8 @@ def timer(list_proc_data, key, curr_pid, running_table, mutex_proc_dict):
     process = list_proc_data[key]
     time.sleep(process.stoptime)
     print("end of sleep stop")
+    if key not in list_proc_data:
+        return
     if list_proc_data[key].pid == curr_pid: #Si pas eu d'autre start ou restart entre temp
         if list_proc_data[key].backlog[0] == True: #Clairement impossible lol
             return
@@ -33,10 +35,10 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         print("Already in a stopping process")
         return "Process : " + key + " already in a stopping process"
     if process.backlog[0] == True and process.backoff_starting[0] == False:
-        print("Old state : BACKLOG, stopping the start process")
+        print("Old state : BACKOFF, stopping the start process")
         process.quit_with_stop = True
         process.stopped = (True, time_stamp)
-        return "Old state of :" + key + " BACKLOG, stopping the start process"
+        return "Old state of :" + key + " BACKOFF, stopping the start process"
 #        return "Process : " + key + " already in a starting process"
     if process.stopped[0] == True:
         print(f"Already stopped WHYYYYYYYYYYYYYYYYY ?{list_proc_data[key]}")
@@ -48,22 +50,25 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     process.quit_with_stop = True
     stop_timer = threading.Thread(target=timer, args=(list_proc_data, key, copy.deepcopy(process.pid),running_table, mutex_proc_dict))
 
-    if process.stopsignal == "TERM":
-        print("STOP WITH SIGTERM")
-        os.kill(process.pid, signal.SIGTERM)
-    elif process.stopsignal == "HUP":
-        os.kill(process.pid, signal.SIGHUP)
-    elif process.stopsignal == "INT":
-        os.kill(process.pid, signal.SIGINT)
-    elif process.stopsignal == "QUIT":
-        os.kill(process.pid, signal.SIGQUIT)
-    elif process.stopsignal == "KILL":
-        print("STOP WITH SIGTERM")
-        os.kill(process.pid, signal.SIGKILL)
-    elif process.stopsignal == "USR1":
-        os.kill(process.pid, signal.SIGUSR1)
-    elif process.stopsignal == "USR2":
-        os.kill(process.pid, signal.SIGUSR2)
-    thread_list.append(stop_timer)
-    stop_timer.start()
-    return "Stopping process : " + key
+    try:
+        if process.stopsignal == "TERM":
+            print(f"STOP WITH SIGTERM this pid : {process.pid}")
+            os.kill(process.pid, signal.SIGTERM)
+        elif process.stopsignal == "HUP":
+            os.kill(process.pid, signal.SIGHUP)
+        elif process.stopsignal == "INT":
+            os.kill(process.pid, signal.SIGINT)
+        elif process.stopsignal == "QUIT":
+            os.kill(process.pid, signal.SIGQUIT)
+        elif process.stopsignal == "KILL":
+            print("STOP WITH SIGTERM")
+            os.kill(process.pid, signal.SIGKILL)
+        elif process.stopsignal == "USR1":
+            os.kill(process.pid, signal.SIGUSR1)
+        elif process.stopsignal == "USR2":
+            os.kill(process.pid, signal.SIGUSR2)
+        thread_list.append(stop_timer)
+        stop_timer.start()
+        return "Stopping process : " + key
+    except OSError as e:
+        return "key :" + str(e)

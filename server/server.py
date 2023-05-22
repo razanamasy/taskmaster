@@ -83,7 +83,7 @@ def is_exit_matching(status, process_data):
 def wait_for_child(running_table, list_proc_data, clients, thread_list):
     while True:
         if len(clients) == 0:
-            print("LEN OF CLIENTS : ", len(clients))
+            print("LEN OF CLIENTS MONITOR : ", len(clients))
             break
         if bool(running_table):
             try:
@@ -129,6 +129,7 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                 if e.errno == errno.ECHILD:
                     print("No child processes to wait for...")
                 else:
+                    print("WAITPID HAS CRASHED I DUNNO WHY IN MONITOR")
                     raise e
     print("MONITOR HAS QUIT")
 
@@ -254,13 +255,13 @@ while running:
                 clients.remove(client_socket)
 
                 #If last client
-                mutex_proc_dict.acquire()
+		   #     mutex_proc_dict.acquire()
                 if len(clients) == 0:
                     #Kill all processes
                     kill_quit(list_proc_data, running_table, mutex_proc_dict)
                     print("LEN OF CLIENTS : ", len(clients))
                     running = 0
-                mutex_proc_dict.release()
+		   #     mutex_proc_dict.release()
             elif cmd_key == 'shutdown':
                 print("SHUTDOWN")
                 result = "shutdown"
@@ -274,13 +275,13 @@ while running:
                 mutex_proc_dict.release()
 
                 print(f"Len of clients : {len(clients)} ")
-                mutex_proc_dict.acquire()
+			 #   mutex_proc_dict.acquire()
                 if len(clients) == 0:
                     print("CLIENT LEN IS EMPTY")
                     kill_quit(list_proc_data, running_table, mutex_proc_dict)
                     print("LEN OF CLIENTS : ", len(clients))
                     running = 0
-                mutex_proc_dict.release()
+			 #   mutex_proc_dict.release()
 
             else:
                 print("Invalid command.", data)
@@ -290,17 +291,13 @@ while running:
             result += '\x03'
             client_socket.sendall(result.encode())
 
+for thread in thread_list:
+    print(f"here is my thread : {thread}")
+#    if thread.is_alive():
+#        return
+    thread.join()
 
 for client in clients:
     poll_object.unregister(client)
     client.close()
 server_socket.close()
-
-for thread in thread_list:
-    print(f"here is my thread : {thread}")
-    if thread.is_alive():
-        # Get the thread identifier
-        thread_id = thread.ident
-        # Terminate the thread by raising SystemExit exception
-        ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), ctypes.py_object(SystemExit))
-    thread.join()
