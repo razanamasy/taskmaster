@@ -33,13 +33,13 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         return "Initial starting " + key
     else:
         if is_exit_matching(process.status_exit[-1], process) == 1 and process.fatal[0] == False: #means it DID exit gracefully 
-            print("Start work it exited gracefully")
-            process.cli_history.append('start')
-            process.stopping = (False, time_stamp)
-            process.stopped = (False, time_stamp)
-            process.quit_with_stop = False
-            main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-            return "Starting " + key
+            res = "Starting " + key
         else:
-            print("need to restart it didn't exit gracefully or is fatal")
-            return "Need to restart process: " + key + ", because it didn't exit gracefully or is fatal"
+            res = "Starting : " + key + " (didn't exit with an uxpected exit code or was fatal)"
+        process.cli_history.append('start')
+        process.stopping = (False, time_stamp)
+        process.stopped = (False, time_stamp)
+        process.quit_with_stop = False
+        main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+        return res 
+

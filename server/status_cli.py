@@ -3,7 +3,7 @@ import time
 
 def main(list_proc_data, key, mutex_proc_dict):
     process = list_proc_data[key]
-    print(f"MY PROCESS STATUS IS : {process}")
+  #  print(f"MY PROCESS STATUS IS : {process}")
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 

@@ -12,7 +12,7 @@ from restart_cli import main as main_restart_cli
 from stop_cli import main as main_stop_cli
 from start_cli import main as main_start_cli
 from status_cli import main as main_status_cli
-from restart_cli import main as main_reload_cli
+from reload_cli import main as main_reload_cli
 from parse import main as main_parse
 from kill_quit import main as kill_quit
 import threading
@@ -57,7 +57,7 @@ else:
 #mutex
 mutex_proc_dict = Lock()
 
-signal.signal(signal.SIGHUP, main_reload_cli)
+#signal.signal(signal.SIGHUP, main_reload_cli)
 
 def is_running():
     try:
@@ -91,7 +91,7 @@ def is_exit_matching(status, process_data):
 def wait_for_child(running_table, list_proc_data, clients, thread_list):
     while True:
         if len(clients) == 0:
-            print("LEN OF CLIENTS : ", len(clients))
+            print("LEN OF CLIENTS MONITOR : ", len(clients))
             break
         if bool(running_table):
             try:
@@ -137,6 +137,7 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                 if e.errno == errno.ECHILD:
                     print("No child processes to wait for...")
                 else:
+                    print("WAITPID HAS CRASHED I DUNNO WHY IN MONITOR")
                     raise e
     print("MONITOR HAS QUIT")
 
@@ -151,6 +152,7 @@ def launching(running, list_proc_data, clients, running_table, first, thread_lis
             while i < list_proc_data[key].numprocs:
                 temp_dico[key + "-" + str(i)] = copy.deepcopy(list_proc_data[key])
                 temp_dico[key + "-" + str(i)].name = key + "-" + str(i)
+                temp_dico[key + "-" + str(i)].numprocs = 1
                 i += 1
     #UPDATE PROCES TO RUN
     list_proc_data.update(temp_dico)
@@ -235,17 +237,19 @@ while running:
                         result = "Can't restart process :" + key + ", it does not exist"
                 # Code to stop the job goes here
             elif cmd_key == 'reload':
-                print("Reloading the configuration file...")
-                result = "Realoading the configuration file..."
-                new_list_proc_data = main_parse(init_path_conf)
+                print("Reloading the configuration file..." + init_path_conf)
+                result = "Reloading the configuration file : " + init_path_conf 
+                new_list = main_parse(init_path_conf)
+                print(f"New list is : {new_list}")
+                print(f"Old list is : {list_proc_data}")
              #   handle_sighup(signal.SIGHUP, None)
-                #main_reload_cli(new_list_proc_data, list_proc_data, client_socket.fileno()])
+                main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
 
             elif cmd_key == 'status':
                 result = "------STATUS------\n"
                 for key in list_proc_data:
                     curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
-                    result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + curr_status[1] + " seconds "  + "\n"
+                    result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
                 # Code to stop the job goes here
             elif cmd_key == 'help':
                 print("Display helper...")
@@ -260,13 +264,13 @@ while running:
                 clients.remove(client_socket)
 
                 #If last client
-                mutex_proc_dict.acquire()
+		   #     mutex_proc_dict.acquire()
                 if len(clients) == 0:
                     #Kill all processes
                     kill_quit(list_proc_data, running_table, mutex_proc_dict)
                     print("LEN OF CLIENTS : ", len(clients))
                     running = 0
-                mutex_proc_dict.release()
+		   #     mutex_proc_dict.release()
             elif cmd_key == 'shutdown':
                 print("SHUTDOWN")
                 result = "shutdown"
@@ -280,13 +284,13 @@ while running:
                 mutex_proc_dict.release()
 
                 print(f"Len of clients : {len(clients)} ")
-                mutex_proc_dict.acquire()
+			 #   mutex_proc_dict.acquire()
                 if len(clients) == 0:
                     print("CLIENT LEN IS EMPTY")
                     kill_quit(list_proc_data, running_table, mutex_proc_dict)
                     print("LEN OF CLIENTS : ", len(clients))
                     running = 0
-                mutex_proc_dict.release()
+			 #   mutex_proc_dict.release()
 
             else:
                 print("Invalid command.", data)
@@ -299,16 +303,13 @@ while running:
             else:
                 pass
 
+for thread in thread_list:
+    print(f"here is my thread : {thread}")
+#    if thread.is_alive():
+#        return
+    thread.join()
+
 for client in clients:
     poll_object.unregister(client)
     client.close()
 server_socket.close()
-
-for thread in thread_list:
-    print(f"here is my thread : {thread}")
-    if thread.is_alive():
-        # Get the thread identifier
-        thread_id = thread.ident
-        # Terminate the thread by raising SystemExit exception
-        ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), ctypes.py_object(SystemExit))
-    thread.join()

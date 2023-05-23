@@ -41,29 +41,7 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     else:
         if process.running[0] == False:
             print("not running")
-            if process.fatal[0] == True:
-                print("it's fatal")
-                process.fatal = (False, time_stamp)
-                process.cli_history.append('restart')
-                process.stopping = (False, time_stamp)
-                process.stopped = (False, time_stamp)
-                process.quit_with_stop = False
-                main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                return "Restart fatal process :" + key
-            else:
-                print("it'is NOT fatal")
-              #  last_position = len(process.status_exit) - 1
-                if is_exit_matching(process.status_exit[-1], process) == 0: #means it did not exit gracefully, here obviously autorestart = false because it's not in backlog
-                    print("it has not exit gracefully so restart")
-                    process.cli_history.append('restart')
-                    process.stopping = (False, time_stamp)
-                    process.stopped = (False, time_stamp)
-                    process.quit_with_stop = False
-                    main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                    return "Restart process :" + key + " (has not quit gracefully)"
-                else:
-                    print("process has exit gracefully, use start")
-                    return "Process :" + key + " has exit gracefully, use start"
+            return "Process :" + key + " is not running"
         else:
             print("Running")
             if process.autorestart == True:
