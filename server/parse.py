@@ -127,9 +127,9 @@ def parse_file(configs):
                         print(error_flag)
                         error["error"] = "process name" +  error_flag
                         return (error)
-                    elif proc_name.startswith("-"):
-                        print("Wrong process name, cannot start with a '-'")
-                        error["error"] = "Wrong process name, cannot start with a '-'"
+                    elif "-" in str(proc_name):
+                        print("Wrong process name, cannot contain a '-'")
+                        error["error"] = "Wrong process name, cannot contain a '-'"
                         return (error)
                     else:
                         process_dict[str(proc_name)] = process_data(str(proc_name))
