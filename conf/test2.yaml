@@ -11,38 +11,3 @@ programs:
     stopsignal: "TERM"
     exitcodes: [0]
 
-  return:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 10
-    startretries: 6
-    numprocs: 1
-    autostart: True 
-    autorestart: False 
-    starttime: 0
-    stoptime: 10
-    stopsignal: "TERM"
-    exitcodes: [0]
-
-  while:
-    cmd: "/home/hrazanam/taskmaster/progs/while"
-    starttime: 10
-    startretries: 6
-    numprocs: 1
-    autostart: True 
-    autorestart: False 
-    starttime: 10
-    stoptime: 10
-    stopsignal: "TERM"
-    exitcodes: [0]
-
-  command:
-    cmd: "/home/hrazanam/taskmaster/progs/while"
-    starttime: 10
-    startretries: 6
-    numprocs: 1
-    autostart: True 
-    autorestart: False 
-    starttime: 10
-    stoptime: 10
-    stopsignal: "TERM"
-    exitcodes: [0]
