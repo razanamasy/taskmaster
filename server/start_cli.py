@@ -4,6 +4,7 @@ import os
 import signal
 import calendar
 import time
+import logging
 
 def is_exit_matching(status, process_data):
     exit_table = process_data.exitcodes
@@ -17,12 +18,14 @@ def is_exit_matching(status, process_data):
 
 
 def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
+    logging.basicConfig(level=logging.DEBUG, filename="../Taskmasterd.logs", filemode="a+", format="%(asctime)-15s %(levelname)-8s %(message)s")
     process = list_proc_data[key]
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
     if process.backlog[0] == True or process.running[0] == True:
         print(f'Process {key} already running or backlog')
+        logging.warning("Process " + key  + " already running or backlog")
         return "Process " + key  + " already running or backlog"
     if process.autostart == False and process.pid == -1:
         process.cli_history.append('start')
@@ -30,6 +33,7 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         process.stopped = (False, time_stamp)
         process.quit_with_stop = False
         main_starting(list_roc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+        logging.info("Initial starting " + key)
         return "Initial starting " + key
     else:
         if is_exit_matching(process.status_exit[-1], process) == 1 and process.fatal[0] == False: #means it DID exit gracefully 
@@ -41,5 +45,6 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         process.stopped = (False, time_stamp)
         process.quit_with_stop = False
         main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-        return res 
+        logging.info(res)
+        return res
 

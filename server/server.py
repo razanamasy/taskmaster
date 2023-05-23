@@ -19,6 +19,7 @@ import threading
 from threading import Thread, Lock
 from parse_command import *
 import ctypes
+import logging
 
 # Define the host and port to listen on
 HOST = 'localhost'
@@ -171,6 +172,7 @@ def launching(running, list_proc_data, clients, running_table, first, thread_lis
 
 
 while running:
+    logging.basicConfig(level=logging.DEBUG, filename="../Taskmasterd.logs", filemode="a+", format="%(asctime)-15s %(levelname)-8s %(message)s")
     # Wait for events from clients or the server socket
     events = poll_object.poll()
 
@@ -187,6 +189,11 @@ while running:
                 first = 1
                 print(f"path conf = {init_path_conf}")
                 list_proc_data = copy.deepcopy(main_parse(init_path_conf))
+                for key in list_proc_data:
+                    if key == "error":
+                        print(list_proc_data["error"])
+                        running = 0
+                        break
                 print("in list proc data :: ", list_proc_data.keys())
                 launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
                 print("after launching the keys in dico are : ", list_proc_data.keys())
@@ -208,14 +215,16 @@ while running:
             cmd_key = next(iter(cmd.keys()))
 
             # Process the job command
-            if cmd_key == 'start':
+            if cmd_key == 'start': 
                 print("Starting the job...")
                 result = "starting called..." 
                 for key in cmd['start']:
+                    logging.info("Client " + str(client.fileno()) + " required starting " + key + " process")
                     if key in list_proc_data:
-                        result = main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+                        result += main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     else:
                         result = "Can start process :" + key + ", it does not exist"
+                        logging.error(result)
 
                 # Code to start the job goes here
             elif cmd_key == 'stop':
@@ -223,7 +232,7 @@ while running:
                 result = "Stopping called..."
                 for key in cmd['stop']:
                     if key in list_proc_data:
-                        result = main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+                        result += main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     else:
                         result = "Can't stop process :" + key + ", it does not exist"
                 # Code to stop the job goes here
