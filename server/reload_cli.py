@@ -82,6 +82,22 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
     print(f"List process when calling reload {list_proc_data}")
     old_list = list_proc_data
     to_add = []
+
+    #First add the replicas to the new list 
+    temp_dico = {}
+    for key in new_list:
+        print(key)
+        if new_list[key].numprocs > 1:
+            i = 1
+            while i < new_list[key].numprocs:
+                temp_dico[key + "-" + str(i)] = copy.deepcopy(new_list[key])
+                temp_dico[key + "-" + str(i)].name = key + "-" + str(i)
+                temp_dico[key + "-" + str(i)].numprocs = 1
+                i += 1
+    #UPDATE PROCES TO RUN
+    new_list.update(temp_dico)
+
+
     #check the changes in new list
     for process_key in new_list:
         if process_key in old_list:
@@ -109,6 +125,4 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
 
     for process_key in to_delete:
         stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
-	#    if list_proc_data[process_key].pid in running_table:
-	#        running_table.pop(list_proc_data[process_key].pid)
         list_proc_data.pop(process_key)

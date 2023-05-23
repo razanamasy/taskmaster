@@ -1,4 +1,16 @@
 programs:
+  ls:
+    cmd: "/usr/bin/ls"
+    starttime: 10
+    startretries: 6
+    numprocs: 1
+    autostart: True 
+    autorestart: False 
+    starttime: 0
+    stoptime: 10
+    stopsignal: "TERM"
+    exitcodes: [0]
+
   return:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     starttime: 10
@@ -6,12 +18,12 @@ programs:
     numprocs: 1
     autostart: True 
     autorestart: False 
-    starttime: 50
+    starttime: 0
     stoptime: 10
     stopsignal: "TERM"
     exitcodes: [0]
 
-  while1:
+  while:
     cmd: "/home/hrazanam/taskmaster/progs/while"
     starttime: 10
     startretries: 6
@@ -23,7 +35,7 @@ programs:
     stopsignal: "TERM"
     exitcodes: [0]
 
-  while2:
+  command:
     cmd: "/home/hrazanam/taskmaster/progs/while"
     starttime: 10
     startretries: 6

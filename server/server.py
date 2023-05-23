@@ -144,6 +144,7 @@ def launching(running, list_proc_data, clients, running_table, first, thread_lis
             while i < list_proc_data[key].numprocs:
                 temp_dico[key + "-" + str(i)] = copy.deepcopy(list_proc_data[key])
                 temp_dico[key + "-" + str(i)].name = key + "-" + str(i)
+                temp_dico[key + "-" + str(i)].numprocs = 1
                 i += 1
     #UPDATE PROCES TO RUN
     list_proc_data.update(temp_dico)
