@@ -4,8 +4,8 @@ import readline
 import signal
 
 # Define the host and port to connect to
-HOST = 'localhost'
-PORT = 12345
+HOST = sys.argv[1] 
+PORT = int(sys.argv[2])
 
 #command history list
 command_history = []

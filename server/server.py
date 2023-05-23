@@ -21,8 +21,8 @@ from parse_command import *
 import ctypes
 
 # Define the host and port to listen on
-HOST = 'localhost'
-PORT = 12345
+HOST = sys.argv[2] 
+PORT = int(sys.argv[3])
 
 #SOCKET INITALISATION
 # Create a socket object and bind it to the host and port

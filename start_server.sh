@@ -5,8 +5,8 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-nohup python3 server/server.py $1 &
+nohup python3 server/server.py $1 $2 $3 &
 
 sleep 2
 
-python3 client/cli.py
+python3 client/cli.py $2 $3
