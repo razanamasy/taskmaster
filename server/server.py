@@ -147,7 +147,6 @@ def launching(running, list_proc_data, clients, running_table, first, thread_lis
     #CHECK REPLICAS
     temp_dico = {}
     for key in list_proc_data:
-        print(key)
         if list_proc_data[key].numprocs > 1:
             i = 1
             while i < list_proc_data[key].numprocs:
@@ -242,9 +241,9 @@ while running:
                         print(result)
             elif cmd_key == 'reload':
                 result = "Reloading the configuration file : " + init_path_conf 
-			   # handle_sighup(signal.SIGHUP, None)
-                new_list = main_parse(init_path_conf)
-                main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
+                handle_sighup(signal.SIGHUP, None)
+              #  new_list = main_parse(init_path_conf)
+              #  main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
 
             elif cmd_key == 'status':
                 result = "------STATUS------\n"
