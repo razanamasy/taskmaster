@@ -127,9 +127,9 @@ def parse_file(configs):
                         print(error_flag)
                         error["error"] = "process name" +  error_flag
                         return (error)
-                    elif proc_name.startswith("-"):
-                        print("Wrong process name, cannot start with a '-'")
-                        error["error"] = "Wrong process name, cannot start with a '-'"
+                    elif "-" in str(proc_name):
+                        print("Wrong process name, cannot contain a '-'")
+                        error["error"] = "Wrong process name, cannot contain a '-'"
                         return (error)
                     else:
                         process_dict[str(proc_name)] = process_data(str(proc_name))
@@ -158,6 +158,21 @@ def parse_file(configs):
                     if process_dict[str(proc_name)].stdout == process_dict[str(proc_name)].stderr:
                         print("stdout and stderr should be different")
                         error["error"] = "stdout and stderr should be different"
+                        return (error)
+                    try:
+                        os.makedirs(os.path.dirname(process_dict[str(proc_name)].stdout), exist_ok=True)
+                        os.makedirs(os.path.dirname(process_dict[str(proc_name)].stderr), exist_ok=True)
+                        open(process_dict[str(proc_name)].stdout, "x")
+                        open(process_dict[str(proc_name)].stderr, "x")
+                    except Exception as e:
+                        pass
+                    open(process_dict[str(proc_name)].stdout, "w")
+                    os.chmod(process_dict[str(proc_name)].stdout, int(calculate_file_rights(process_dict[str(proc_name)].umask), 8))    
+                    if os.access(process_dict[str(proc_name)].stdout, os.W_OK):
+                        open(process_dict[str(proc_name)].stderr, "w")
+                        os.chmod(process_dict[str(proc_name)].stderr, int(calculate_file_rights(process_dict[str(proc_name)].umask), 8))
+                    else:
+                        error["error"] = "stdout and stderr file write rights issues"
                         return (error)
                 else:
                     print("Wrong process section or process section is NULL")

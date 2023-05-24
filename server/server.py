@@ -26,6 +26,11 @@ try:
     PORT = int(sys.argv[2])
 except:
     print("Bad port")
+    exit(1)
+
+if os.getuid() != 0:
+    print("Error: you should be root to start a daemon Taskmaster server")
+    exit(1)
 
 #SOCKET INITALISATION
 # Create a socket object and bind it to the host and port
@@ -178,6 +183,12 @@ while running:
             if first == 0:
                 first = 1
                 list_proc_data = copy.deepcopy(main_parse(init_path_conf))
+                for key in list_proc_data:
+                    if key == "error":
+                        print(list_proc_data["error"])
+                        running = 0
+                        break
+                print("in list proc data :: ", list_proc_data.keys())
                 launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
 
 
@@ -256,7 +267,8 @@ while running:
                 result = str(cmd["help"]) 
             elif cmd_key == 'quit': 
                 print("Client quitting")
-                result = "\x03"
+                result = None
+                #Remove client from everything
                 poll_object.unregister(client_socket)
                 clients.remove(client_socket)
 
@@ -280,9 +292,12 @@ while running:
                 print("Invalid command.", data)
                 result = cmd[cmd_key] 
 
-            # Send the result back to the client
-            result += '\x03'
-            client_socket.sendall(result.encode())
+            if result != None:
+                # Send the result back to the client
+                result += '\x03'
+                client_socket.sendall(result.encode())
+            else:
+                pass
 
 for thread in thread_list:
     thread.join()

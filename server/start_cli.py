@@ -38,5 +38,5 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         process.stopped = (False, time_stamp)
         process.quit_with_stop = False
         main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-        return res 
+        return res
 
