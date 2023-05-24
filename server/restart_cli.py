@@ -9,9 +9,7 @@ def is_exit_matching(status, process_data):
     exit_table = process_data.exitcodes
     match = 0
     for i in exit_table:
-        print(f"compare {status} with {i}")
         if status == i:
-            print("It has matched !!!")
             match = 1
     return match
 
@@ -36,18 +34,13 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     time_stamp = calendar.timegm(current_GMT)
 
     if process.backlog[0] == True:
-        print("Already in a start process")
         return "Process :" + key + " already in a start process"
     else:
         if process.running[0] == False:
-            print("not running")
             return "Process :" + key + " is not running"
         else:
-            print("Running")
             if process.autorestart == True:
-                print("Autorestart true so just kill")
                 if process.stopsignal == "TERM":
-                    print("STOP WITH SIGTERM")
                     os.kill(process.pid, signal.SIGTERM)
                 elif process.stopsignal == "HUP":
                     os.kill(process.pid, signal.SIGHUP)
@@ -56,7 +49,6 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
                 elif process.stopsignal == "QUIT":
                     os.kill(process.pid, signal.SIGQUIT)
                 elif process.stopsignal == "KILL":
-                    print("STOP WITH SIGTERM")
                     os.kill(process.pid, signal.SIGKILL)
                 elif process.stopsignal == "USR1":
                     os.kill(process.pid, signal.SIGUSR1)
@@ -64,9 +56,7 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
                     os.kill(process.pid, signal.SIGUSR2)
                 return "Restart running Process :" + key
             else:
-                print("Autorestart false so kill and restart")
                 if process.stopsignal == "TERM":
-                    print("STOP WITH SIGTERM")
                     os.kill(process.pid, signal.SIGTERM)
                 elif process.stopsignal == "HUP":
                     os.kill(process.pid, signal.SIGHUP)
@@ -75,7 +65,6 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
                 elif process.stopsignal == "QUIT":
                     os.kill(process.pid, signal.SIGQUIT)
                 elif process.stopsignal == "KILL":
-                    print("STOP WITH SIGTERM")
                     os.kill(process.pid, signal.SIGKILL)
                 elif process.stopsignal == "USR1":
                     os.kill(process.pid, signal.SIGUSR1)

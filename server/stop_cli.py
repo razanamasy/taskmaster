@@ -10,14 +10,14 @@ from threading import Thread, Lock
 def timer(list_proc_data, key, curr_pid, running_table, mutex_proc_dict):
     process = list_proc_data[key]
     time.sleep(process.stoptime)
-    print("end of sleep stop")
+    print("end of stoptime")
     if key not in list_proc_data:
         return
     if list_proc_data[key].pid == curr_pid: #Si pas eu d'autre start ou restart entre temp
         if list_proc_data[key].backlog[0] == True: #Clairement impossible lol
             return
         if list_proc_data[key].running[0] == False: #On a reussit a kill
-            print("the process has stopped")
+            print("the process has already stopped")
             return
         else:
             print("Stop failed Need to sigkill it")
@@ -29,22 +29,16 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
-    print(f"status of my shit {list_proc_data[key]}")
-
     if process.stopping[0] == True:
-        print("Already in a stopping process")
         return "Process : " + key + " already in a stopping process"
     if process.backlog[0] == True and process.backoff_starting[0] == False:
-        print("Old state : BACKOFF, stopping the start process")
         process.quit_with_stop = True
         process.stopped = (True, time_stamp)
         return "Old state of :" + key + " BACKOFF, stopping the start process"
 #        return "Process : " + key + " already in a starting process"
     if process.stopped[0] == True:
-        print(f"Already stopped WHYYYYYYYYYYYYYYYYY ?{list_proc_data[key]}")
-        return "ALREADY STOPPED Process : " + key + " stopped"
+        return "Already stopped Process : " + key + " stopped"
 
-    print(f"Really stopping {process.name}")
     process.cli_history.append('stop')
     process.stopping = (True, time_stamp)
     process.quit_with_stop = True
@@ -52,7 +46,6 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
 
     try:
         if process.stopsignal == "TERM":
-            print(f"STOP WITH SIGTERM this pid : {process.pid}")
             os.kill(process.pid, signal.SIGTERM)
         elif process.stopsignal == "HUP":
             os.kill(process.pid, signal.SIGHUP)
@@ -61,7 +54,6 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         elif process.stopsignal == "QUIT":
             os.kill(process.pid, signal.SIGQUIT)
         elif process.stopsignal == "KILL":
-            print("STOP WITH SIGTERM")
             os.kill(process.pid, signal.SIGKILL)
         elif process.stopsignal == "USR1":
             os.kill(process.pid, signal.SIGUSR1)
