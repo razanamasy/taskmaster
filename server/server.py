@@ -55,8 +55,9 @@ def is_running():
     try:
         server_socket.bind((HOST, PORT))
     except socket.error as err:
-        print("Server already running")
-        exit(1) 
+        print("BAD IP OR PORT")
+        print(f"error : {err}")
+        exit(2) 
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
