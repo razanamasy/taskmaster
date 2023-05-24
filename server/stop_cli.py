@@ -10,22 +10,22 @@ from threading import Thread, Lock
 def timer(list_proc_data, key, curr_pid, running_table, mutex_proc_dict):
     process = list_proc_data[key]
     time.sleep(process.stoptime)
-    print("end of stoptime")
+    print("end of stoptime", flush=True)
     if key not in list_proc_data:
         return
     if list_proc_data[key].pid == curr_pid: #Si pas eu d'autre start ou restart entre temp
         if list_proc_data[key].backlog[0] == True: #Clairement impossible lol
             return
         if list_proc_data[key].running[0] == False: #On a reussit a kill
-            print("the process has already stopped")
+            print("the process has already stopped", flush=True)
             return
         else:
-            print("Stop failed Need to sigkill it")
+            print("Stop failed Need to sigkill it", flush=True)
             list_proc_data[key].quit_with_stop = True
             os.kill(process.pid, signal.SIGKILL)
 
 def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
-    print(f"THIS PROCESS ENTER IN STOP {key}")
+    print(f"THIS PROCESS ENTER IN STOP {key}", flush=True)
     process = list_proc_data[key]
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)

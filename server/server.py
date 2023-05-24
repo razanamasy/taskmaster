@@ -28,11 +28,11 @@ HOST = "localhost"
 try:
     PORT = int(sys.argv[2])
 except:
-    print("Bad port")
+    print("Bad port", flush=True)
     exit(1)
 
 if os.getuid() != 0:
-    print("Error: you should be root to start a daemon Taskmaster server")
+    print("Error: you should be root to start a daemon Taskmaster server", flush=True)
     exit(1)
 
 #SOCKET INITALISATION
@@ -70,14 +70,14 @@ def is_running():
     try:
         server_socket.bind((HOST, PORT))
     except socket.error as err:
-        print(f"Server error : {err}")
+        print(f"Server error : {err}", flush=True)
         exit(2) 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 is_running()
 server_socket.listen()
-print(f"Server listening on {HOST}:{PORT}")
+print(f"Server listening on {HOST}:{PORT}", flush=True)
 poll_object = select.poll()
 poll_object.register(server_socket, select.POLLIN)
 
@@ -89,7 +89,7 @@ def is_exit_matching(status, process_data):
         if status == i:
             match = 1
         else:
-            print(f"Process {process_data.name} : has died unexpectedly")
+            print(f"Process {process_data.name} : has died unexpectedly", flush=True)
     return match
 
 def wait_for_child(running_table, list_proc_data, clients, thread_list):
@@ -100,7 +100,7 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
             try:
                 pid, status = os.waitpid(-1, os.WNOHANG)
                 if (pid < 0):
-                    print(f"child :{pid} encountered error")
+                    print(f"child :{pid} encountered error", flush=True)
                 else:
                     if (pid > 0):
                         current_GMT = time.gmtime()
@@ -113,7 +113,6 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
 
                         #STOPPED OU EXIT ?
                         if running_table[pid].quit_with_stop == True:
-                            print("IM SURE YOU COM HERE")
                             running_table[pid].stopped = (True, time_stamp)
                             running_table[pid].backlog = (False, time_stamp)
                             running_table[pid].exited = (False, time_stamp)
@@ -135,15 +134,15 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                                 main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
 
                         running_table.pop(pid)
-                        print(f"Process {pid} exited with status {status}")
-                        print("No longer waiting pid")
+                        print(f"Process {pid} exited with status {status}", flush=True)
+                        print("No longer waiting pid", flush=True)
             except OSError as e:
                 if e.errno == errno.ECHILD:
-                    print("No child processes to wait for...")
+                    print("No child processes to wait for...", flush=True)
                 else:
-                    print("error waitpid")
+                    print("error waitpid", flush=True)
                     raise e
-    print("MONITOR HAS QUIT")
+    print("MONITOR HAS QUIT", flush=True)
 
 
 def launching(running, list_proc_data, clients, running_table, first, thread_list, path_conf):
@@ -179,7 +178,7 @@ while running:
             client_socket, addr = server_socket.accept()
             clients.append(client_socket)
             poll_object.register(client_socket, select.POLLIN)
-            print(f"New client connected from {addr[0]}:{addr[1]}")
+            print(f"New client connected from {addr[0]}:{addr[1]}", flush=True)
         
             # First launch process and monitor calling (only once)
             if first == 0:
@@ -187,10 +186,9 @@ while running:
                 list_proc_data = copy.deepcopy(main_parse(init_path_conf))
                 for key in list_proc_data:
                     if key == "error":
-                        print(list_proc_data["error"])
+                        print(list_proc_data["error"], flush=True)
                         running = 0
                         break
-                print("in list proc data :: ", list_proc_data.keys())
                 launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
 
 
@@ -211,37 +209,37 @@ while running:
 
             # Process the job command
             if cmd_key == 'start':
-                print("starting called...")
+                print("starting called...", flush=True)
                 result = "starting called..." 
                 for key in cmd['start']:
                     if key in list_proc_data:
                         result = main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        print(result)
+                        print(result, flush=True)
                     else:
                         result = "Can start process :" + key + ", it does not exist"
-                        print(result)
+                        print(result, flush=True)
 
                 # Code to start the job goes here
             elif cmd_key == 'stop':
-                print("Stopping called...")
+                print("Stopping called...", flush=True)
                 result = "Stopping called..."
                 for key in cmd['stop']:
                     if key in list_proc_data:
                         result = main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        print(result)
+                        print(result, flush=True)
                     else:
                         result = "Can't stop process :" + key + ", it does not exist"
-                        print(result)
+                        print(result, flush=True)
             elif cmd_key == 'restart':
-                print("restarting called...")
+                print("restarting called...", flush=True)
                 result = "restarting called..."
                 for key in cmd['restart']:
                     if key in list_proc_data:
                         result = main_restart_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        print(result)
+                        print(result, flush=True)
                     else:
                         result = "Can't restart process :" + key + ", it does not exist"
-                        print(result)
+                        print(result, flush=True)
             elif cmd_key == 'reload':
                 result = "Reloading the configuration file : " + init_path_conf 
                 handle_sighup(signal.SIGHUP, None)
@@ -260,15 +258,15 @@ while running:
                         if key in list_proc_data:
                             curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
                             result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
-                            print(result)
+                            print(result, flush=True)
                         else:
                             result = "Can't get status of process :" + key + ", it does not exist"
-                            print(result)
+                            print(result, flush=True)
             elif cmd_key == 'help':
-                print("Display helper...")
+                print("Display helper...", flush=True)
                 result = str(cmd["help"]) 
             elif cmd_key == 'quit': 
-                print("Client quitting")
+                print("Client quitting", flush=True)
                 result = None
                 #Remove client from everything
                 poll_object.unregister(client_socket)
@@ -278,12 +276,12 @@ while running:
                     kill_quit(list_proc_data, running_table, mutex_proc_dict)
                     running = 0
             elif cmd_key == 'shutdown':
-                print("SHUTDOWN")
+                print("SHUTDOWN", flush=True)
                 result = "shutdown"
                 mutex_proc_dict.acquire()
                 while len(clients) != 0:
                     poll_object.unregister(clients.pop())
-                    print(f"client left: {clients} ")
+                    print(f"client left: {clients} ", flush=True)
                 mutex_proc_dict.release()
 
                 if len(clients) == 0:
@@ -291,7 +289,7 @@ while running:
                     running = 0
 
             else:
-                print("Invalid command.", data)
+                print(f"Invalid command : {data}", flush=True)
                 result = cmd[cmd_key] 
 
             if result != None:

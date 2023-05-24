@@ -7,7 +7,7 @@ from threading import Thread, Lock
 
 def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dict):
 
-    print(f"{list_proc_data[key].name} entering in starting process")
+    print(f"{list_proc_data[key].name} entering in starting process", flush=True)
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
     my_retries = copy.deepcopy(list_proc_data[key].startretries)
@@ -31,9 +31,9 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                     break
                 mutex_proc_dict.release()
                 if key in list_proc_data and list_proc_data[key].pid not in running_table:
-                    print("starting process : pid not in process_table, need to retry for :", list_proc_data[key].name)
+                    print(f"starting process : pid not in process_table, need to retry for : {list_proc_data[key].name}", flush=True)
                     if my_retries == 0:
-                        print(f"No retries left for {list_proc_data[key].name} : FATAL ")
+                        print(f"No retries left for {list_proc_data[key].name} : FATAL ", flush=True)
                         list_proc_data[key].fatal = (True, time_stamp)
                         break
 
@@ -79,7 +79,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                 list_proc_data[key].stopped = (False, time_stamp)
                 list_proc_data[key].exited = (False, time_stamp)
                 list_proc_data[key].running = (True, time_stamp)
-            print(f"{list_proc_data[key].name} : leaving starting process")
+            print(f"{list_proc_data[key].name} : leaving starting process", flush=True)
             mutex_proc_dict.release()
 
 

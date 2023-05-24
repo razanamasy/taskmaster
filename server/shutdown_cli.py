@@ -8,6 +8,6 @@ def main():
             client_proc_dict.pop(client_socket.fileno())
             mutex_proc_dict.release()
             mutex_proc_dict.acquire()
-			print("Key in dictionary left : ")
+			print("Key in dictionary left : ", flush=True)
             print(client_proc_dict.keys())
             mutex_proc_dict.release()

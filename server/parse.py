@@ -124,11 +124,11 @@ def parse_file(configs):
                 if isinstance(conf, dict):
                     error_flag = check_string(str(proc_name))
                     if error_flag != None:
-                        print(error_flag)
+                        print(error_flag, flush=True)
                         error["error"] = "process name" +  error_flag
                         return (error)
                     elif "-" in str(proc_name):
-                        print("Wrong process name, cannot contain a '-'")
+                        print("Wrong process name, cannot contain a '-'", flush=True)
                         error["error"] = "Wrong process name, cannot contain a '-'"
                         return (error)
                     else:
@@ -137,26 +137,26 @@ def parse_file(configs):
                             try:
                                 conf_list.index(key)
                             except ValueError:
-                                print("Invalid configuration option")
+                                print("Invalid configuration option", flush=True)
                                 error["error"] = "Invalid configuration option"
                                 return (error)
                             error_type = check_value_types(key, value)
                             if error_type != None:
-                                print(error_type)
+                                print(error_type, flush=True)
                                 error["error"] = error_type
                                 return (error)
                             else:
                                 error_type = set_attribute(process_dict[str(proc_name)], key, value)
                                 if error_type != None:
-                                    print(error_type)
+                                    print(error_type, flush=True)
                                     error["error"] = error_type
                                     return (error)
                     if process_dict[str(proc_name)].cmd == None:
-                        print("cmd configuration mandatory")
+                        print("cmd configuration mandatory", flush=True)
                         error["error"] = "cmd configuration mandatory"
                         return (error)
                     if process_dict[str(proc_name)].stdout == process_dict[str(proc_name)].stderr:
-                        print("stdout and stderr should be different")
+                        print("stdout and stderr should be different", flush=True)
                         error["error"] = "stdout and stderr should be different"
                         return (error)
                     try:
@@ -175,36 +175,36 @@ def parse_file(configs):
                         error["error"] = "stdout and stderr file write rights issues"
                         return (error)
                 else:
-                    print("Wrong process section or process section is NULL")
+                    print("Wrong process section or process section is NULL", flush=True)
                     error["error"] = "Wrong process section or process section is NULL"
                     return (error)
         else:
-            print("File doesn't start with the programs section or programs section is NULL")
+            print("File doesn't start with the programs section or programs section is NULL", flush=True)
             error["error"] = "File doesn't start with the programs section or programs section is NULL"
             return (error)
     return (process_dict)
         
 
 def open_file(conf_file):
-    print("in open file : ", conf_file)
+    print(f"in open file : {conf_file} ", flush=True)
     try:
         with open(conf_file, 'r') as f:
             try:
                 configs = yaml.safe_load(f)
             except:
-                print("Invalid yaml")
+                print("Invalid yaml", flush=True)
                 error["error"] = "Invalid yaml"
                 return (error)
     except FileNotFoundError:
-        print("open File not found")
+        print("open File not found", flush=True)
         error["error"] = "File not found"
         return (error)
     except IOError:
-        print("Could not read file")
+        print("Could not read file", flush=True)
         error["error"] = "Could not read file"
         return (error)
     except PermissionError:
-        print("You don't have the permissions to read the file")
+        print("You don't have the permissions to read the file", flush=True)
         error["error"] = "You don't have the permissions to read the file"
         return (error)
     return parse_file(configs)
@@ -213,9 +213,4 @@ def open_file(conf_file):
 def main(conf_file):
     return open_file(conf_file)
 
-#if __name__ == "__main__":
-#    if len(sys.argv) != 3:
-#        print("Wrong number of arguments")
-#        exit(1)
-#    main(sys.argv[1], sys.argv[2])
 
