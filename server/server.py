@@ -20,6 +20,9 @@ from threading import Thread, Lock
 from parse_command import *
 import ctypes
 
+#sys.stdout.flush()
+#sys.stderr.flush()
+
 # Define the host and port to listen on
 HOST = "localhost"
 try:
@@ -251,7 +254,7 @@ while running:
                     for key in list_proc_data:
                         curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
                         result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
-                        print(result)
+                        print(result, flush=True)
                 else:
                     for key in cmd['status']:
                         if key in list_proc_data:
