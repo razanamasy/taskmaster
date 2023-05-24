@@ -242,9 +242,17 @@ while running:
 
             elif cmd_key == 'status':
                 result = "------STATUS------\n"
-                for key in list_proc_data:
-                    curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
-                    result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
+                if len(cmd['status']) == 0:
+                    for key in list_proc_data:
+                        curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
+                        result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
+                else:
+                    for key in cmd['status']:
+                        if key in list_proc_data:
+                            curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
+                            result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
+                        else:
+                            result = "Can't get status of process :" + key + ", it does not exist"
                 # Code to stop the job goes here
             elif cmd_key == 'help':
                 print("Display helper...")
