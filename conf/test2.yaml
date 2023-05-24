@@ -22,7 +22,7 @@ programs:
     exitcodes: [0]
 
   command:
-    cmd: "/home/hrazanam/taskmaster/progs/while"
+    cmd: "/home/hrazanam/taskmaster/progs/return"
     startretries: 2
     numprocs: 1
     autostart: True 

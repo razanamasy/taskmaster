@@ -52,7 +52,11 @@ init_path_conf = sys.argv[1]
 #mutex
 mutex_proc_dict = Lock()
 
-#signal.signal(signal.SIGHUP, main_reload_cli)
+def handle_sighup(signal, frame):
+    new_list = main_parse(init_path_conf)
+    main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
+    
+signal.signal(signal.SIGHUP, handle_sighup)
 
 def is_running():
     try:
@@ -60,7 +64,6 @@ def is_running():
     except socket.error as err:
         print(f"Server error : {err}")
         exit(2) 
-
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -102,6 +105,7 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
 
                         #STOPPED OU EXIT ?
                         if running_table[pid].quit_with_stop == True:
+                            print("IM SURE YOU COM HERE")
                             running_table[pid].stopped = (True, time_stamp)
                             running_table[pid].backlog = (False, time_stamp)
                             running_table[pid].exited = (False, time_stamp)
@@ -157,9 +161,6 @@ def launching(running, list_proc_data, clients, running_table, first, thread_lis
     monitor.daemon = True
     monitor.start()
     thread_list.append(monitor)
-
-
-
 
 while running:
     # Wait for events from clients or the server socket
@@ -229,8 +230,8 @@ while running:
                         result = "Can't restart process :" + key + ", it does not exist"
                         print(result)
             elif cmd_key == 'reload':
-                print("Reloading the configuration file..." + init_path_conf)
                 result = "Reloading the configuration file : " + init_path_conf 
+			   # handle_sighup(signal.SIGHUP, None)
                 new_list = main_parse(init_path_conf)
                 main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
 

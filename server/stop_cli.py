@@ -25,6 +25,7 @@ def timer(list_proc_data, key, curr_pid, running_table, mutex_proc_dict):
             os.kill(process.pid, signal.SIGKILL)
 
 def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
+    print(f"THIS PROCESS ENTER IN STOP {key}")
     process = list_proc_data[key]
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)

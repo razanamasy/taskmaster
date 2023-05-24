@@ -1,6 +1,8 @@
 from start_launch import main as main_starting
 from status_cli import main as status
 from stop_cli import main as stop
+import calendar
+import time
 import copy
 
 def manage_process_key(new_process_key, old_process_key):
@@ -77,6 +79,9 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
     old_list = list_proc_data
     to_add = []
 
+    current_GMT = time.gmtime()
+    time_stamp = calendar.timegm(current_GMT)
+
     #First add the replicas to the new list 
     temp_dico = {}
     for key in new_list:
@@ -98,6 +103,10 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
             if manage_process_key(new_list[process_key], old_list[process_key]) == True:
                 stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
                 if list_proc_data[process_key].autostart == True:
+                    list_proc_data[process_key].cli_history.append('start')
+                    list_proc_data[process_key].stopping = (False, time_stamp)
+                    list_proc_data[process_key].stopped = (False, time_stamp)
+                    list_proc_data[process_key].quit_with_stop = False
                     main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
                 #RELOAD HERE
         else:
