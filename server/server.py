@@ -19,7 +19,6 @@ import threading
 from threading import Thread, Lock
 from parse_command import *
 import ctypes
-import logging
 
 # Define the host and port to listen on
 HOST = "localhost"
@@ -27,6 +26,7 @@ try:
     PORT = int(sys.argv[2])
 except:
     print("Bad port")
+    exit(1)
 
 if os.getuid() != 0:
     print("Error: you should be root to start a daemon Taskmaster server")
@@ -52,12 +52,8 @@ first = 0
 switch_monitor = [0]
 #Thread tables
 thread_list = []
-if len(sys.argv) == 2:
-    #Initil path conf in case of reload
-    init_path_conf = sys.argv[1]
-else:
-    print("Error: wrong number of arguments, you should provide the configuration file")
-    exit(1)
+#Initil path conf in case of reload
+init_path_conf = sys.argv[1]
 #mutex
 mutex_proc_dict = Lock()
 
@@ -175,7 +171,6 @@ def launching(running, list_proc_data, clients, running_table, first, thread_lis
 
 
 while running:
-    logging.basicConfig(level=logging.DEBUG, filename="../Taskmasterd.logs", filemode="a+", format="%(asctime)-15s %(levelname)-8s %(message)s")
     # Wait for events from clients or the server socket
     events = poll_object.poll()
 
@@ -222,12 +217,10 @@ while running:
                 print("Starting the job...")
                 result = "starting called..." 
                 for key in cmd['start']:
-                    logging.info("Client " + str(client.fileno()) + " required starting " + key + " process")
                     if key in list_proc_data:
-                        result += main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+                        result = main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     else:
                         result = "Can start process :" + key + ", it does not exist"
-                        logging.error(result)
 
                 # Code to start the job goes here
             elif cmd_key == 'stop':
@@ -235,7 +228,7 @@ while running:
                 result = "Stopping called..."
                 for key in cmd['stop']:
                     if key in list_proc_data:
-                        result += main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+                        result = main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                     else:
                         result = "Can't stop process :" + key + ", it does not exist"
                 # Code to stop the job goes here
