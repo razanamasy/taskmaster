@@ -1,7 +1,7 @@
 programs:
   return:
     cmd: "/home/hrazanam/taskmaster/progs/return"
-    startretries: 2
+    startretries: 6
     numprocs: 1
     autostart: True 
     autorestart: False

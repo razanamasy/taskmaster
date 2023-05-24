@@ -7,7 +7,7 @@ from threading import Thread, Lock
 
 def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dict):
 
-    print("STARTING OF START PROCESS FOR --->", list_proc_data[key])
+    print(f"{list_proc_data[key].name} entering in starting process")
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
     my_retries = copy.deepcopy(list_proc_data[key].startretries)
@@ -18,7 +18,6 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
     last_starting = list_proc_data[key].backoff_starting[1] 
     mutex_proc_dict.release()
     if list_proc_data[key].starttime == 0:
-        print("STARTIME 0 BACKLOG FALSE")
         list_proc_data[key].backlog = (False, time_stamp)
         list_proc_data[key].exited = (False, time_stamp)
         list_proc_data[key].stopped = (False, time_stamp)
@@ -32,9 +31,9 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                     break
                 mutex_proc_dict.release()
                 if key in list_proc_data and list_proc_data[key].pid not in running_table:
-                    print("Pid not in process_table, need to retry for :", list_proc_data[key].name)
+                    print("starting process : pid not in process_table, need to retry for :", list_proc_data[key].name)
                     if my_retries == 0:
-                        print("But no retries left it's fataal:", list_proc_data[key].name)
+                        print(f"No retries left for {list_proc_data[key].name} : FATAL ")
                         list_proc_data[key].fatal = (True, time_stamp)
                         break
 
@@ -80,13 +79,11 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                 list_proc_data[key].stopped = (False, time_stamp)
                 list_proc_data[key].exited = (False, time_stamp)
                 list_proc_data[key].running = (True, time_stamp)
-            print("FINAL START PROCESS FOR --->", list_proc_data[key])
+            print(f"{list_proc_data[key].name} : leaving starting process")
             mutex_proc_dict.release()
 
 
 def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
-    print("MAIN STARTING CALLED")
-    #Fork premiere execution
     newpid = main_exec(list_proc_data[key])
 
     current_GMT = time.gmtime()
@@ -103,6 +100,5 @@ def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_l
     #envoi du thread starting process pour chaque process
     thread_starting_process = threading.Thread(target=starting_process, args=(list_proc_data, key, clients, running_table, mutex_proc_dict))
  #   thread_starting_process.daemon = True
-    print(f"My key is : {key} the thread is : {thread_starting_process}")
     thread_list.append(thread_starting_process)
     thread_starting_process.start()

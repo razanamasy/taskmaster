@@ -9,9 +9,7 @@ def is_exit_matching(status, process_data):
     exit_table = process_data.exitcodes
     match = 0
     for i in exit_table:
-        print(f"compare {status} with {i}")
         if status == i:
-            print("It has matched !!!")
             match = 1
     return match
 
@@ -22,7 +20,6 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     time_stamp = calendar.timegm(current_GMT)
 
     if process.backlog[0] == True or process.running[0] == True:
-        print(f'Process {key} already running or backlog')
         return "Process " + key  + " already running or backlog"
     if process.autostart == False and process.pid == -1:
         process.cli_history.append('start')

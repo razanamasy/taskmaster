@@ -6,56 +6,52 @@ import copy
 def manage_process_key(new_process_key, old_process_key):
     to_reload = False
     if new_process_key.numprocs != old_process_key.numprocs:
-        print("change")
+        print(f"change replicas for : {new_process_key.name}")
         old_process_key.numprocs = new_process_key.numprocs
     if new_process_key.umask != old_process_key.umask:
-        print("change")
+        print("change umask for : {new_process_key.name}")
         old_process_key.umask = new_process_key.umask
     if new_process_key.workingdir != old_process_key.workingdir:
-        print("change")
+        print("change workingdir for : {new_process_key.name}")
         old_process_key.workingdir = new_process_key.workingdir
     if new_process_key.autostart != old_process_key.autostart:
-        print("change")
+        print("change autostart for : {new_process_key.name}")
         old_process_key.autostart = new_process_key.autostart
     if new_process_key.autorestart != old_process_key.autorestart:
-        print("change")
+        print("change autorestart for : {new_process_key.name}")
         old_process_key.autorestart = new_process_key.autorestart
     if new_process_key.exitcodes != old_process_key.exitcodes:
-        print("change")
+        print("change exitcodes for : {new_process_key.name}")
         old_process_key.exitcode = new_process_key.exitcode
     if new_process_key.startretries != old_process_key.startretries:
-        print("change")
+        print("change startretries for : {new_process_key.name}")
         old_process_key.startretries = new_process_key.startretries
     if new_process_key.starttime != old_process_key.starttime:
-        print("change")
+        print("change starttime for : {new_process_key.name}")
         old_process_key.starttime = new_process_key.starttime
     if new_process_key.stopsignal != old_process_key.stopsignal:
-        print("change")
+        print("change stopsignal for : {new_process_key.name}")
         old_process_key.stopsignal = new_process_key.stopsignal
     if new_process_key.stoptime != old_process_key.stoptime:
-        print("change")
+        print("change stoptime for : {new_process_key.name}")
         old_process_key.stoptime = new_process_key.stoptime
     if new_process_key.stdout != old_process_key.stdout:
-        print("change")
+        print("change stdout for : {new_process_key.name}")
         old_process_key.stdout = new_process_key.stdout
     if new_process_key.stderr != old_process_key.stderr:
-        print("change")
+        print("change stderr for : {new_process_key.name}")
         old_process_key.stderr = new_process_key.stderr
     if new_process_key.env != old_process_key.env:
-        print("change")
-        old_process_key.env = new_process_key.env
-    if new_process_key.env != old_process_key.env:
-        print("change")
+        print("change env for : {new_process_key.name}")
         old_process_key.env = new_process_key.env
 
 
     if new_process_key.cmd != old_process_key.cmd:
-        print("change need reload")
+        print("This process need to be restarted because command changed : {new_process_key.name}")
         old_process_key.cmd = new_process_key.cmd
         to_reload = True
 
     if to_reload:
-        print("changes if reload")
         if new_process_key.running != old_process_key.running:
             old_process_key.running = new_process_key.running
         if new_process_key.backlog != old_process_key.backlog:
@@ -75,11 +71,9 @@ def manage_process_key(new_process_key, old_process_key):
         if new_process_key.quit_with_stop != old_process_key.quit_with_stop:
             old_process_key.quit_with_stop = new_process_key.quit_with_stop
 
-    print(f"my new process after changes {old_process_key}")
     return to_reload
 
 def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list):
-    print(f"List process when calling reload {list_proc_data}")
     old_list = list_proc_data
     to_add = []
 
@@ -102,11 +96,8 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
     for process_key in new_list:
         if process_key in old_list:
             if manage_process_key(new_list[process_key], old_list[process_key]) == True:
-                print("need to reload stop it")
                 stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
                 if list_proc_data[process_key].autostart == True:
-                    print("If autostart, start it")
-                    print(f"i'm restarting this shit because changes {process_key}")
                     main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
                 #RELOAD HERE
         else:
@@ -115,7 +106,7 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
     for process_key in to_add:
         list_proc_data[process_key] = copy.deepcopy(new_list[process_key])
         if list_proc_data[process_key].autostart == True:
-            print(f"i'm starting this shit because it did not exist ! {process_key}")
+            print(f"Add process : {process_key}")
             main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
 
     to_delete = []
@@ -124,5 +115,6 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
             to_delete.append(process_key)
 
     for process_key in to_delete:
+        print(f"Delete process : {process_key}")
         stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
         list_proc_data.pop(process_key)
