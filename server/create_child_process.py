@@ -40,7 +40,8 @@ def main(data):
                 os.dup2(stdout_file.fileno(), stdout_original.fileno())
                 os.dup2(stderr_file.fileno(), stderr_original.fileno())
 
-                os.execve(data.cmd, [data.name], os.environ)
+                command = data.cmd.split()
+                os.execve(command[0], command, os.environ)
             except Exception as e:
                 os.dup2(stdout_file.fileno(), stdout_original.fileno())
                 os.dup2(stderr_file.fileno(), stderr_original.fileno())

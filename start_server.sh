@@ -1,7 +1,8 @@
 #!/bin/bash
 
 if [ $# -ne 2 ]; then
-	>&2 echo "command format : bash start_server CONF_FILE PORT \n (local connexion)"
+	>&2 echo "command format : bash start_server CONF_FILE PORT"
+	echo "(local connexion)"
     exit 1
 fi
 
