@@ -21,8 +21,11 @@ from parse_command import *
 import ctypes
 
 # Define the host and port to listen on
-HOST = sys.argv[2] 
-PORT = int(sys.argv[3])
+HOST = "localhost"
+try:
+    PORT = int(sys.argv[2])
+except:
+    print("Bad port")
 
 #SOCKET INITALISATION
 # Create a socket object and bind it to the host and port
@@ -55,8 +58,7 @@ def is_running():
     try:
         server_socket.bind((HOST, PORT))
     except socket.error as err:
-        print("BAD IP OR PORT")
-        print(f"error : {err}")
+        print(f"Server error : {err}")
         exit(2) 
 
 
@@ -130,7 +132,7 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                 if e.errno == errno.ECHILD:
                     print("No child processes to wait for...")
                 else:
-                    print("WAITPID HAS CRASHED I DUNNO WHY IN MONITOR")
+                    print("error waitpid")
                     raise e
     print("MONITOR HAS QUIT")
 

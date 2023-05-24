@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 client/cli.py $1 $2
+python3 client/cli.py $1
