@@ -4,8 +4,11 @@ import readline
 import signal
 
 # Define the host and port to connect to
-HOST = 'localhost'
-PORT = 12345
+HOST = "localhost"
+try:
+    PORT = int(sys.argv[1])
+except:
+    print("Bad port")
 
 #command history list
 command_history = []
@@ -32,7 +35,7 @@ def main():
         client_socket.connect((HOST, PORT))
     except:
         flag = False
-        print("No available Takmaster server")
+        print(f"Client : Taskmaster server not available")
         return ()
 
     while True:

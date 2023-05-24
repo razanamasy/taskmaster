@@ -22,8 +22,11 @@ import ctypes
 import logging
 
 # Define the host and port to listen on
-HOST = 'localhost'
-PORT = 12345
+HOST = "localhost"
+try:
+    PORT = int(sys.argv[2])
+except:
+    print("Bad port")
 
 if os.getuid() != 0:
     print("Error: you should be root to start a daemon Taskmaster server")
@@ -64,8 +67,8 @@ def is_running():
     try:
         server_socket.bind((HOST, PORT))
     except socket.error as err:
-        print("Server already running")
-        exit(1) 
+        print(f"Server error : {err}")
+        exit(2) 
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -138,7 +141,7 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                 if e.errno == errno.ECHILD:
                     print("No child processes to wait for...")
                 else:
-                    print("WAITPID HAS CRASHED I DUNNO WHY IN MONITOR")
+                    print("error waitpid")
                     raise e
     print("MONITOR HAS QUIT")
 
