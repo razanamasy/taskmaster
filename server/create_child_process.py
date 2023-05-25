@@ -5,6 +5,7 @@ import copy
 import struct
 from contextlib import redirect_stdout, redirect_stderr
 from timestamp import *
+import resource
 
 #retourner le tableau de PID au main server qui va wait dans la boucle principale
 def main(data):
@@ -52,12 +53,12 @@ def main(data):
                         os.close(stderr_fd)
                     sys.stdout = stdout_original
                     sys.stderr = stderr_original
-                    print(timestamp('DEBG') + str(e), file=sys.stdout)
+                    print(timestamp('DEBG') + str(e) + "\n", file=sys.stdout, end="")
                     
                     sys.exit(1)  # Terminate child process with error status
 
             except Exception as e:
-                print(timestamp('CRIT') + str(e), flush=True)
+                print(timestamp('CRIT') + str(e) + "\n", flush=True, end="")
             # This line will never be reached
         else:
             pids.append(pid)

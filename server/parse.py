@@ -132,7 +132,7 @@ def parse_file(configs):
                         error["error"] = "process name" +  error_flag
                         return (error)
                     elif "-" in str(proc_name):
-                        print(timestamp('CRIT') + "Wrong process name, cannot contain a '-'", flush=True)
+                        print(timestamp('CRIT') + "Wrong process name, cannot contain a '-'\n", end="", flush=True)
                         error["error"] = "Wrong process name, cannot contain a '-'"
                         return (error)
                     else:
@@ -141,7 +141,7 @@ def parse_file(configs):
                             try:
                                 conf_list.index(key)
                             except ValueError:
-                                print(timestamp('CRIT') + "Invalid configuration option", flush=True)
+                                print(timestamp('CRIT') + "Invalid configuration option\n", end="", flush=True)
                                 error["error"] = "Invalid configuration option"
                                 return (error)
                             error_type = check_value_types(key, value)
@@ -156,18 +156,18 @@ def parse_file(configs):
                                     error["error"] = error_type
                                     return (error)
                     if process_dict[str(proc_name)].cmd == None:
-                        print(timestamp('CRIT') + "cmd configuration mandatory", flush=True)
+                        print(timestamp('CRIT') + "cmd configuration mandatory\n", end="", flush=True)
                         error["error"] = "cmd configuration mandatory"
                         return (error)
                     if process_dict[str(proc_name)].stdout == process_dict[str(proc_name)].stderr:
-                        print(timestamp('CRIT') + "stdout and stderr should be different", flush=True)
+                        print(timestamp('CRIT') + "stdout and stderr should be different\n", end="", flush=True)
                         error["error"] = "stdout and stderr should be different"
                         return (error)
                     try:
                         os.makedirs(os.path.dirname(process_dict[str(proc_name)].stdout), exist_ok=True)
                         os.makedirs(os.path.dirname(process_dict[str(proc_name)].stderr), exist_ok=True)
                     except Exception as e:
-                        print(timestamp('CRIT') + str(e), flush=True)
+                        print(timestamp('CRIT') + str(e) + "\n", end="", flush=True)
                         error["error"] = str(e)
                         return (error)
                     try:
@@ -185,43 +185,43 @@ def parse_file(configs):
                         stderr_file.close()
                         stdout_file.close()
                     else:
-                        print(timestamp('CRIT') + "stdout and stderr file write rights issues", flush=True)
+                        print(timestamp('CRIT') + "stdout and stderr file write rights issues\n", end="", flush=True)
                         error["error"] = "stdout and stderr file write rights issues"
                         stdout_file.close()
                         return (error)
                 else:
-                    print(timestamp('CRIT') + "Wrong process section or process section is NULL", flush=True)
+                    print(timestamp('CRIT') + "Wrong process section or process section is NULL\n", end="", flush=True)
                     error["error"] = "Wrong process section or process section is NULL"
                     return (error)
         else:
-            print(timestamp('CRIT') + "File doesn't start with the programs section or programs section is NULL", flush=True)
+            print(timestamp('CRIT') + "File doesn't start with the programs section or programs section is NULL\n", end="", flush=True)
             error["error"] = "File doesn't start with the programs section or programs section is NULL"
             return (error)
     return (process_dict)
         
 
 def open_file(conf_file):
-    print(timestamp('INFO') + f"in open file : {conf_file} ", flush=True)
+    print(timestamp('INFO') + f"in open file : {conf_file} \n", end="", flush=True)
     try:
         with open(conf_file, 'r') as f:
             try:
                 configs = yaml.safe_load(f)
             except:
-                print(timestamp('CRIT') + "Invalid yaml", flush=True)
+                print(timestamp('CRIT') + "Invalid yaml\n", end="", flush=True)
                 error["error"] = "Invalid yaml"
                 f.close()
                 return (error)
         f.close()
     except FileNotFoundError:
-        print(timestamp('CRIT') + "File not found", flush=True)
+        print(timestamp('CRIT') + "File not foun\n", end="", flush=True)
         error["error"] = "File not found"
         return (error)
     except PermissionError:
-        print(timestamp('CRIT') + "You don't have the permissions to read the file", flush=True)
+        print(timestamp('CRIT') + "You don't have the permissions to read the file\n", end="", flush=True)
         error["error"] = "You don't have the permissions to read the file"
         return (error)
     except IOError:
-        print(timestamp('CRIT') + "Could not read file", flush=True)
+        print(timestamp('CRIT') + "Could not read file\n", end="", flush=True)
         error["error"] = "Could not read file"
         return (error)
     return parse_file(configs)

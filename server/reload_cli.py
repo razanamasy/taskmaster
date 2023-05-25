@@ -11,7 +11,7 @@ def to_reload(new_process_key, old_process_key):
     has_to_reload = False
 
     if new_process_key.cmd != old_process_key.cmd:
-        print(timestamp('INFO') + "This process need to be restarted because command changed : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"This process need to be restarted because command changed : {new_process_key.name}\n", end="", flush=True)
         old_process_key.cmd = new_process_key.cmd
         has_to_reload = True
     return has_to_reload
@@ -45,43 +45,43 @@ def deep_change_process_key(new_process_key, old_process_key):
 
 def change_process_key(new_process_key, old_process_key):
     if new_process_key.numprocs != old_process_key.numprocs:
-        print(timestamp('INFO') + f"change replicas for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change replicas for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.numprocs = new_process_key.numprocs
     if new_process_key.umask != old_process_key.umask:
-        print(timestamp('INFO') + "change umask for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change umask for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.umask = new_process_key.umask
     if new_process_key.workingdir != old_process_key.workingdir:
-        print(timestamp('INFO') + "change workingdir for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change workingdir for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.workingdir = new_process_key.workingdir
     if new_process_key.autostart != old_process_key.autostart:
-        print(timestamp('INFO') + "change autostart for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change autostart for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.autostart = new_process_key.autostart
     if new_process_key.autorestart != old_process_key.autorestart:
-        print(timestamp('INFO') + "change autorestart for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change autorestart for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.autorestart = new_process_key.autorestart
     if new_process_key.exitcodes != old_process_key.exitcodes:
-        print(timestamp('INFO') + "change exitcodes for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change exitcodes for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.exitcode = new_process_key.exitcode
     if new_process_key.startretries != old_process_key.startretries:
-        print(timestamp('INFO') + "change startretries for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change startretries for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.startretries = new_process_key.startretries
     if new_process_key.starttime != old_process_key.starttime:
-        print(timestamp('INFO') + "change starttime for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change starttime for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.starttime = new_process_key.starttime
     if new_process_key.stopsignal != old_process_key.stopsignal:
-        print(timestamp('INFO') + "change stopsignal for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change stopsignal for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.stopsignal = new_process_key.stopsignal
     if new_process_key.stoptime != old_process_key.stoptime:
-        print(timestamp('INFO') + "change stoptime for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change stoptime for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.stoptime = new_process_key.stoptime
     if new_process_key.stdout != old_process_key.stdout:
-        print(timestamp('INFO') + "change stdout for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change stdout for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.stdout = new_process_key.stdout
     if new_process_key.stderr != old_process_key.stderr:
-        print(timestamp('INFO') + "change stderr for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change stderr for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.stderr = new_process_key.stderr
     if new_process_key.env != old_process_key.env:
-        print(timestamp('INFO') + "change env for : {new_process_key.name}", flush=True)
+        print(timestamp('INFO') + f"change env for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.env = new_process_key.env
 
 

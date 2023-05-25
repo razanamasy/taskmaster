@@ -35,11 +35,11 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     time_stamp = calendar.timegm(current_GMT)
 
     if process.backlog[0] == True:
-        print(timestamp('WARN') + "Process :" + key + " already in a start process", flush=True)
+        print(timestamp('WARN') + "Process :" + key + " already in a start process\n", end="", flush=True)
         return "Process :" + key + " already in a start process"
     else:
         if process.running[0] == False:
-            print(timestamp('WARN') + "Process :" + key + " is not running", flush=True)
+            print(timestamp('WARN') + "Process :" + key + " is not running\n", end="", flush=True)
             return "Process :" + key + " is not running"
         else:
             if process.autorestart == True:
@@ -79,5 +79,5 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
                 process.stopped = (False, time_stamp)
                 process.quit_with_stop = False
                 main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                print(timestamp('INFO') + "Restart running Process :" + key, flush=True)
+                print(timestamp('INFO') + "Restart running Process :" + key + "\n", end="", flush=True)
                 return "Restart running Process :" + key

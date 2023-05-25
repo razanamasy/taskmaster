@@ -1,16 +1,23 @@
 programs:
   env1:
     cmd: "/usr/bin/env"
-    workingdir: "/home/alice"
-    startretries: 1
-    autorestart: false
     starttime: 0
+    autorestart: True
+    numprocs: 10
     env:
       test: caca
-      caca: test
   env:
     cmd: "/usr/bin/env"
-    autorestart: false
+    autorestart: True
+    numprocs: 10
     starttime: 0
   ls:
-    cmd: "/usr/bin/ls -la"
+    cmd: "/bin/ls -la"
+    autorestart: True
+    numprocs: 10
+    starttime: 0
+  ls1:
+    cmd: "/bin/ls -la"
+    autorestart: True
+    numprocs: 10
+    starttime: 0

@@ -8,7 +8,7 @@ from timestamp import *
 
 def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dict):
 
-    print(timestamp('INFO') + f"{list_proc_data[key].name} entering in starting process", flush=True)
+    print(timestamp('INFO') + f"{list_proc_data[key].name} entering in starting process\n", end="", flush=True)
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
     my_retries = copy.deepcopy(list_proc_data[key].startretries)
@@ -35,7 +35,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                     break
                 mutex_proc_dict.release()
                 if key in list_proc_data and list_proc_data[key].pid not in running_table:
-                    print(timestamp('WARN') + f"starting process : pid not in process_table, need to retry for : {list_proc_data[key].name}", flush=True)
+                    print(timestamp('WARN') + f"starting process : pid not in process_table, need to retry for : {list_proc_data[key].name}\n", end="", flush=True)
                     if my_retries == 0:
                         print(timestamp('INFO') + f"No retries left for {list_proc_data[key].name} : FATAL ", flush=True)
                         list_proc_data[key].backlog = (False, time_stamp)
@@ -56,7 +56,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                         break
 
                     if list_proc_data[key].stopped[0] == True or my_curr_pid in list_proc_data[key].obsolete_pid:
-                        print(timestamp('WARN') + f"in start launch the pid is obsolete {my_curr_pid} or stopped {key} so i don't continue starting process", flush=True)
+                        print(timestamp('WARN') + f"in start launch the pid is obsolete {my_curr_pid} or stopped {key} so i don't continue starting process\n", end="", flush=True)
                         list_proc_data[key].backlog = (False, time_stamp)
                         list_proc_data[key].exited = (False, time_stamp)
                         mutex_proc_dict.release()
@@ -88,7 +88,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                 list_proc_data[key].stopped = (False, time_stamp)
                 list_proc_data[key].exited = (False, time_stamp)
                 list_proc_data[key].running = (True, time_stamp)
-            print(timestamp('INFO') + f"{list_proc_data[key].name} : leaving starting process", flush=True)
+            print(timestamp('INFO') + f"{list_proc_data[key].name} : leaving starting process\n", end="", flush=True)
             mutex_proc_dict.release()
 
 
