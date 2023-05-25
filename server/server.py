@@ -250,6 +250,7 @@ while running:
                 result = "------STATUS------\n"
                 if len(cmd['status']) == 0:
                     for key in list_proc_data:
+							# print(f"STATUS OF {list_proc_data[key]}")
                         curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
                         result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
                 else:

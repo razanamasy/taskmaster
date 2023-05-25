@@ -78,7 +78,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
             current_GMT = time.gmtime()
             time_stamp = calendar.timegm(current_GMT)
 
-        if key in list_proc_data and len(clients) != 0 and list_proc_data[key].stopped[0] == False and list_proc_data[key].exited[0] == False:
+        if key in list_proc_data and len(clients) != 0 and list_proc_data[key].stopped[0] == False:
             mutex_proc_dict.acquire()
             list_proc_data[key].backlog = (False, time_stamp)
             if list_proc_data[key].pid in running_table:
