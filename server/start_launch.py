@@ -29,6 +29,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
             if len(clients) != 0 and list_proc_data[key].stopped[0] == False: #Check also if has not been stopped to avoid revival process
                 mutex_proc_dict.acquire()
                 if key not in list_proc_data or list_proc_data[key].fatal[0] == True:
+                    list_proc_data[key].backlog = (False, time_stamp)
                     mutex_proc_dict.release()
                     break
                 mutex_proc_dict.release()
