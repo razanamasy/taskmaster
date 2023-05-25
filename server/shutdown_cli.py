@@ -1,4 +1,5 @@
 from kill_quit import main as kill_quit
+from timestamp import *
 
 def main():
     for client in client_proc_dict
@@ -8,6 +9,6 @@ def main():
             client_proc_dict.pop(client_socket.fileno())
             mutex_proc_dict.release()
             mutex_proc_dict.acquire()
-			print("Key in dictionary left : ", flush=True)
-            print(client_proc_dict.keys())
+            print(timestamp('INFO') + "Key in dictionary left : ", flush=True)
+            #print(client_proc_dict.keys())
             mutex_proc_dict.release()

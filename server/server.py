@@ -6,7 +6,6 @@ import signal
 import os
 import select
 import copy
-#from create_child_process import main as main_launch
 from start_launch import main as main_starting
 from restart_cli import main as main_restart_cli
 from stop_cli import main as main_stop_cli
@@ -18,7 +17,8 @@ from kill_quit import main as kill_quit
 import threading
 from threading import Thread, Lock
 from parse_command import *
-import ctypes
+import errno
+from timestamp import *
 
 #sys.stdout.flush()
 #sys.stderr.flush()
@@ -28,11 +28,11 @@ HOST = "localhost"
 try:
     PORT = int(sys.argv[2])
 except:
-    print("Bad port", flush=True)
+    print(timestamp('CRIT') + "Bad port", flush=True)
     exit(1)
 
 if os.getuid() != 0:
-    print("Error: you should be root to start a daemon Taskmaster server", flush=True)
+    print(timestamp('CRIT') + "Error: you should be root to start a daemon Taskmaster server", flush=True)
     exit(1)
 
 #SOCKET INITALISATION
@@ -70,7 +70,7 @@ def is_running():
     try:
         server_socket.bind((HOST, PORT))
     except socket.error as err:
-        print(f"Server error : {err}", flush=True)
+        print(timestamp('ERRO') + f"Server error : {err}", flush=True)
         exit(2) 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -89,7 +89,7 @@ def is_exit_matching(status, process_data):
         if status == i:
             match = 1
         else:
-            print(f"Process {process_data.name} : has died unexpectedly", flush=True)
+            print(timestamp('WARN') + f"Process {process_data.name} : has died unexpectedly", flush=True)
     return match
 
 def wait_for_child(running_table, list_proc_data, clients, thread_list):
@@ -100,9 +100,14 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
             try:
                 pid, status = os.waitpid(-1, os.WNOHANG)
                 if (pid < 0):
-                    print(f"child :{pid} encountered error", flush=True)
+                    print(timestamp('WARN') + f"child :{pid} encountered error", flush=True)
                 else:
                     if (pid > 0):
+                        # try:
+                        #     os.close(running_table[pid].stdout_fd)
+                        #     os.close(running_table[pid].stderr_fd)
+                        # except:
+                        #     pass
                         current_GMT = time.gmtime()
                         time_stamp = calendar.timegm(current_GMT)
 
@@ -134,15 +139,15 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                                 main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
 
                         running_table.pop(pid)
-                        print(f"Process {pid} exited with status {status}", flush=True)
-                        print("No longer waiting pid", flush=True)
+                        print(timestamp('INFO') + f"Process {pid} exited with status {status}", flush=True)
             except OSError as e:
                 if e.errno == errno.ECHILD:
-                    print("No child processes to wait for...", flush=True)
+                    pass
+                    #print(timestamp('INFO') + "No child processes to wait for...", flush=True)
                 else:
-                    print("error waitpid", flush=True)
+                    print(timestamp('CRIT') + "error waitpid", flush=True)
                     raise e
-    print("MONITOR HAS QUIT", flush=True)
+    print(timestamp('INFO') + "MONITOR HAS QUIT", flush=True)
 
 
 def launching(running, list_proc_data, clients, running_table, first, thread_list, path_conf):
@@ -178,7 +183,7 @@ while running:
             client_socket, addr = server_socket.accept()
             clients.append(client_socket)
             poll_object.register(client_socket, select.POLLIN)
-            print(f"New client connected from {addr[0]}:{addr[1]}", flush=True)
+            print(timestamp('INFO') + f"New client connected from {addr[0]}:{addr[1]}", flush=True)
         
             # First launch process and monitor calling (only once)
             if first == 0:
@@ -186,7 +191,6 @@ while running:
                 list_proc_data = copy.deepcopy(main_parse(init_path_conf))
                 for key in list_proc_data:
                     if key == "error":
-                        print(list_proc_data["error"], flush=True)
                         running = 0
                         break
                 launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
@@ -209,37 +213,37 @@ while running:
 
             # Process the job command
             if cmd_key == 'start':
-                print("starting called...", flush=True)
+                print(timestamp('INFO') + "starting called by client " + str(client.fileno()), flush=True)
                 result = "starting called..." 
                 for key in cmd['start']:
                     if key in list_proc_data:
                         result = main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        print(result, flush=True)
+                        #print(result, flush=True)
                     else:
                         result = "Can start process :" + key + ", it does not exist"
-                        print(result, flush=True)
+                        #print(result, flush=True)
 
                 # Code to start the job goes here
             elif cmd_key == 'stop':
-                print("Stopping called...", flush=True)
+                print(timestamp('INFO') + "Stopping called by client " + str(client.fileno()), flush=True)
                 result = "Stopping called..."
                 for key in cmd['stop']:
                     if key in list_proc_data:
                         result = main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        print(result, flush=True)
+                        #print(result, flush=True)
                     else:
                         result = "Can't stop process :" + key + ", it does not exist"
-                        print(result, flush=True)
+                        #print(result, flush=True)
             elif cmd_key == 'restart':
-                print("restarting called...", flush=True)
+                print(timestamp('INFO') + "restarting called by client " + str(client.fileno()), flush=True)
                 result = "restarting called..."
                 for key in cmd['restart']:
                     if key in list_proc_data:
                         result = main_restart_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        print(result, flush=True)
+                        #print(result, flush=True)
                     else:
                         result = "Can't restart process :" + key + ", it does not exist"
-                        print(result, flush=True)
+                        #print(result, flush=True)
             elif cmd_key == 'reload':
                 result = "Reloading the configuration file : " + init_path_conf 
                 handle_sighup(signal.SIGHUP, None)
@@ -251,23 +255,23 @@ while running:
                 if len(cmd['status']) == 0:
                     for key in list_proc_data:
                         curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
-                        result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
+                        result +=  "Process : " + key + " : " + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
                 else:
                     for key in cmd['status']:
                         print(f"in server in status {list_proc_data[key]}")
                         if key in list_proc_data:
                             curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
-                            result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
-                            print(result, flush=True)
+                            result +=  "Process : " + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
+                            print(timestamp('INFO') + result, flush=True)
                         else:
-                            result = "Can't get status of process :" + key + ", it does not exist"
-                            print(result, flush=True)
+                            result = "Can't get status of process : " + key + ", it does not exist"
+                            print(timestamp('WARN') + result, flush=True)
                 print(result, flush=True)
             elif cmd_key == 'help':
-                print("Display helper...", flush=True)
-                result = str(cmd["help"]) 
+                print(timestamp('INFO') + "Displaying helper requested by client  " + str(client.fileno()), flush=True)
+                result = str(cmd["help"])
             elif cmd_key == 'quit': 
-                print("Client quitting", flush=True)
+                print(timestamp('INFO') + "Client " + str(client.fileno()) + " quitting", flush=True)
                 result = None
                 #Remove client from everything
                 poll_object.unregister(client_socket)
@@ -277,12 +281,12 @@ while running:
                     kill_quit(list_proc_data, running_table, mutex_proc_dict)
                     running = 0
             elif cmd_key == 'shutdown':
-                print("SHUTDOWN", flush=True)
-                result = "shutdown"
+                print(timestamp('INFO') + "SERVER SHUTTING DOWN...", flush=True)
+                result = "Server shutdown"
                 mutex_proc_dict.acquire()
                 while len(clients) != 0:
                     poll_object.unregister(clients.pop())
-                    print(f"client left: {clients} ", flush=True)
+                    print(timestamp('INFO') + f"client left: {clients} ", flush=True)
                 mutex_proc_dict.release()
 
                 if len(clients) == 0:
@@ -290,7 +294,7 @@ while running:
                     running = 0
 
             else:
-                print(f"Invalid command : {data}", flush=True)
+                print(timestamp('ERRO') + "Wrong command :" + data, flush=True)
                 result = cmd[cmd_key] 
 
             if result != None:
