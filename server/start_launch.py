@@ -13,6 +13,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
     my_retries = copy.deepcopy(list_proc_data[key].startretries)
     my_retries_fix = copy.deepcopy(list_proc_data[key].startretries)
     my_starttime = copy.deepcopy(list_proc_data[key].starttime)
+    my_curr_pid = copy.deepcopy(list_proc_data[key].pid)
 
     mutex_proc_dict.acquire()
     last_starting = list_proc_data[key].backoff_starting[1] 
@@ -28,12 +29,14 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
             if len(clients) != 0 and list_proc_data[key].stopped[0] == False: #Check also if has not been stopped to avoid revival process
                 mutex_proc_dict.acquire()
                 if key not in list_proc_data or list_proc_data[key].fatal[0] == True:
+                    mutex_proc_dict.release()
                     break
                 mutex_proc_dict.release()
                 if key in list_proc_data and list_proc_data[key].pid not in running_table:
                     print(f"starting process : pid not in process_table, need to retry for : {list_proc_data[key].name}", flush=True)
                     if my_retries == 0:
                         print(f"No retries left for {list_proc_data[key].name} : FATAL ", flush=True)
+                        list_proc_data[key].backlog = (False, time_stamp)
                         list_proc_data[key].fatal = (True, time_stamp)
                         break
 
@@ -46,11 +49,12 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                         time.sleep(my_retries_fix - my_retries)
 
                     mutex_proc_dict.acquire()
-                    if key not in list_proc_data:
+                    if key not in list_proc_data or my_curr_pid in list_proc_data[key].obsolete_pid:
                         mutex_proc_dict.release()
                         break
 
-                    if list_proc_data[key].stopped[0] == True:
+                    if list_proc_data[key].stopped[0] == True or my_curr_pid in list_proc_data[key].obsolete_pid:
+                        print(f"in start launch the pid is obsolete {my_curr_pid} or stopped {key} so i don't continue starting process")
                         list_proc_data[key].backlog = (False, time_stamp)
                         list_proc_data[key].exited = (False, time_stamp)
                         mutex_proc_dict.release()
@@ -65,6 +69,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                     newpid = main_exec(list_proc_data[key])
                     my_retries -= 1
                     list_proc_data[key].pid = newpid
+                    my_curr_pid = copy.deepcopy(list_proc_data[key].pid)
                     running_table[newpid]=list_proc_data[key]
                     mutex_proc_dict.release()
             else:
@@ -72,7 +77,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
             current_GMT = time.gmtime()
             time_stamp = calendar.timegm(current_GMT)
 
-        if key in list_proc_data and len(clients) != 0 and list_proc_data[key].stopped[0] == False:
+        if key in list_proc_data and len(clients) != 0 and list_proc_data[key].stopped[0] == False and list_proc_data[key].exited[0] == False:
             mutex_proc_dict.acquire()
             list_proc_data[key].backlog = (False, time_stamp)
             if list_proc_data[key].pid in running_table:
@@ -84,6 +89,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
 
 
 def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
+    print(f"in start launch strating : {key}")
     newpid = main_exec(list_proc_data[key])
 
     current_GMT = time.gmtime()

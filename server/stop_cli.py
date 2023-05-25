@@ -29,15 +29,17 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     process = list_proc_data[key]
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
+    process.backlog = (False, time_stamp)
 
     if process.stopping[0] == True:
         return "Process : " + key + " already in a stopping process"
-    if process.backlog[0] == True and process.backoff_starting[0] == False:
+    if process.backlog[0] == True and process.backoff_starting[0] == False: #en backoff
         process.quit_with_stop = True
         process.stopped = (True, time_stamp)
+        process.obsolete_pid.append(process.pid)
         return "Old state of :" + key + " BACKOFF, stopping the start process"
 #        return "Process : " + key + " already in a starting process"
-    if process.stopped[0] == True:
+    if process.stopped[0] == True or process.exited[0] == True or process.fatal[0] == True:
         return "Already stopped Process : " + key + " stopped"
 
     process.cli_history.append('stop')

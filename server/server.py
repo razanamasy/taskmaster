@@ -252,9 +252,9 @@ while running:
                     for key in list_proc_data:
                         curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
                         result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
-                        print(result, flush=True)
                 else:
                     for key in cmd['status']:
+                        print(f"in server in status {list_proc_data[key]}")
                         if key in list_proc_data:
                             curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
                             result +=  "Process :" + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
@@ -262,6 +262,7 @@ while running:
                         else:
                             result = "Can't get status of process :" + key + ", it does not exist"
                             print(result, flush=True)
+                print(result, flush=True)
             elif cmd_key == 'help':
                 print("Display helper...", flush=True)
                 result = str(cmd["help"]) 

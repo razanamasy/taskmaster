@@ -1,28 +1,6 @@
 programs:
-  return:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    startretries: 6
-    numprocs: 1
-    autostart: True 
-    autorestart: False
-    starttime: 0
-    stoptime: 10
-    stopsignal: "TERM"
-    exitcodes: [0]
-
-  while:
-    cmd: "/home/hrazanam/taskmaster/progs/while"
-    startretries: 2
-    numprocs: 1
-    autostart: True 
-    autorestart: True 
-    starttime: 50
-    stoptime: 10
-    stopsignal: "TERM"
-    exitcodes: [0]
-
   command:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
+    cmd: "/Users/hinaraza/taskmaster/progs/return"
     startretries: 2
     numprocs: 1
     autostart: True 

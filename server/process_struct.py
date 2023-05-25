@@ -29,6 +29,7 @@ class process_data:
         self.logs = []
         self.cli_history = []
         self.status_exit = []
+        self.obsolete_pid = []
 
     def __str__(self):
         return f"My class: \n name = {self.name}\n pid = {self.pid}\n cmd = {self.cmd}\n numprocs = {self.numprocs}\n \
