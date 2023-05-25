@@ -30,6 +30,9 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
     process.backlog = (False, time_stamp)
+    process.quit_with_stop = True
+    process.stopped = (True, time_stamp)
+    process.obsolete_pid.append(process.pid)
 
     if process.stopping[0] == True:
         return "Process : " + key + " already in a stopping process"

@@ -1,8 +1,8 @@
 programs:
-  while:
-    cmd: "/Users/hinaraza/taskmaster/progs/while"
+  ls:
+    cmd: "/Users/hinaraza/taskmaster/progs/return"
     startretries: 2
-    numprocs: 1 
+    numprocs: 1
     autostart: True 
     autorestart: True 
     starttime: 50
@@ -10,21 +10,10 @@ programs:
     stopsignal: "TERM"
     exitcodes: [0]
 
-  ls:
-    cmd: "/bin/ls"
-    startretries: 2
-    numprocs: 10
-    autostart: True 
-    autorestart: True 
-    starttime: 0
-    stoptime: 10
-    stopsignal: "TERM"
-    exitcodes: [0]
-
   command:
     cmd: "/Users/hinaraza/taskmaster/progs/return"
     startretries: 2
-    numprocs: 10
+    numprocs: 1
     autostart: True 
     autorestart: True 
     starttime: 50
