@@ -106,10 +106,25 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                     print(timestamp('WARN') + f"child :{pid} encountered error\n", end="", flush=True)
                 else:
                     if (pid > 0):
+                        # Close file descriptors
+                        stdout_original = sys.stdout
+                        stderr_original = sys.stderr
+                        stdout_fd = os.dup(stdout_original.fileno())
+                        stderr_fd = os.dup(stderr_original.fileno())
                         if running_table[pid].stdout_fd != -1:
                             os.close(running_table[pid].stdout_fd)
                         if running_table[pid].stderr_fd != -1:
                             os.close(running_table[pid].stderr_fd)
+
+                        # Restore original file descriptors and sys.stdout/sys.stderr
+                        if stdout_fd is not None:
+                            os.dup2(stdout_fd, running_table[pid].stdout_og)
+                            os.close(stdout_fd)
+                        if stderr_fd is not None:
+                            os.dup2(stderr_fd, running_table[pid].stderr_og)
+                            os.close(stderr_fd)
+                        sys.stdout = stdout_original
+                        sys.stderr = stderr_original
 
                         current_GMT = time.gmtime()
                         time_stamp = calendar.timegm(current_GMT)

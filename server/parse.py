@@ -94,7 +94,7 @@ def set_attribute(process_dict, key, value):
             value = int_signals[value]
     elif key == "stdout":
         if os.path.exists(os.path.dirname(value)):
-            file = open(value, "w")
+            file = open(value, "a")
             os.chmod(value, int(calculate_file_rights(process_dict.umask), 8))
             if os.access(value, os.W_OK):
                 pass
@@ -106,7 +106,7 @@ def set_attribute(process_dict, key, value):
             return ("error: stdout file does not exist")
     elif key == "stderr":
         if os.path.exists(os.path.dirname(value)):
-            file = open(value, "w")
+            file = open(value, "a")
             os.chmod(value, int(calculate_file_rights(process_dict.umask), 8))    
             if os.access(value, os.W_OK):
                 pass
@@ -177,10 +177,10 @@ def parse_file(configs):
                         stderr_file.close()
                     except Exception as e:
                         pass
-                    stdout_file = open(process_dict[str(proc_name)].stdout, "w")
+                    stdout_file = open(process_dict[str(proc_name)].stdout, "a")
                     os.chmod(process_dict[str(proc_name)].stdout, int(calculate_file_rights(process_dict[str(proc_name)].umask), 8))    
                     if os.access(process_dict[str(proc_name)].stdout, os.W_OK):
-                        stderr_file = open(process_dict[str(proc_name)].stderr, "w")
+                        stderr_file = open(process_dict[str(proc_name)].stderr, "a")
                         os.chmod(process_dict[str(proc_name)].stderr, int(calculate_file_rights(process_dict[str(proc_name)].umask), 8))
                         stderr_file.close()
                         stdout_file.close()

@@ -16,6 +16,8 @@ def main(data):
     stderr_fd = os.dup(stderr_original.fileno())
     data.stdout_fd = copy.deepcopy(stdout_fd)
     data.stderr_fd = copy.deepcopy(stderr_fd)
+    data.stdout_og = copy.deepcopy(stdout_original.fileno())
+    data.stderr_og = copy.deepcopy(stderr_original.fileno())
     for i in range(1):
         pid = os.fork()
         if pid == 0:

@@ -32,6 +32,8 @@ class process_data:
         self.obsolete_pid = []
         self.stdout_fd = -1
         self.stderr_fd = -1
+        self.stdout_og = -1
+        self.stderr_og = -1 
 
     def __str__(self):
         return f"My class: \n name = {self.name}\n pid = {self.pid}\n cmd = {self.cmd}\n numprocs = {self.numprocs}\n \
