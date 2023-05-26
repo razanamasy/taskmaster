@@ -9,8 +9,7 @@ fi
 rm -rf /tmp/taskmaster.log
 file_path="/tmp/taskmaster.log"
 
-#nohup python3 server/server.py $1 $2 $3 &> $file_path #error ok but not if it work
-PYTHONUNBUFFERED=1 nohup python3 server/server.py $1 $2 $3 >> $file_path & #Ok if it work but don't catch server i dunno why need to catch error from client if error 
+PYTHONUNBUFFERED=1 nohup python3 server/server.py $1 $2 $3 >> $file_path & 
 
 
 sleep 2

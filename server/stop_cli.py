@@ -30,6 +30,8 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
     process.backlog = (False, time_stamp)
+    process.quit_with_stop = True
+    process.obsolete_pid.append(process.pid)
 
     if process.stopping[0] == True:
         print(timestamp('WARN') + "Process : " + key + " already in a stopping process\n", end="", flush=True)
@@ -41,9 +43,14 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         print(timestamp('INFO') + "Old state of :" + key + " BACKOFF, stopping the start process\n", end="", flush=True)
         return "Old state of :" + key + " BACKOFF, stopping the start process"
 #        return "Process : " + key + " already in a starting process"
-    if process.stopped[0] == True or process.exited[0] == True or process.fatal[0] == True:
-        print(timestamp('INFO') + "Already stopped Process : " + key + " stopped\n", end="", flush=True)
-        return "Already stopped Process : " + key + " stopped"
+
+    if process.exited[0] == True:
+        process.stopped = (True, time_stamp) #in case of exited ls to fast
+        print(timestamp('WARN') + "Already exited Process : " + key + " now stopped\n", end="", flush=True)
+        return "Already exited Process : " + key + " now stopped"
+    if process.stopped[0] == True or process.fatal[0] == True:
+        print(timestamp('WARN') + "Already stopped Process : " + key + " stopped" + " or fatal : " + str(process.exited[0]) + " and " +  str(process.fatal[0]) + "\n", end="", flush=True)
+        return "Already stopped Process : " + key + " stopped" + " or fatal : " + str(process.exited[0]) + " and " +  str(process.fatal[0])
 
     process.cli_history.append('stop')
     process.stopping = (True, time_stamp)
