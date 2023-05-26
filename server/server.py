@@ -62,6 +62,9 @@ mutex_proc_dict = Lock()
 
 def handle_sighup(signal, frame):
     new_list = main_parse(init_path_conf)
+    for key in new_list:
+        if key == "error":
+            return()
     main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
     
 signal.signal(signal.SIGHUP, handle_sighup)
