@@ -1,10 +1,10 @@
 programs:
   return:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
+    cmd: "/usr/bin/ls"
     startretries: 2
     numprocs: 1
     autostart: True 
-    autorestart: True
+    autorestart: True 
     starttime: 0
     stoptime: 10
     stopsignal: "TERM"

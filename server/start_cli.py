@@ -25,6 +25,7 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         process.cli_history.append('start')
         process.stopping = (False, time_stamp)
         process.stopped = (False, time_stamp)
+        process.fatal = (False, time_stamp)
         process.quit_with_stop = False
         main_starting(list_roc_data, key, clients, running_table, mutex_proc_dict, thread_list)
         return "Initial starting " + key
@@ -36,6 +37,7 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         process.cli_history.append('start')
         process.stopping = (False, time_stamp)
         process.stopped = (False, time_stamp)
+        process.fatal = (False, time_stamp)
         process.quit_with_stop = False
         main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
         return res
