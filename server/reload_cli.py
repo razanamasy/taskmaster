@@ -120,7 +120,7 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
                 time.sleep(0.1)
             #    print(f"1 in reload this process had deep changes before main starting: {list_proc_data[key]}")
                 if list_proc_data[process_key].autostart == True:
-                    print(f"2 in reload this process had deep changes before main starting: {list_proc_data[key]}")
+                    #print(f"2 in reload this process had deep changes before main starting: {list_proc_data[key]}")
                     main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
             else:
                 change_process_key(new_list[process_key], old_list[process_key])

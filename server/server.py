@@ -77,7 +77,7 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 is_running()
 server_socket.listen()
-print(f"Server listening on {HOST}:{PORT}\n", end="", flush=True)
+print(timestamp('INFO') + f"Server listening on {HOST}:{PORT}\n", end="", flush=True)
 poll_object = select.poll()
 poll_object.register(server_socket, select.POLLIN)
 
