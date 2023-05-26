@@ -46,7 +46,7 @@ def main(data):
                 except Exception as e:
                     os.dup2(stdout_file.fileno(), stdout_original.fileno())
                     os.dup2(stderr_file.fileno(), stderr_original.fileno())
-                    print(str(e), file=stderr_file)
+                    print(str(e) + "\n", end="", file=stderr_file)
                     if stdout_fd is not None:
                         os.dup2(stdout_fd, stdout_original.fileno())
                         os.close(stdout_fd)
@@ -65,4 +65,4 @@ def main(data):
         else:
             pids.append(pid)
 
-    return [pid]
+    return pid

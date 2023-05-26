@@ -143,7 +143,6 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
             except OSError as e:
                 if e.errno == errno.ECHILD:
                     pass
-                    #print(timestamp('INFO') + "No child processes to wait for...", flush=True)
                 else:
                     print(timestamp('CRIT') + "error waitpid\n", end="", flush=True)
                     raise e
@@ -218,10 +217,9 @@ while running:
                 for key in cmd['start']:
                     if key in list_proc_data:
                         result = main_start_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        #print(result, flush=True)
                     else:
                         result = "Can start process :" + key + ", it does not exist"
-                        #print(result, flush=True)
+                        print(timestamp('WARN') + result + "\n", end="", flush=True)
 
                 # Code to start the job goes here
             elif cmd_key == 'stop':
@@ -230,20 +228,18 @@ while running:
                 for key in cmd['stop']:
                     if key in list_proc_data:
                         result = main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        #print(result, flush=True)
                     else:
                         result = "Can't stop process :" + key + ", it does not exist"
-                        #print(result, flush=True)
+                        print(timestamp('WARN') + result + "\n", end="", flush=True)
             elif cmd_key == 'restart':
                 print(timestamp('INFO') + "restarting called by client " + str(client.fileno()) + "\n", end="", flush=True)
                 result = "restarting called..."
                 for key in cmd['restart']:
                     if key in list_proc_data:
                         result = main_restart_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
-                        #print(result, flush=True)
                     else:
                         result = "Can't restart process :" + key + ", it does not exist"
-                        #print(result, flush=True)
+                        print(timestamp('WARN') + result + "\n", end="", flush=True)
             elif cmd_key == 'reload':
                 result = "Reloading the configuration file : " + init_path_conf 
                 handle_sighup(signal.SIGHUP, None)
@@ -262,11 +258,10 @@ while running:
                         if key in list_proc_data:
                             curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
                             result +=  "Process : " + key + " :" + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
-                            print(timestamp('INFO') + result + "\n", end="", flush=True)
                         else:
                             result = "Can't get status of process : " + key + ", it does not exist"
                             print(timestamp('WARN') + result + "\n", end="", flush=True)
-                print(result, flush=True)
+                print(result, end="", flush=True)
             elif cmd_key == 'help':
                 print(timestamp('INFO') + "Displaying helper requested by client  " + str(client.fileno()) + "\n", end="", flush=True)
                 result = str(cmd["help"])

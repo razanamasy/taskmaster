@@ -37,7 +37,7 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                 if key in list_proc_data and list_proc_data[key].pid not in running_table:
                     print(timestamp('WARN') + f"starting process : pid not in process_table, need to retry for : {list_proc_data[key].name}\n", end="", flush=True)
                     if my_retries == 0:
-                        print(timestamp('INFO') + f"No retries left for {list_proc_data[key].name} : FATAL ", flush=True)
+                        print(timestamp('INFO') + f"No retries left for {list_proc_data[key].name} : FATAL \n", end="", flush=True)
                         list_proc_data[key].backlog = (False, time_stamp)
                         list_proc_data[key].fatal = (True, time_stamp)
                         break
@@ -70,11 +70,9 @@ def starting_process(list_proc_data, key, clients, running_table, mutex_proc_dic
                     list_proc_data[key].backoff_starting = (True, time_stamp) #reset startsecs from last starting (substraction ts - b_s.ts)
                     newpid = main_exec(list_proc_data[key])
                     my_retries -= 1
-                    list_proc_data[key].pid = newpid[0]
-                    # list_proc_data[key].stdout_fd = newpid[1]
-                    # list_proc_data[key].stderr_fd = newpid[2]
+                    list_proc_data[key].pid = newpid
                     my_curr_pid = copy.deepcopy(list_proc_data[key].pid)
-                    running_table[newpid[0]]=list_proc_data[key]
+                    running_table[newpid]=list_proc_data[key]
                     mutex_proc_dict.release()
             else:
                 break
@@ -98,15 +96,13 @@ def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_l
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
-    list_proc_data[key].pid = newpid[0]
-    # list_proc_data[key].stdout_fd = newpid[1]
-    # list_proc_data[key].stderr_fd = newpid[2]
+    list_proc_data[key].pid = newpid
     list_proc_data[key].backlog = (True, time_stamp) #enter in starting process
     list_proc_data[key].stopped = (False, time_stamp) #not stopped anymore if mannually start or restart
     list_proc_data[key].exit = (False, time_stamp) #not stopped anymore if mannually start or restart
     list_proc_data[key].fatal = (False, time_stamp) #not fatal anymore if restart or start
     list_proc_data[key].backoff_starting = (True, time_stamp) #starting 
-    running_table[newpid[0]]=list_proc_data[key]
+    running_table[newpid]=list_proc_data[key]
 
     #envoi du thread starting process pour chaque process
     thread_starting_process = threading.Thread(target=starting_process, args=(list_proc_data, key, clients, running_table, mutex_proc_dict))

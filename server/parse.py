@@ -128,7 +128,7 @@ def parse_file(configs):
                 if isinstance(conf, dict):
                     error_flag = check_string(str(proc_name))
                     if error_flag != None:
-                        print(timestamp('CRIT') + error_flag, flush=True)
+                        print(timestamp('CRIT') + error_flag + "\n", end="", flush=True)
                         error["error"] = "process name" +  error_flag
                         return (error)
                     elif "-" in str(proc_name):
@@ -146,13 +146,13 @@ def parse_file(configs):
                                 return (error)
                             error_type = check_value_types(key, value)
                             if error_type != None:
-                                print(timestamp('CRIT') + error_type, flush=True)
+                                print(timestamp('CRIT') + error_type + "\n", end="", flush=True)
                                 error["error"] = error_type
                                 return (error)
                             else:
                                 error_type = set_attribute(process_dict[str(proc_name)], key, value)
                                 if error_type != None:
-                                    print(timestamp('CRIT') + error_type, flush=True)
+                                    print(timestamp('CRIT') + error_type + "\n", end="", flush=True)
                                     error["error"] = error_type
                                     return (error)
                     if process_dict[str(proc_name)].cmd == None:

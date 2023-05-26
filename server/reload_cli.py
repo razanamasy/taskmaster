@@ -131,7 +131,7 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
     for process_key in to_add:
         list_proc_data[process_key] = copy.deepcopy(new_list[process_key])
         if list_proc_data[process_key].autostart == True:
-            print(timestamp('INFO') + f"Add process : {process_key}", flush=True)
+            print(timestamp('INFO') + f"Add process : {process_key}\n", end="", flush=True)
             main_starting(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
 
     to_delete = []
@@ -140,6 +140,6 @@ def main(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thre
             to_delete.append(process_key)
 
     for process_key in to_delete:
-        print(timestamp('INFO') + f"Delete process : {process_key}", flush=True)
+        print(timestamp('INFO') + f"Delete process : {process_key}\n", end="", flush=True)
         stop(list_proc_data, process_key, clients, running_table, mutex_proc_dict, thread_list)
         list_proc_data.pop(process_key)
