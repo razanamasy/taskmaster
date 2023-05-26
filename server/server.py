@@ -103,11 +103,11 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                     print(timestamp('WARN') + f"child :{pid} encountered error\n", end="", flush=True)
                 else:
                     if (pid > 0):
-                        # try:
-                        #     os.close(running_table[pid].stdout_fd)
-                        #     os.close(running_table[pid].stderr_fd)
-                        # except:
-                        #     pass
+                        if running_table[pid].stdout_fd != -1:
+                            os.close(running_table[pid].stdout_fd)
+                        if running_table[pid].stderr_fd != -1:
+                            os.close(running_table[pid].stderr_fd)
+
                         current_GMT = time.gmtime()
                         time_stamp = calendar.timegm(current_GMT)
 
