@@ -136,11 +136,15 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
 
                         #STOPPED OU EXIT ?
                         if running_table[pid].quit_with_stop == True:
+                            print(timestamp('INFO') +  f"STOP detection in monitor {running_table[pid].name}\n", end="", flush=True)
                             running_table[pid].stopped = (True, time_stamp)
+                            running_table[pid].stopping = (False, time_stamp)
                             running_table[pid].backlog = (False, time_stamp)
                             running_table[pid].exited = (False, time_stamp)
                         else:
+                            print(timestamp('INFO') +  f"EXIT detection in monitor {running_table[pid].name}\n", end="", flush=True)
                             running_table[pid].stopped = (False, time_stamp)
+                            running_table[pid].stopping = (False, time_stamp)
                             running_table[pid].exited = (True, time_stamp)
                         
                         restart = False

@@ -1,4 +1,6 @@
 from start_launch import main as main_starting
+from stop_cli import main as main_stop_cli
+from start_cli import main as main_start_cli
 #from server import is_exit_matching as is_exit_matching
 from timestamp import *
 import os
@@ -41,39 +43,13 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         if process.running[0] == False:
             print(timestamp('WARN') + "Process :" + key + " is not running\n", end="", flush=True)
             return "Process :" + key + " is not running"
-        else:
-            if process.autorestart == True:
-                if process.stopsignal == "TERM":
-                    os.kill(process.pid, signal.SIGTERM)
-                elif process.stopsignal == "HUP":
-                    os.kill(process.pid, signal.SIGHUP)
-                elif process.stopsignal == "INT":
-                    os.kill(process.pid, signal.SIGINT)
-                elif process.stopsignal == "QUIT":
-                    os.kill(process.pid, signal.SIGQUIT)
-                elif process.stopsignal == "KILL":
-                    os.kill(process.pid, signal.SIGKILL)
-                elif process.stopsignal == "USR1":
-                    os.kill(process.pid, signal.SIGUSR1)
-                elif process.stopsignal == "USR2":
-                    os.kill(process.pid, signal.SIGUSR2)
-                return "Restart running Process :" + key
-            else:
-                if process.stopsignal == "TERM":
-                    os.kill(process.pid, signal.SIGTERM)
-                elif process.stopsignal == "HUP":
-                    os.kill(process.pid, signal.SIGHUP)
-                elif process.stopsignal == "INT":
-                    os.kill(process.pid, signal.SIGINT)
-                elif process.stopsignal == "QUIT":
-                    os.kill(process.pid, signal.SIGQUIT)
-                elif process.stopsignal == "KILL":
-                    os.kill(process.pid, signal.SIGKILL)
-                elif process.stopsignal == "USR1":
-                    os.kill(process.pid, signal.SIGUSR1)
-                elif process.stopsignal == "USR2":
-                    os.kill(process.pid, signal.SIGUSR2)
+        else: #if running to true but need to consider the case when waitpid did not detect death
 
+
+            main_stop_cli(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+            time.sleep(0.1)
+
+            if (list_proc_data[key].stopping[0] != True):
                 process.cli_history.append('restart')
                 process.stopping = (False, time_stamp)
                 process.stopped = (False, time_stamp)
@@ -81,3 +57,6 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
                 main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
                 print(timestamp('INFO') + "Restart running Process :" + key + "\n", end="", flush=True)
                 return "Restart running Process :" + key
+            else:
+                print(timestamp('INFO') + "Restart Process :" + key + " failed, process still stopping" + "\n", end="", flush=True)
+                return "Restart Process :" + key + " failed, process still stopping"

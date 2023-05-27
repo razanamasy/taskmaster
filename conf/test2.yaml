@@ -1,10 +1,10 @@
 programs:
   return:
-    cmd: "/usr/bin/ls"
-    startretries: 2
+    cmd: "/Users/hinaraza/taskmaster/progs/return"
+    startretries: 1
     numprocs: 1
-    autostart: True 
-    autorestart: True 
+    autostart: True
+    autorestart: False
     starttime: 0
     stoptime: 10
     stopsignal: "TERM"

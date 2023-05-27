@@ -20,9 +20,9 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
     current_GMT = time.gmtime()
     time_stamp = calendar.timegm(current_GMT)
 
-    if process.backlog[0] == True or process.running[0] == True:
-        print(timestamp('WARN') + "Process " + key  + " already running or backlog\n", end="", flush=True)
-        return "Process " + key  + " already running or backlog"
+    if process.backlog[0] == True or process.running[0] == True or process.stopping[0] == True:
+        print(timestamp('WARN') + "Process " + key  + " already running stopping process or starting process\n", end="", flush=True)
+        return "Process " + key  + " already running stopping process or starting process"
     if process.autostart == False and process.pid == -1:
         process.cli_history.append('start')
         process.stopping = (False, time_stamp)

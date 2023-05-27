@@ -61,7 +61,7 @@ def change_process_key(new_process_key, old_process_key):
         old_process_key.autorestart = new_process_key.autorestart
     if new_process_key.exitcodes != old_process_key.exitcodes:
         print(timestamp('INFO') + f"change exitcodes for : {new_process_key.name}\n", end="", flush=True)
-        old_process_key.exitcode = new_process_key.exitcode
+        old_process_key.exitcodes = new_process_key.exitcodes
     if new_process_key.startretries != old_process_key.startretries:
         print(timestamp('INFO') + f"change startretries for : {new_process_key.name}\n", end="", flush=True)
         old_process_key.startretries = new_process_key.startretries
