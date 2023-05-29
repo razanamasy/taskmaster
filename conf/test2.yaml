@@ -2,7 +2,18 @@ programs:
   return:
     cmd: "/home/hrazanam/taskmaster/progs/return"
     startretries: 1
-    numprocs: 30
+    numprocs: 1
+    autostart: True
+    autorestart: False
+    starttime: 0
+    stoptime: 10
+    stopsignal: "TERM"
+    exitcodes: [0]
+
+  return1:
+    cmd: "/home/hrazanam/taskmaster/progs/returnz"
+    startretries: 1
+    numprocs: 1
     autostart: True
     autorestart: False
     starttime: 0

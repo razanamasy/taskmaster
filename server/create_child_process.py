@@ -9,6 +9,7 @@ import resource
 
 #retourner le tableau de PID au main server qui va wait dans la boucle principale
 def main(data):
+    error = 0
     pids = []
     stdout_original = sys.stdout
     stderr_original = sys.stderr
@@ -58,18 +59,8 @@ def main(data):
                     sys.stdout = stdout_original
                     sys.stderr = stderr_original
                     print(timestamp('DEBG') + str(e) + "\n", file=sys.stdout, end="")
-                    data.failure = (False, 0)
-                    data.running = (False, 0)
-                    data.backlog = (False, 0)
-                    data.backoff_starting = (False, 0)
-                    data.fatal = (False, 0)
-                    data.quitting = (False, 0)
-                    data.stopping = (False, 0)
-                    data.stopped = (False, 0)
-                    data.exited = (False, 0)
-                    data.quit_with_stop = False
-                    
                     sys.exit(1)  # Terminate child process with error status
+
 
             except Exception as e:
                 print(timestamp('CRIT') + str(e) + "\n", flush=True, end="")

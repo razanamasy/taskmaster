@@ -99,8 +99,6 @@ def main (list_proc_data, key, clients, running_table, mutex_proc_dict, thread_l
         list_proc_data[key].running = (True, time_stamp)
 
     newpid = main_exec(list_proc_data[key])
-    if list_proc_data[key].running == False:
-        return "Execution failed for" + key
     list_proc_data[key].pid = newpid
     running_table[newpid]=list_proc_data[key]
 

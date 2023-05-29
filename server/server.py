@@ -188,7 +188,7 @@ def launching(running, list_proc_data, clients, running_table, first, thread_lis
     #FIRT EXEC IF AUTOSTART
     for key in list_proc_data:
         if list_proc_data[key].autostart == True:
-            main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
+           main_starting(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list)
 
     monitor = threading.Thread(target=wait_for_child, args=(running_table, list_proc_data, clients, thread_list))
     monitor.daemon = True
@@ -225,7 +225,7 @@ while running:
             # Process the job command
             if cmd_key == 'connexion':
                 error = 0
-                result = "Connexion to server..."
+                result = "Connexion to server...\n"
                 # First launch process and monitor calling (only once)
                 if first == 0:
                     first = 1
@@ -240,6 +240,11 @@ while running:
                             break
                     if error == 0:
                         launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
+                        time.sleep(0.5)
+                        for key in list_proc_data:
+                                # print(f"STATUS OF {list_proc_data[key]}")
+                            curr_status = main_status_cli(list_proc_data, key, mutex_proc_dict)
+                            result +=  "Process : " + key + " : " + curr_status[0]  + " since : " + str(curr_status[1]) + " seconds "  + "\n"
                     else:
                         break
 
