@@ -28,7 +28,6 @@ class process_data:
         self.quit_with_stop = False #a utils flag to avoid autorestart
         self.logs = []
         self.cli_history = []
-        self.status_exit = []
         self.obsolete_pid = []
         self.stdout_fd = -1
         self.stderr_fd = -1
@@ -44,4 +43,4 @@ stdout = {self.stdout}\n stderr = {self.stderr}\n env = {self.env}\n failure = {
 running = {self.running}\n backlog = {self.backlog}\n fatal = {self.fatal}\n \
 quitting = {self.quitting}\n stopping = {self.stopping}\n stopped = {self.stopped}\n \
 quit_with_stop = {self.quit_with_stop}\n logs = {self.logs}\n \
-status_exit = {self.status_exit}\n logs = {self.logs}\n cli_history = {self.cli_history}\n"
+logs = {self.logs}\n cli_history = {self.cli_history}\n"

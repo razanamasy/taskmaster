@@ -131,7 +131,6 @@ def wait_for_child(running_table, list_proc_data, clients, thread_list):
                         time_stamp = calendar.timegm(current_GMT)
 
                         key = running_table[pid].name
-                        running_table[pid].status_exit.append(status)
                         running_table[pid].running = (False, time_stamp)
                         running_table[pid].stopping = (False, time_stamp) 
 

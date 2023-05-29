@@ -6,15 +6,6 @@ import calendar
 import time
 from timestamp import *
 
-def is_exit_matching(status, process_data):
-    exit_table = process_data.exitcodes
-    match = 0
-    for i in exit_table:
-        if status == i:
-            match = 1
-    return match
-
-
 def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_list):
     process = list_proc_data[key]
     current_GMT = time.gmtime()
@@ -33,12 +24,8 @@ def main(list_proc_data, key, clients, running_table, mutex_proc_dict, thread_li
         print(timestamp('INFO') + "Initial starting " + key + "\n", end="", flush=True)
         return "Initial starting " + key
     else:
-        if is_exit_matching(process.status_exit[-1], process) == 1 and process.fatal[0] == False: #means it DID exit gracefully
-            print(timestamp('INFO') + "Starting " + key + "\n", end="", flush=True)
-            res = "Starting " + key
-        else:
-            print(timestamp('INFO') + "Starting : " + key + " (didn't exit with an uxpected exit code or was fatal)\n", end="", flush=True)
-            res = "Starting : " + key + " (didn't exit with an uxpected exit code or was fatal)"
+        print(timestamp('INFO') + "Starting : " + key + "\n", end="", flush=True)
+        res = "Starting : " + key
         process.cli_history.append('start')
         process.stopping = (False, time_stamp)
         process.stopped = (False, time_stamp)
