@@ -39,7 +39,7 @@ def check_umask(value):
             return ("wrong length")
         else:
             for nb in value:
-                if 0 <= int(nb) <= 7:
+                if 0 <= int(nb) <= 6:
                     continue
                 else:
                     return ("wrong permission value")

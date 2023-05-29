@@ -34,7 +34,22 @@ def main(data):
                 try:
                     # Change the current working directory
                     if data.workingdir != None:
-                        os.chdir(data.workingdir)
+                        try:
+                            os.chdir(data.workingdir)
+                        except Exception as e:
+                            os.dup2(stdout_file.fileno(), stdout_original.fileno())
+                            os.dup2(stderr_file.fileno(), stderr_original.fileno())
+                            print(str(e) + "\n", end="", file=stderr_file)
+                            if stdout_fd is not None:
+                                os.dup2(stdout_fd, stdout_original.fileno())
+                                os.close(stdout_fd)
+                            if stderr_fd is not None:
+                                os.dup2(stderr_fd, stderr_original.fileno())
+                                os.close(stderr_fd)
+                            sys.stdout = stdout_original
+                            sys.stderr = stderr_original
+                            print(timestamp('DEBG') + str(e) + "\n", file=sys.stdout, end="")
+                            sys.exit(1)  # Terminate child process with error status
 
                     # Create a new dictionary for child process environment variables
                     child_env = os.environ.copy()

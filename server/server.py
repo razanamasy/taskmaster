@@ -64,7 +64,7 @@ def handle_sighup(signal, frame):
     new_list = main_parse(init_path_conf)
     for key in new_list:
         if key == "error":
-            return("Error parsing : reload failed")
+            return("Error parsing : " + new_list[key])
     main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
     return ("Reload succeded")
     
@@ -233,7 +233,7 @@ while running:
                         if key == "error":
                             error = 1
                             result = list_proc_data[key] 
-                            result += ": Closing server" 
+                            result += ": Closing server\x03"
                             client_socket.sendall(result.encode())
                             running = 0
                             break
@@ -325,8 +325,8 @@ while running:
                     running = 0
 
             else:
-                print(timestamp('ERRO') + "Wrong command :" + data + "\n", end="", flush=True)
-                result = cmd[cmd_key] 
+                print(timestamp('ERRO') + "Wrong command: " + data + "\n", end="", flush=True)
+                result = cmd[cmd_key]
 
             if result != None:
                 # Send the result back to the client

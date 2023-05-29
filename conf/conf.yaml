@@ -1,23 +1,35 @@
 programs:
   env1:
-    cmd: "env"
-    starttime: 0
-    autorestart: unexpected
-    numprocs: 10
+    cmd: "/bin/env"
+    starttime: 1
+    autostart: True
+    autorestart: false
+    numprocs: 1
     env:
-      test: caca
+      "1234": caca27e276f@!
   env:
-    cmd: "/in/env"
+    cmd: "/bin/env"
     autorestart: False
-    numprocs: 10
+    numprocs: 1
     starttime: 0
   ls:
-    cmd: "/bin/ls -l"
+    cmd: /bin/ls -l
     autorestart: False
-    numprocs: 10
+    numprocs: 1
     starttime: 0
+    umask: "000"
+    workingdir: ../
   ls1:
-    cmd: "/bin/ls"
-    autorestart: unexpected
-    numprocs: 10
+    cmd: "/bin/ls -l"
+    autorestart: false
+    numprocs: 1
     starttime: 0
+    workingdir: ../
+    exitcodes:
+      - 5
+      - 6
+    startretries: 5
+    stopsignal: "TERM"
+    stoptime: 1
+    stdout: "./1232"
+    stderr: ./stderr

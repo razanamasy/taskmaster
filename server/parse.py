@@ -213,7 +213,7 @@ def open_file(conf_file):
                 return (error)
         f.close()
     except FileNotFoundError:
-        print(timestamp('CRIT') + "File not foun\n", end="", flush=True)
+        print(timestamp('CRIT') + "File not found\n", end="", flush=True)
         error["error"] = "File not found"
         return (error)
     except PermissionError:

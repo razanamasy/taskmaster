@@ -6,9 +6,6 @@ import io
 parser = argparse.ArgumentParser(prog='Taskmaster', usage='%(prog)s [options]', add_help=False)
 subparsers = parser.add_subparsers(dest='command')
 
-# Subparser for "connexion" command
-connexion_parser = subparsers.add_parser('connexion', help='Client connexion', add_help=False)
-
 # Subparser for "start" command
 start_parser = subparsers.add_parser('start', help='Start one stopped process or multiple processes', add_help=False)
 start_parser.add_argument('process_name', nargs='+', type=str, help='Process names to restart')
@@ -37,6 +34,9 @@ status_parser = subparsers.add_parser('help', help='Display helper', add_help=Fa
 # Subparser for "shutdown" command
 quit_parser = subparsers.add_parser('shutdown', help='Shutdown the taskmaster server', add_help=False)
 
+# Subparser for "connexion" command
+connexion_parser = subparsers.add_parser('connexion', help='Client connexion, does nothing when entered via client terminal because you are already connected duh', add_help=False)
+
 def check_command_start(command):
     valid_commands = ["help", "reload", "start", "stop", "restart", "quit", "status", "shutdown", "connexion"]
     if any(command.startswith(cmd) for cmd in valid_commands):
@@ -64,17 +64,40 @@ def parse_command(command):
             cmd["error"] = f"Taskmaster: error: invalid argument: '{args.command}' should not have any arguments"
         elif args.command in ['reload', 'quit', 'shutdown', 'connexion'] and not unknown_args:
             cmd[args.command] = None
-    except OSError as e:
+    except:
+        if command.startswith("start"):
+            if len(command) > 5 and command[5] == " ":
+                cmd["error"] = "usage: Taskmaster [options] start process_name [process_name ...]\nTaskmaster [options] start: error: the following arguments are required: process_name"
+            elif len(command) == 5:
+                cmd["error"] = "usage: Taskmaster [options] start process_name [process_name ...]\nTaskmaster [options] start: error: the following arguments are required: process_name"
+            else:
+                cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown', 'connexion')"
+        elif command.startswith("stop"):
+            if len(command) > 4 and command[4] == " ":
+                cmd["error"] = "usage: Taskmaster [options] stop process_name [process_name ...]\nTaskmaster [options] stop: error: the following arguments are required: process_name"
+            elif len(command) == 4:
+                cmd["error"] = "usage: Taskmaster [options] stop process_name [process_name ...]\nTaskmaster [options] stop: error: the following arguments are required: process_name"
+            else:
+                cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown', 'connexion')"
+        elif command.startswith("restart"):
+            if len(command) > 7 and command[7] == " ":
+                cmd["error"] = "usage: Taskmaster [options] restart process_name [process_name ...]\nTaskmaster [options] restart: error: the following arguments are required: process_name"
+            elif len(command) == 7:
+                cmd["error"] = "usage: Taskmaster [options] restart process_name [process_name ...]\nTaskmaster [options] restart: error: the following arguments are required: process_name"
+            else:
+                cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown', 'connexion')"
+        else:
+            cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown', 'connexion')"
         # Temporarily redirect stderr to capture the usage message
-        original_stderr = sys.stderr
-        sys.stderr = error_buffer = io.StringIO()
-        try:
-            parser.parse_args(command.split())
-        except:
-            pass
-        sys.stderr = original_stderr
+        #original_stderr = sys.stderr
+        #sys.stderr = error_buffer = io.StringIO()
+        #try:
+            #parser.parse_args(command.split())
+        #except:
+            #pass
+        #sys.stderr = original_stderr
 
         # Retrieve the captured usage message
-        usage_message = error_buffer.getvalue().strip()
-        cmd["error"] = usage_message    
+        #usage_message = error_buffer.getvalue().strip()
+        #cmd["error"] = usage_message    
     return (cmd)

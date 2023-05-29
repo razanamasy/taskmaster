@@ -9,6 +9,7 @@ try:
     PORT = int(sys.argv[1])
 except:
     print("Bad port")
+    exit(1)
 
 #command history list
 command_history = []
@@ -34,8 +35,16 @@ def main():
         client_socket.connect((HOST, PORT))
         command = 'connexion'
         client_socket.sendall(command.encode())
-        result = client_socket.recv(1024).decode()
-        print(result)
+        result = ''
+        # Receive the result from the server
+        while True:
+            chunk = client_socket.recv(1024).decode()
+            result += chunk
+            if '\x03' in chunk:
+                break
+        # Print the result to the console
+        if result:
+            print(result)
     except OSError as e:
         flag = False
         print(f"Client : Taskmaster server not available : {str(e)}")
