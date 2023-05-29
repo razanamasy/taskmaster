@@ -6,6 +6,9 @@ import io
 parser = argparse.ArgumentParser(prog='Taskmaster', usage='%(prog)s [options]', add_help=False)
 subparsers = parser.add_subparsers(dest='command')
 
+# Subparser for "connexion" command
+connexion_parser = subparsers.add_parser('connexion', help='Client connexion', add_help=False)
+
 # Subparser for "start" command
 start_parser = subparsers.add_parser('start', help='Start one stopped process or multiple processes', add_help=False)
 start_parser.add_argument('process_name', nargs='+', type=str, help='Process names to restart')
@@ -35,7 +38,7 @@ status_parser = subparsers.add_parser('help', help='Display helper', add_help=Fa
 quit_parser = subparsers.add_parser('shutdown', help='Shutdown the taskmaster server', add_help=False)
 
 def check_command_start(command):
-    valid_commands = ["help", "reload", "start", "stop", "restart", "quit", "status", "shutdown"]
+    valid_commands = ["help", "reload", "start", "stop", "restart", "quit", "status", "shutdown", "connexion"]
     if any(command.startswith(cmd) for cmd in valid_commands):
         return True
     return False
@@ -44,8 +47,9 @@ def parse_command(command):
     cmd = {}
     cmd.clear()
     if check_command_start(command) == False:
-        cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown')"
+        cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown', 'connexion')"
         return (cmd)
+
 
     #parse command and it's arguments
     try:
@@ -56,11 +60,11 @@ def parse_command(command):
             cmd[args.command] = helper.getvalue()
         elif args.command in ['start', 'stop', 'restart', 'status']:
             cmd[args.command] = args.process_name
-        elif args.command in ['reload', 'quit', 'shutdown'] and unknown_args:
+        elif args.command in ['reload', 'quit', 'shutdown', 'connexion'] and unknown_args:
             cmd["error"] = f"Taskmaster: error: invalid argument: '{args.command}' should not have any arguments"
-        elif args.command in ['reload', 'quit', 'shutdown'] and not unknown_args:
+        elif args.command in ['reload', 'quit', 'shutdown', 'connexion'] and not unknown_args:
             cmd[args.command] = None
-    except:
+    except OSError as e:
         # Temporarily redirect stderr to capture the usage message
         original_stderr = sys.stderr
         sys.stderr = error_buffer = io.StringIO()

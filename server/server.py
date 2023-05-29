@@ -205,16 +205,6 @@ while running:
             clients.append(client_socket)
             poll_object.register(client_socket, select.POLLIN)
             print(timestamp('INFO') + f"New client connected from {addr[0]}:{addr[1]}\n", end="", flush=True)
-        
-            # First launch process and monitor calling (only once)
-            if first == 0:
-                first = 1
-                list_proc_data = copy.deepcopy(main_parse(init_path_conf))
-                for key in list_proc_data:
-                    if key == "error":
-                        running = 0
-                        break
-                launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
 
 
         # If the event is from a client socket, it means there's data to read
@@ -229,11 +219,30 @@ while running:
 
             data = client_socket.recv(1024).decode()
             cmd = parse_command(data)
-
             cmd_key = next(iter(cmd.keys()))
 
             # Process the job command
-            if cmd_key == 'start':
+            if cmd_key == 'connexion':
+                error = 0
+                result = "Connexion to server..."
+                # First launch process and monitor calling (only once)
+                if first == 0:
+                    first = 1
+                    list_proc_data = copy.deepcopy(main_parse(init_path_conf))
+                    for key in list_proc_data:
+                        if key == "error":
+                            error = 1
+                            result = list_proc_data[key] 
+                            result += ": Closing server" 
+                            client_socket.sendall(result.encode())
+                            running = 0
+                            break
+                    if error == 0:
+                        launching(running, list_proc_data, clients, running_table, first, thread_list, sys.argv[1])
+                    else:
+                        break
+
+            elif cmd_key == 'start':
                 print(timestamp('INFO') + "starting called by client " + str(client.fileno()) + "\n", end="", flush=True)
                 result = "starting called..." 
                 for key in cmd['start']:

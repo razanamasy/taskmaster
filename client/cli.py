@@ -17,7 +17,6 @@ command_history = []
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def signal_handler(signal, frame):
-    command = "quit"
     try:
         client_socket.sendall(command.encode())
     except:
@@ -33,9 +32,13 @@ def main():
     flag = True
     try:
         client_socket.connect((HOST, PORT))
-    except:
+        command = 'connexion'
+        client_socket.sendall(command.encode())
+        result = client_socket.recv(1024).decode()
+        print(result)
+    except OSError as e:
         flag = False
-        print(f"Client : Taskmaster server not available")
+        print(f"Client : Taskmaster server not available : {str(e)}")
         return ()
 
     while True:
