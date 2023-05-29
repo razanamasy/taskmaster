@@ -64,8 +64,9 @@ def handle_sighup(signal, frame):
     new_list = main_parse(init_path_conf)
     for key in new_list:
         if key == "error":
-            return()
+            return("Error parsing : reload failed")
     main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
+    return ("Reload succeded")
     
 signal.signal(signal.SIGHUP, handle_sighup)
 
@@ -273,7 +274,7 @@ while running:
                         print(timestamp('WARN') + result + "\n", end="", flush=True)
             elif cmd_key == 'reload':
                 result = "Reloading the configuration file : " + init_path_conf 
-                handle_sighup(signal.SIGHUP, None)
+                result = handle_sighup(signal.SIGHUP, None)
               #  new_list = main_parse(init_path_conf)
               #  main_reload_cli(new_list, list_proc_data, mutex_proc_dict, clients, running_table, thread_list)
 
