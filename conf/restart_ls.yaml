@@ -1,5 +1,5 @@
 programs:
-  return:
+  ls:
     cmd: "/usr/bin/ls"
     startretries: 2
     numprocs: 1

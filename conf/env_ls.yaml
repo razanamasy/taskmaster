@@ -2,12 +2,13 @@ programs:
   env1:
     cmd: "/usr/bin/env"
     starttime: 0
-    autorestart: True
+    autorestart: unexpected
     numprocs: 10
     env:
-      test: Test
-  ls1:
-    cmd: "/usr/bin/ls -la"
-    autorestart: True
+      test: caca
+  ls:
+    cmd: "/bin/ls -l"
+    autorestart: False
     numprocs: 10
     starttime: 0
+

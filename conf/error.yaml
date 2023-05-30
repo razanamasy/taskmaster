@@ -14,7 +14,7 @@ programs:
     cmd: "/usr/bin/ls"
     startretries: 2
     numprocs: 10
-    autostart: Caca 
+    autostart: error 
     autorestart: False
     starttime: 0
     stoptime: 10
