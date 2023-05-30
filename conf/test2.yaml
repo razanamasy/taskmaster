@@ -1,11 +1,22 @@
 programs:
-  while1:
-    cmd: "/home/hrazanam/taskmaster/progs/while"
-    startretries: 3
-    numprocs: 1
-    autostart: True
-    autorestart: "unexpected"
-    starttime: 10
+  ls:
+    cmd: "/usr/bin/ls"
+    startretries: 2
+    numprocs: 10
+    autostart: True 
+    autorestart: True
+    starttime: 0
     stoptime: 10
-    stopsignal: "KILL"
+    stopsignal: "TERM"
+    exitcodes: [0]
+
+  ls1:
+    cmd: "/usr/bin/ls"
+    startretries: 2
+    numprocs: 10
+    autostart: Caca 
+    autorestart: False
+    starttime: 0
+    stoptime: 10
+    stopsignal: "TERM"
     exitcodes: [0]

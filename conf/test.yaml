@@ -1,6 +1,0 @@
-programs:
-  return1:
-    cmd: "/home/hrazanam/taskmaster/progs/return"
-    starttime: 1
-    startretries: 40
-    numprocs: 10

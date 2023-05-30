@@ -47,7 +47,7 @@ def parse_command(command):
     cmd = {}
     cmd.clear()
     if check_command_start(command) == False:
-        cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown', 'connexion')"
+        cmd["error"] = f"usage: Taskmaster [options]\nTaskmaster: error: argument command: invalid choice: '{command}' (choose from 'start', 'stop', 'restart', 'reload', 'quit', 'status', 'help', 'shutdown')"
         return (cmd)
 
 

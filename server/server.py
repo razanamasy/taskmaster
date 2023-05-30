@@ -224,9 +224,10 @@ while running:
             # Process the job command
             if cmd_key == 'connexion':
                 error = 0
-                result = "Connexion to server...\n"
+                result = "Already connected..\n"
                 # First launch process and monitor calling (only once)
                 if first == 0:
+                    result = "Connexion to server...\n"
                     first = 1
                     list_proc_data = copy.deepcopy(main_parse(init_path_conf))
                     for key in list_proc_data:

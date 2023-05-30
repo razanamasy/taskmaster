@@ -1,0 +1,11 @@
+programs:
+  while:
+    cmd: "/home/hrazanam/taskmaster/progs/while"
+    startretries: 3
+    numprocs: 1
+    autostart: True 
+    autorestart: True
+    starttime: 50
+    stoptime: 10
+    stopsignal: "TERM"
+    exitcodes: [0]
